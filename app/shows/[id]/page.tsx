@@ -6,6 +6,7 @@ import {
   AlertCircle,
   Clock,
   TrendingUp,
+  Pencil,
 } from "lucide-react";
 import { getShowById } from "@/lib/queries";
 import {
@@ -164,7 +165,15 @@ export default async function ShowDetailPage({
                   thread with the agent.
                 </CardDescription>
               </div>
-              {deal && <DealTypeBadge type={deal.dealType} />}
+              <div className="flex items-center gap-2">
+                {deal && <DealTypeBadge type={deal.dealType} />}
+                <Link href={`/shows/${show.id}/deal`}>
+                  <Button variant="secondary" size="sm">
+                    <Pencil className="h-3 w-3" />
+                    {deal ? "Edit deal" : "Set up deal"}
+                  </Button>
+                </Link>
+              </div>
             </CardHeader>
             <CardContent className="space-y-5">
               {deal ? (

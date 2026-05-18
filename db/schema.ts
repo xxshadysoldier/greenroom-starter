@@ -118,14 +118,25 @@ export const deals = sqliteTable("deals", {
   }).notNull(),
   guaranteeAmount: real("guarantee_amount"),
   percentage: real("percentage"),
-  percentageBasis: text("percentage_basis", { enum: ["gross", "net"] }),
+  percentageBasis: text("percentage_basis", { enum: ["gross", "net", "door"] }),
   expenseCap: real("expense_cap"),
   hospitalityCap: real("hospitality_cap"),
+
+  // Structured terms added in slice 02 (deal entry form).
+  // Stored as JSON because the shapes are small and read together as a unit
+  // — the agent sign-off page renders all of them, the in-app calculator
+  // reads none of them yet. See lib/dealRules.ts for the shapes + rules.
+  recoupsJson: text("recoups_json"),
+  deductionOrderJson: text("deduction_order_json"),
+  compRulesJson: text("comp_rules_json"),
+  walkoutPotJson: text("walkout_pot_json"),
+  sourceEmail: text("source_email"),
 
   bonusesJson: text("bonuses_json"),
   dealNotesFreetext: text("deal_notes_freetext"),
 
   createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
+  updatedAt: integer("updated_at", { mode: "timestamp" }),
 });
 
 // -------- Ticket sales --------
@@ -333,3 +344,64 @@ export type Recoup = {
 };
 
 export type SettlementStage = Settlement["status"];
+
+/**
+ * Deal-level recoup (negotiated up front, not a settlement-time line item).
+ *
+ * `bucket` is required on vs / % of net deals (it determines where the
+ * recoup lives in the math) and auto-resolves to "off-top" on % of gross
+ * and door deals, where there's no cap to live inside.
+ *
+ * `appliesAt` controls whether the recoup comes off before or after the
+ * percentage is calculated.
+ */
+export type DealRecoup = {
+  id: string;
+  label: string;
+  category:
+    | "marketing"
+    | "hospitality_overage"
+    | "production_overage"
+    | "prior_advance"
+    | "damages"
+    | "other";
+  amount: number;
+  bucket: "inside" | "outside" | "off-top";
+  appliesAt: "before" | "after";
+};
+
+/**
+ * The deduction order is a flat list of stage IDs in the order they apply
+ * at settlement. Vs/Net default to 5 stages; gross/door default to 3.
+ */
+export type DeductionStage =
+  | "fees"
+  | "off_top_recoups"
+  | "expenses"
+  | "in_cap_recoups"
+  | "artist_split";
+
+/**
+ * Per-comp-category rule for whether that category counts toward gross.
+ * Set at the deal level, not per ticket. Default: does not count.
+ */
+export type CompRules = {
+  artist_gl: boolean;
+  label: boolean;
+  press: boolean;
+  venue_staff: boolean;
+  sponsor: boolean;
+  promo: boolean;
+  other: boolean;
+};
+
+/**
+ * Walkout pot — required on Door deals, hidden everywhere else.
+ * `floor` is the minimum the artist takes home; `splitPct` is the share
+ * of remaining cash that goes to the artist; `paysOut` is when.
+ */
+export type WalkoutPot = {
+  floor: number;
+  splitPct: number;
+  paysOut: "same_night_cash" | "end_of_run";
+};

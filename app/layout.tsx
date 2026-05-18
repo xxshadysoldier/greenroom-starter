@@ -68,7 +68,7 @@ export default function RootLayout({
       lang="en"
       className={`${GeistSans.variable} ${GeistMono.variable} ${fraunces.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex font-sans">
+      <body className="h-full flex font-sans">
         <Sidebar />
         <main className="flex-1 overflow-auto relative">{children}</main>
         <CommandPaletteData />

@@ -1,0 +1,2800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Greenroom · Deal entry — three variations</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Geist+Mono:wght@400;500&family=Geist:wght@400;450;500;600&display=swap"
+  rel="stylesheet"
+/>
+
+<style>
+  /* ───────── tokens — mirrored from app/globals.css ───────── */
+  :root {
+    --canvas:        #faf7f0;
+    --canvas-soft:   #fdfbf6;
+
+    --brand-50:  #ecfdf5;
+    --brand-100: #d1fae5;
+    --brand-200: #a7f3d0;
+    --brand-300: #6ee7b7;
+    --brand-500: #10b981;
+    --brand-600: #059669;
+    --brand-700: #047857;
+    --brand-800: #065f46;
+    --brand-900: #064e3b;
+
+    --ink-50:  #faf8f4;
+    --ink-100: #f3f0e9;
+    --ink-200: #e4dfd2;
+    --ink-300: #c9c2b1;
+    --ink-400: #94907f;
+    --ink-500: #6b6759;
+    --ink-600: #4f4c41;
+    --ink-700: #3a3830;
+    --ink-800: #26241e;
+    --ink-900: #1a1814;
+
+    --amber-50:  #fef7e6;
+    --amber-100: #fef0c7;
+    --amber-200: #fde68a;
+    --amber-700: #b45309;
+    --amber-800: #92400e;
+
+    --rose-50:  #fef2f2;
+    --rose-100: #ffe4e6;
+    --rose-200: #fecaca;
+    --rose-700: #be123c;
+    --rose-800: #9f1239;
+
+    --sky-50:  #eff6ff;
+    --sky-100: #dbeafe;
+    --sky-200: #bfdbfe;
+    --sky-700: #1d4ed8;
+    --sky-800: #1e40af;
+
+    --font-display: 'Fraunces', Georgia, serif;
+    --font-sans:    'Geist', ui-sans-serif, system-ui, sans-serif;
+    --font-mono:    'Geist Mono', ui-monospace, monospace;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: var(--font-sans);
+    color: var(--ink-900);
+    background: var(--canvas);
+    font-feature-settings: "cv11", "ss01", "ss03";
+    -webkit-font-smoothing: antialiased;
+    position: relative;
+    min-height: 100vh;
+  }
+
+  /* paper wash + noise — straight from globals.css */
+  body::before {
+    content: ""; position: fixed; inset: 0;
+    pointer-events: none; z-index: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 50% 0%, rgba(16,185,129,0.05), transparent 60%),
+      radial-gradient(ellipse 50% 30% at 100% 100%, rgba(245,158,11,0.03), transparent 60%);
+  }
+  body::after {
+    content: ""; position: fixed; inset: 0;
+    pointer-events: none; z-index: 1;
+    opacity: 0.025;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 256px 256px;
+  }
+
+  /* utilities */
+  .tabular { font-variant-numeric: tabular-nums; font-feature-settings: "tnum"; }
+  .mono    { font-family: var(--font-mono); }
+  .display { font-family: var(--font-display); font-weight: 500; letter-spacing: -0.025em; font-optical-sizing: auto; }
+  .eyebrow {
+    font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.12em;
+    color: var(--brand-700);
+  }
+
+  /* ───────── canvas chrome ───────── */
+  .canvas-page { position: relative; z-index: 2; max-width: 1320px; margin: 0 auto; padding: 80px 56px 160px; }
+
+  .cover { margin-bottom: 88px; }
+  .cover .meta-row {
+    display: flex; align-items: center; gap: 14px;
+    font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--ink-400);
+    margin-bottom: 28px;
+  }
+  .cover .meta-row .dot { width: 4px; height: 4px; border-radius: 50%; background: var(--ink-300); }
+  .cover h1 {
+    font-family: var(--font-display); font-weight: 500;
+    font-size: 88px; line-height: 0.98; letter-spacing: -0.035em;
+    margin: 0 0 22px;
+    color: var(--ink-900);
+    font-optical-sizing: auto;
+  }
+  .cover h1 em { font-style: italic; font-weight: 400; color: var(--brand-700); }
+  .cover .lede {
+    max-width: 640px;
+    font-size: 17px; line-height: 1.55;
+    color: var(--ink-600);
+  }
+  .cover .toc {
+    margin-top: 36px; display: flex; gap: 28px; flex-wrap: wrap;
+    border-top: 1px solid var(--ink-200);
+    padding-top: 18px;
+  }
+  .cover .toc a {
+    text-decoration: none; color: var(--ink-700);
+    font-size: 13px; display: flex; align-items: baseline; gap: 8px;
+  }
+  .cover .toc a:hover { color: var(--brand-700); }
+  .cover .toc a .n { font-family: var(--font-mono); font-size: 10.5px; color: var(--ink-400); letter-spacing: 0.04em; }
+
+  /* section heads, taken from the design system */
+  .sec-head {
+    margin-bottom: 32px; display: flex; align-items: baseline; gap: 24px;
+    border-bottom: 1px solid var(--ink-200); padding-bottom: 16px;
+  }
+  .sec-head .num {
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em;
+    color: var(--ink-400); flex-shrink: 0; padding-top: 8px;
+  }
+  .sec-head h2 {
+    font-family: var(--font-display); font-weight: 500;
+    font-size: 36px; letter-spacing: -0.02em; margin: 0;
+    color: var(--ink-900); flex: 1; font-optical-sizing: auto;
+  }
+  .sec-head .sub {
+    font-size: 13px; color: var(--ink-500); max-width: 360px;
+    line-height: 1.55; text-align: right;
+  }
+
+  .specimen {
+    background: var(--canvas-soft);
+    border: 1px solid rgba(228,223,210,0.7);
+    border-radius: 14px;
+    padding: 18px;
+    margin-bottom: 96px;
+    box-shadow: 0 1px 2px rgba(26,24,20,0.03);
+  }
+  .specimen .spec-meta {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 4px 10px 16px;
+    font-family: var(--font-mono); font-size: 10.5px;
+    letter-spacing: 0.06em; color: var(--ink-400);
+    text-transform: uppercase;
+  }
+  .specimen .spec-meta .tags { display: flex; gap: 8px; }
+  .specimen .spec-meta .tag {
+    background: white; padding: 3px 8px; border-radius: 6px;
+    box-shadow: inset 0 0 0 1px rgba(228,223,210,0.8);
+    color: var(--ink-600); letter-spacing: 0.05em;
+  }
+  .specimen .frame {
+    background: var(--canvas);
+    border: 1px solid rgba(228,223,210,0.8);
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+  }
+  .specimen .takeaway {
+    margin-top: 14px; padding: 14px 18px;
+    font-size: 12.5px; color: var(--ink-600);
+    line-height: 1.6; max-width: 980px;
+  }
+  .specimen .takeaway strong { color: var(--ink-900); font-weight: 600; }
+  .specimen .takeaway .kw { color: var(--brand-700); font-weight: 500; }
+
+  /* ───────── shared form primitives (all three variations) ───────── */
+
+  /* nav strip (mock app shell, only on the variations where it adds context) */
+  .app-bar {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 28px;
+    border-bottom: 1px solid rgba(228,223,210,0.7);
+    background: rgba(255,255,255,0.55);
+    backdrop-filter: blur(6px);
+    font-size: 12.5px; color: var(--ink-500);
+  }
+  .app-bar .crumb { display: flex; align-items: center; gap: 6px; }
+  .app-bar .crumb a { color: var(--ink-400); text-decoration: none; }
+  .app-bar .crumb a:hover { color: var(--ink-900); }
+  .app-bar .crumb .sep { color: var(--ink-300); }
+  .app-bar .crumb .here { color: var(--ink-900); font-weight: 500; }
+  .app-bar .right { margin-left: auto; display: flex; align-items: center; gap: 12px; font-family: var(--font-mono); font-size: 11px; color: var(--ink-400); }
+  .app-bar .pulse { display: inline-flex; align-items: center; gap: 6px; }
+  .app-bar .pulse .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--amber-700); animation: pulse 2s ease-in-out infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+
+  /* poster header — matches show detail */
+  .poster {
+    padding: 36px 48px 28px;
+    background: linear-gradient(to bottom, rgba(167,243,208,0.20), transparent);
+  }
+  .poster .crumb {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12px; color: var(--ink-400);
+    text-decoration: none; margin-bottom: 24px;
+  }
+  .poster .crumb:hover { color: var(--ink-900); }
+  .poster .row {
+    display: flex; align-items: flex-start; justify-content: space-between; gap: 24px;
+  }
+  .poster h2.show-title {
+    font-family: var(--font-display); font-weight: 500;
+    font-size: 44px; letter-spacing: -0.025em; line-height: 1.04;
+    margin: 0; color: var(--ink-900); font-optical-sizing: auto;
+  }
+  .poster .badge-row { display: flex; gap: 6px; align-items: center; margin-bottom: 14px; }
+  .poster .meta {
+    font-size: 13px; color: var(--ink-400); margin-top: 12px;
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  }
+  .poster .meta .strong { color: var(--ink-600); font-weight: 500; }
+  .poster .meta .sep { color: var(--ink-200); }
+
+  /* badge primitive — copied verbatim from design system */
+  .badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 10.5px; font-weight: 500;
+    box-shadow: inset 0 0 0 1px var(--ring, rgba(228,223,210,0.8));
+  }
+  .badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--dot, var(--ink-400)); }
+  .badge.booked   { background: var(--ink-100); color: var(--ink-700); --ring: rgba(228,223,210,0.8); --dot: var(--ink-400); }
+  .badge.advanced { background: var(--sky-50);  color: var(--sky-800); --ring: rgba(191,219,254,0.8); --dot: var(--sky-700); }
+  .badge.flat     { background: var(--ink-50);  color: var(--ink-700); --ring: rgba(228,223,210,0.8); }
+  .badge.vs       { background: var(--amber-50); color: var(--amber-800); --ring: rgba(253,230,138,0.8); }
+  .badge.brand    { background: var(--brand-50); color: var(--brand-800); --ring: rgba(167,243,208,0.8); }
+  .badge.amber    { background: var(--amber-50); color: var(--amber-800); --ring: rgba(253,230,138,0.8); }
+  .badge.rose     { background: var(--rose-50);  color: var(--rose-800); --ring: rgba(254,202,202,0.8); }
+  .badge.sky      { background: var(--sky-50);   color: var(--sky-800); --ring: rgba(191,219,254,0.8); }
+
+  /* buttons — mirroring components/ui/button.tsx */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    border-radius: 8px;
+    font-size: 13px; font-weight: 500;
+    font-family: var(--font-sans);
+    transition: all 150ms;
+    height: 36px; padding: 0 16px;
+    border: 0; cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+  }
+  .btn.sm { height: 28px; padding: 0 10px; font-size: 12px; }
+  .btn.lg { height: 40px; padding: 0 20px; }
+  .btn.icon { width: 36px; height: 36px; padding: 0; }
+  .btn.brand {
+    background: var(--brand-700); color: white;
+    box-shadow: 0 1px 2px rgba(4,120,87,0.15), inset 0 0 0 1px rgba(6,95,70,0.2);
+  }
+  .btn.brand:hover { background: var(--brand-800); }
+  .btn.default { background: var(--ink-900); color: white; }
+  .btn.secondary {
+    background: white; color: var(--ink-900);
+    box-shadow: 0 1px 2px rgba(26,24,20,0.04), inset 0 0 0 1px rgba(228,223,210,0.8);
+  }
+  .btn.outline {
+    background: rgba(255,255,255,0.8); color: var(--ink-800);
+    border: 1px solid rgba(201,194,177,0.8);
+  }
+  .btn.ghost   { background: transparent; color: var(--ink-600); }
+  .btn.ghost:hover { background: var(--ink-100); color: var(--ink-900); }
+  .btn:disabled, .btn[aria-disabled="true"] { opacity: 0.5; cursor: not-allowed; }
+
+  /* form controls */
+  .field-label {
+    display: block;
+    font-size: 10.5px; font-weight: 600; letter-spacing: 0.1em;
+    color: var(--ink-500); text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .field-label .req { color: var(--rose-700); margin-left: 3px; }
+  .hint { font-size: 11px; color: var(--ink-400); margin-top: 4px; line-height: 1.5; }
+  .input, .select, .textarea {
+    width: 100%;
+    background: white;
+    border: 1px solid rgba(201,194,177,0.7);
+    border-radius: 8px;
+    font-family: inherit; font-size: 13.5px;
+    color: var(--ink-900);
+    padding: 9px 12px;
+    transition: all 120ms;
+    line-height: 1.4;
+  }
+  .input.mono, .input.amount { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+  .input::placeholder, .textarea::placeholder, .select::placeholder { color: var(--ink-300); }
+  .input:focus, .select:focus, .textarea:focus {
+    outline: 2px solid var(--brand-700); outline-offset: 0; border-color: var(--brand-700);
+  }
+  .textarea { min-height: 110px; resize: vertical; line-height: 1.55; }
+  .input-prefix {
+    display: flex; align-items: stretch;
+    border: 1px solid rgba(201,194,177,0.7);
+    background: white; border-radius: 8px; overflow: hidden;
+  }
+  .input-prefix .px {
+    background: var(--canvas-soft);
+    border-right: 1px solid rgba(228,223,210,0.7);
+    padding: 0 10px;
+    display: inline-flex; align-items: center;
+    font-family: var(--font-mono); font-size: 12px;
+    color: var(--ink-500);
+  }
+  .input-prefix .input { border: 0; border-radius: 0; padding-left: 10px; }
+  .input-prefix:focus-within { outline: 2px solid var(--brand-700); outline-offset: 0; }
+
+  /* segmented control — for deal type picker */
+  .seg {
+    display: inline-flex;
+    background: var(--canvas-soft);
+    border: 1px solid rgba(228,223,210,0.8);
+    border-radius: 10px;
+    padding: 3px;
+    gap: 2px;
+  }
+  .seg button {
+    background: transparent; border: 0; cursor: pointer;
+    padding: 7px 14px; border-radius: 7px;
+    font-family: inherit; font-size: 12.5px; font-weight: 500;
+    color: var(--ink-500);
+    letter-spacing: -0.005em;
+  }
+  .seg button.on {
+    background: white; color: var(--ink-900);
+    box-shadow: 0 1px 2px rgba(26,24,20,0.06), inset 0 0 0 1px rgba(228,223,210,0.7);
+  }
+  .seg button:hover:not(.on) { color: var(--ink-800); }
+
+  /* radio pill group — for recoup bucket + applies-at */
+  .pill-group { display: flex; gap: 6px; flex-wrap: wrap; }
+  .pill {
+    background: white; border: 1px solid rgba(201,194,177,0.7);
+    color: var(--ink-700); font-size: 12px; font-weight: 500;
+    padding: 6px 10px; border-radius: 7px;
+    cursor: pointer; transition: all 120ms;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .pill .swatch {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--ink-300);
+  }
+  .pill[data-bucket="inside"] .swatch  { background: var(--sky-700); }
+  .pill[data-bucket="outside"] .swatch { background: var(--amber-700); }
+  .pill[data-bucket="off-top"] .swatch { background: var(--rose-700); }
+  .pill.on {
+    background: var(--ink-900); color: white; border-color: var(--ink-900);
+  }
+  .pill.on .swatch { box-shadow: 0 0 0 2px rgba(255,255,255,0.25); }
+  .pill.on[data-bucket="inside"]  { background: var(--sky-800);  border-color: var(--sky-800); }
+  .pill.on[data-bucket="outside"] { background: var(--amber-800); border-color: var(--amber-800); }
+  .pill.on[data-bucket="off-top"] { background: var(--rose-800);  border-color: var(--rose-800); }
+
+  /* checkbox */
+  .check { display: inline-flex; align-items: flex-start; gap: 9px; font-size: 12.5px; color: var(--ink-700); line-height: 1.5; cursor: pointer; }
+  .check .box {
+    width: 16px; height: 16px; flex-shrink: 0;
+    border: 1px solid var(--ink-300); border-radius: 4px;
+    background: white; position: relative; margin-top: 2px;
+  }
+  .check.on .box { background: var(--brand-700); border-color: var(--brand-700); }
+  .check.on .box::after {
+    content: ""; position: absolute; left: 4px; top: 1px;
+    width: 5px; height: 9px; border: solid white; border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+
+  /* card — used inside form */
+  .card {
+    background: white;
+    border: 1px solid rgba(228,223,210,0.8);
+    border-radius: 10px;
+    box-shadow: 0 1px 2px rgba(26,24,20,0.03);
+    overflow: hidden;
+  }
+  .card-head {
+    padding: 14px 20px;
+    border-bottom: 1px solid rgba(243,240,233,0.8);
+    display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;
+  }
+  .card-title { font-size: 13px; font-weight: 600; color: var(--ink-900); letter-spacing: -0.005em; }
+  .card-desc  { font-size: 12px; color: var(--ink-500); margin-top: 2px; line-height: 1.55; }
+  .card-body  { padding: 18px 20px; }
+  .card-foot  { padding: 12px 20px; border-top: 1px solid rgba(243,240,233,0.8); font-size: 12px; color: var(--ink-500); display: flex; justify-content: space-between; align-items: center; }
+
+  /* recoup row block — repeating item */
+  .recoup-row {
+    background: var(--canvas-soft);
+    border: 1px solid rgba(228,223,210,0.7);
+    border-radius: 10px;
+    padding: 16px;
+    margin-top: 12px;
+    position: relative;
+  }
+  .recoup-row .row-head {
+    display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;
+  }
+  .recoup-row .row-head .idx {
+    font-family: var(--font-mono); font-size: 10.5px;
+    color: var(--ink-400); letter-spacing: 0.06em;
+  }
+  .recoup-row .grid {
+    display: grid; grid-template-columns: 1.8fr 1fr 1fr; gap: 14px;
+  }
+  .recoup-row .grid-2 {
+    margin-top: 14px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+  }
+
+  /* drag-to-reorder list */
+  .order-list { list-style: none; padding: 0; margin: 0; }
+  .order-list li {
+    display: flex; align-items: center; gap: 14px;
+    padding: 10px 14px;
+    background: white;
+    border: 1px solid rgba(228,223,210,0.8);
+    border-radius: 8px;
+    margin-top: 8px;
+  }
+  .order-list li:first-child { margin-top: 0; }
+  .order-list .grip {
+    width: 18px; height: 18px; color: var(--ink-300);
+    cursor: grab; flex-shrink: 0;
+  }
+  .order-list .num {
+    font-family: var(--font-mono); font-size: 11px; color: var(--ink-400);
+    width: 18px; text-align: center;
+  }
+  .order-list .name { font-size: 13px; font-weight: 500; color: var(--ink-900); flex: 1; }
+  .order-list .what { font-size: 12px; color: var(--ink-500); }
+  .order-list .arrows { display: flex; gap: 2px; flex-shrink: 0; }
+  .order-list .arrows button {
+    width: 24px; height: 24px; border: 0; background: transparent;
+    border-radius: 4px; color: var(--ink-400); cursor: pointer;
+  }
+  .order-list .arrows button:hover { background: var(--ink-100); color: var(--ink-900); }
+
+  /* lucide-ish icons (inline SVG, 1.75 stroke) */
+  .ico { width: 16px; height: 16px; stroke-width: 1.75; stroke: currentColor; fill: none; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+  .ico-sm { width: 14px; height: 14px; }
+  .ico-xs { width: 12px; height: 12px; }
+
+  /* ───── Variation A — long-scroll worksheet ───── */
+  .va-grid {
+    display: grid; grid-template-columns: 1fr 320px;
+    gap: 28px;
+    padding: 28px 48px 56px;
+  }
+  .va-section { margin-top: 28px; }
+  .va-section:first-child { margin-top: 0; }
+  .va-section .va-title {
+    font-family: var(--font-display); font-weight: 500;
+    font-size: 22px; letter-spacing: -0.018em;
+    color: var(--ink-900); margin: 0 0 2px;
+    font-optical-sizing: auto;
+  }
+  .va-section .va-desc { font-size: 12.5px; color: var(--ink-500); margin-bottom: 16px; line-height: 1.55; max-width: 640px; }
+
+  .va-rail {
+    position: sticky; top: 18px;
+    align-self: start;
+  }
+  .va-rail .ticker {
+    background: white;
+    border: 1px solid rgba(228,223,210,0.8);
+    border-radius: 12px;
+    padding: 18px 18px 16px;
+    box-shadow: 0 1px 2px rgba(26,24,20,0.03);
+  }
+  .va-rail .ticker .progress {
+    display: flex; align-items: baseline; gap: 6px;
+    margin-bottom: 4px;
+  }
+  .va-rail .ticker .progress .pct {
+    font-family: var(--font-display); font-weight: 500;
+    font-size: 32px; letter-spacing: -0.025em; line-height: 1; color: var(--ink-900);
+  }
+  .va-rail .ticker .progress .total {
+    font-family: var(--font-mono); font-size: 12px;
+    color: var(--ink-400);
+  }
+  .va-rail .ticker .progress-bar {
+    height: 4px; background: var(--ink-100); border-radius: 2px; margin-top: 12px;
+    overflow: hidden;
+  }
+  .va-rail .ticker .progress-bar .fill {
+    height: 100%; width: 67%;
+    background: linear-gradient(to right, var(--brand-500), var(--brand-700));
+  }
+  .va-rail .ticker .missing {
+    margin-top: 18px; padding-top: 14px;
+    border-top: 1px solid var(--ink-100);
+  }
+  .va-rail .ticker .missing-head {
+    font-size: 10.5px; font-weight: 600; letter-spacing: 0.1em;
+    color: var(--ink-500); text-transform: uppercase; margin-bottom: 8px;
+  }
+  .va-rail .ticker .missing ul { list-style: none; padding: 0; margin: 0; }
+  .va-rail .ticker .missing li {
+    font-size: 12px; color: var(--ink-700);
+    padding: 4px 0; display: flex; align-items: center; gap: 8px;
+  }
+  .va-rail .ticker .missing li .x {
+    width: 4px; height: 4px; border-radius: 50%; background: var(--rose-700);
+  }
+
+  .va-rail .send {
+    margin-top: 14px;
+    background: white;
+    border: 1px solid rgba(228,223,210,0.8);
+    border-radius: 12px;
+    padding: 16px 18px;
+    box-shadow: 0 1px 2px rgba(26,24,20,0.03);
+  }
+  .va-rail .send .to {
+    font-size: 11px; color: var(--ink-500); margin-bottom: 6px;
+  }
+  .va-rail .send .agent {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 10px;
+    background: var(--canvas-soft);
+    border: 1px solid rgba(228,223,210,0.8);
+    border-radius: 8px;
+    margin-bottom: 12px;
+  }
+  .va-rail .send .agent .av {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--brand-300), var(--brand-700));
+    color: white; display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 600; letter-spacing: 0.04em;
+  }
+  .va-rail .send .agent .who { line-height: 1.3; }
+  .va-rail .send .agent .who .nm { font-size: 12.5px; font-weight: 500; color: var(--ink-900); }
+  .va-rail .send .agent .who .mail { font-family: var(--font-mono); font-size: 11px; color: var(--ink-500); }
+  .va-rail .send .save { font-size: 11px; color: var(--ink-400); margin-top: 12px; display: flex; justify-content: space-between; }
+
+  .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .form-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .form-grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+
+  /* "applies-at" choice — toggle */
+  .toggle-row {
+    display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  }
+
+  /* ───── Variation B — stepped wizard ───── */
+  .vb-shell {
+    display: flex; flex-direction: column;
+    min-height: 720px;
+  }
+  .vb-stepper {
+    display: flex; gap: 0;
+    padding: 18px 48px 0;
+    background: white;
+    border-bottom: 1px solid rgba(228,223,210,0.7);
+  }
+  .vb-step {
+    flex: 1;
+    padding: 10px 14px 16px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    position: relative;
+  }
+  .vb-step .si {
+    font-family: var(--font-mono); font-size: 10.5px;
+    letter-spacing: 0.08em; color: var(--ink-400);
+    margin-bottom: 4px;
+  }
+  .vb-step .sn {
+    font-size: 13px; font-weight: 500; color: var(--ink-500);
+    letter-spacing: -0.005em;
+  }
+  .vb-step.done .si { color: var(--brand-700); }
+  .vb-step.done .sn { color: var(--ink-700); }
+  .vb-step.done .si::after { content: " ✓"; color: var(--brand-700); }
+  .vb-step.active {
+    border-bottom-color: var(--brand-700);
+  }
+  .vb-step.active .si { color: var(--brand-700); }
+  .vb-step.active .sn { color: var(--ink-900); font-weight: 600; }
+  .vb-step + .vb-step { margin-left: 0; }
+
+  .vb-body {
+    display: grid; grid-template-columns: 1fr 360px;
+    gap: 36px;
+    padding: 36px 48px 28px;
+    flex: 1;
+  }
+  .vb-stage h3.vb-h {
+    font-family: var(--font-display); font-weight: 500;
+    font-size: 32px; letter-spacing: -0.022em;
+    margin: 0 0 6px; color: var(--ink-900); font-optical-sizing: auto;
+  }
+  .vb-stage .vb-sub {
+    font-size: 14px; color: var(--ink-500); margin-bottom: 28px;
+    max-width: 560px; line-height: 1.55;
+  }
+  .vb-stage .vb-sub strong { color: var(--ink-700); }
+
+  .vb-preview {
+    background: white;
+    border: 1px solid rgba(228,223,210,0.8);
+    border-radius: 12px;
+    box-shadow: 0 1px 2px rgba(26,24,20,0.03);
+    align-self: start;
+    overflow: hidden;
+    position: sticky; top: 18px;
+  }
+  .vb-preview .head {
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(243,240,233,0.8);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .vb-preview .head .lh {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.1em;
+    color: var(--ink-500); text-transform: uppercase;
+  }
+  .vb-preview .head .rh {
+    font-family: var(--font-mono); font-size: 10.5px;
+    color: var(--ink-400);
+  }
+  .vb-preview .body { padding: 14px 16px 18px; }
+  .vb-preview .row {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 6px 0;
+    font-size: 12.5px;
+  }
+  .vb-preview .row .k { color: var(--ink-500); }
+  .vb-preview .row .v { color: var(--ink-900); font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+  .vb-preview .row.pending .v { color: var(--ink-300); }
+  .vb-preview .row.pending .v::before { content: "···  "; color: var(--ink-200); }
+  .vb-preview .sect-h {
+    font-size: 10.5px; font-weight: 600; letter-spacing: 0.1em;
+    color: var(--ink-500); text-transform: uppercase;
+    margin: 14px 0 4px;
+  }
+
+  .vb-foot {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 48px;
+    border-top: 1px solid rgba(228,223,210,0.7);
+    background: rgba(255,255,255,0.7);
+  }
+  .vb-foot .meta { font-size: 12px; color: var(--ink-400); }
+  .vb-foot .actions { display: flex; gap: 10px; }
+
+  /* ───── Variation C — split-pane editor ───── */
+  .vc-shell {
+    display: grid; grid-template-columns: 1fr 460px;
+    gap: 0;
+    background: var(--canvas);
+  }
+  .vc-left  { padding: 24px 32px 60px; }
+  .vc-right {
+    background: var(--canvas-soft);
+    border-left: 1px solid rgba(228,223,210,0.7);
+    padding: 0;
+    position: relative;
+  }
+  .vc-tabs {
+    display: flex; gap: 0; border-bottom: 1px solid var(--ink-200);
+    margin-bottom: 24px;
+  }
+  .vc-tabs .t {
+    padding: 10px 14px;
+    font-size: 12.5px; font-weight: 500; color: var(--ink-500);
+    cursor: pointer; border-bottom: 2px solid transparent;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .vc-tabs .t .n {
+    font-family: var(--font-mono); font-size: 10.5px;
+    color: var(--ink-400);
+  }
+  .vc-tabs .t.on { color: var(--ink-900); border-bottom-color: var(--ink-900); }
+  .vc-tabs .t.on .n { color: var(--brand-700); }
+  .vc-tabs .t.warn::after { content: ""; width: 5px; height: 5px; border-radius: 50%; background: var(--rose-700); margin-left: 4px; }
+
+  .vc-section { margin-bottom: 28px; }
+  .vc-section .vc-h {
+    font-family: var(--font-display); font-weight: 500;
+    font-size: 22px; letter-spacing: -0.018em;
+    color: var(--ink-900); margin: 0 0 4px; font-optical-sizing: auto;
+  }
+  .vc-section .vc-d { font-size: 12.5px; color: var(--ink-500); margin-bottom: 18px; line-height: 1.55; max-width: 540px; }
+
+  /* the live recap (right pane) — designed to look like the agent magic-link page */
+  .recap {
+    padding: 24px 28px;
+    background: var(--canvas-soft);
+    min-height: 100%;
+  }
+  .recap .recap-head {
+    font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--brand-700); font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .recap .recap-title {
+    font-family: var(--font-display); font-weight: 500;
+    font-size: 26px; letter-spacing: -0.02em;
+    color: var(--ink-900); margin: 0 0 4px; font-optical-sizing: auto;
+  }
+  .recap .recap-sub {
+    font-size: 12.5px; color: var(--ink-500);
+    margin-bottom: 18px; padding-bottom: 16px;
+    border-bottom: 1px dashed var(--ink-200);
+  }
+  .recap-block { margin-bottom: 18px; }
+  .recap-block .bk-h {
+    font-size: 10.5px; font-weight: 600; letter-spacing: 0.1em;
+    color: var(--ink-500); text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .recap table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  .recap table td { padding: 5px 0; vertical-align: top; }
+  .recap table td.k { color: var(--ink-500); width: 45%; }
+  .recap table td.v { color: var(--ink-900); font-family: var(--font-mono); font-variant-numeric: tabular-nums; text-align: right; }
+  .recap table td.v.txt { font-family: var(--font-sans); text-align: left; }
+  .recap-block .recoup-line {
+    display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: baseline;
+    padding: 6px 0; border-bottom: 1px dotted var(--ink-200);
+    font-size: 12.5px;
+  }
+  .recap-block .recoup-line:last-child { border-bottom: 0; }
+  .recap-block .recoup-line .lbl { color: var(--ink-800); }
+  .recap-block .recoup-line .lbl .sub { color: var(--ink-500); font-size: 11px; display: block; }
+  .recap-block .recoup-line .amt { font-family: var(--font-mono); color: var(--ink-900); font-variant-numeric: tabular-nums; }
+
+  .recap-stamp {
+    margin-top: 20px;
+    padding: 12px 14px;
+    border: 1px dashed var(--ink-300);
+    border-radius: 10px;
+    background: white;
+    display: flex; align-items: center; gap: 10px;
+    font-size: 12px; color: var(--ink-500);
+    line-height: 1.5;
+  }
+  .recap-stamp .ico { color: var(--ink-400); }
+
+  .vc-statusbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 28px;
+    background: rgba(255,255,255,0.6);
+    border-bottom: 1px solid rgba(228,223,210,0.7);
+  }
+  .vc-statusbar .lh { display: flex; align-items: center; gap: 12px; }
+  .vc-statusbar .progress-pill {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 5px 10px; border-radius: 999px;
+    background: white; box-shadow: inset 0 0 0 1px rgba(228,223,210,0.8);
+    font-size: 12px;
+  }
+  .vc-statusbar .progress-pill .pi {
+    font-family: var(--font-mono); font-weight: 500;
+    color: var(--brand-700);
+  }
+  .vc-statusbar .progress-pill .all { color: var(--ink-400); }
+  .vc-statusbar .progress-pill .word { color: var(--ink-700); }
+
+  /* nice little annotation callouts (canvas-only) */
+  .annotation {
+    position: absolute;
+    font-family: var(--font-display); font-style: italic;
+    color: var(--brand-700);
+    font-size: 14px;
+    pointer-events: none;
+    z-index: 5;
+  }
+  .annotation .arrow {
+    display: block; margin-top: 4px; color: var(--brand-700);
+  }
+  .annotation.a1 { top: 24px; right: -130px; width: 140px; line-height: 1.3; }
+  .annotation.a2 { bottom: 20px; right: -160px; width: 160px; line-height: 1.3; }
+
+  /* ───── §00 · Adaptive-shape overview ───── */
+  .shape-grid {
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px;
+    margin-top: 8px;
+  }
+  .shape-card {
+    background: white;
+    border: 1px solid rgba(228,223,210,0.8);
+    border-radius: 10px;
+    padding: 18px 18px 14px;
+    box-shadow: 0 1px 2px rgba(26,24,20,0.03);
+    position: relative;
+    overflow: hidden;
+  }
+  .shape-card .accent {
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  }
+  .shape-card .accent.flat { background: var(--ink-300); }
+  .shape-card .accent.vs   { background: linear-gradient(to right, var(--brand-500), var(--brand-700)); }
+  .shape-card .accent.net  { background: linear-gradient(to right, var(--sky-200), var(--sky-700)); }
+  .shape-card .accent.gross{ background: linear-gradient(to right, var(--amber-200), var(--amber-700)); }
+  .shape-card .accent.door { background: linear-gradient(to right, var(--rose-200), var(--rose-700)); }
+  .shape-card .name {
+    font-family: var(--font-display); font-weight: 500;
+    font-size: 22px; letter-spacing: -0.018em;
+    margin: 0 0 2px; color: var(--ink-900); font-optical-sizing: auto;
+  }
+  .shape-card .tag {
+    font-family: var(--font-mono); font-size: 10.5px;
+    color: var(--ink-400); letter-spacing: 0.06em;
+    margin-bottom: 14px;
+  }
+  .shape-card ul { list-style: none; padding: 0; margin: 0; }
+  .shape-card li {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 12px; padding: 4px 0;
+    color: var(--ink-700);
+  }
+  .shape-card li .mk {
+    width: 12px; flex-shrink: 0;
+    font-family: var(--font-mono); font-size: 12px;
+    text-align: center; line-height: 1;
+  }
+  .shape-card li.on .mk    { color: var(--brand-700); }
+  .shape-card li.opt .mk   { color: var(--ink-400); }
+  .shape-card li.off       { color: var(--ink-300); text-decoration: line-through; text-decoration-color: var(--ink-200); }
+  .shape-card li.off .mk   { color: var(--ink-200); }
+  .shape-card li.lock      { color: var(--ink-500); }
+  .shape-card li.lock .mk  { color: var(--ink-400); }
+  .shape-card .foot {
+    margin-top: 14px; padding-top: 12px;
+    border-top: 1px solid var(--ink-100);
+    font-size: 11px; color: var(--ink-500);
+    line-height: 1.5;
+  }
+  .shape-card .foot strong { color: var(--ink-800); font-weight: 500; }
+  .shape-card .pct {
+    display: inline-flex; align-items: baseline; gap: 4px;
+    font-family: var(--font-mono); font-size: 11px;
+    color: var(--ink-400); margin-top: 4px;
+  }
+  .shape-card .pct b {
+    font-family: var(--font-display); font-weight: 500;
+    font-size: 18px; color: var(--ink-900);
+    letter-spacing: -0.01em;
+  }
+
+  .principle-strip {
+    margin-top: 28px; padding: 18px 22px;
+    background: white; border: 1px solid rgba(228,223,210,0.8);
+    border-radius: 12px;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+    box-shadow: 0 1px 2px rgba(26,24,20,0.03);
+  }
+  .principle-strip .p-item .ph {
+    font-size: 10.5px; font-weight: 600; letter-spacing: 0.1em;
+    color: var(--brand-700); text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .principle-strip .p-item .pt {
+    font-size: 13px; color: var(--ink-700); line-height: 1.55;
+  }
+  .principle-strip .p-item .pt strong { color: var(--ink-900); font-weight: 500; }
+
+  /* locked / read-only field chip */
+  .locked-field {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 12px;
+    background: var(--canvas-soft);
+    border: 1px dashed rgba(201,194,177,0.8);
+    border-radius: 8px;
+    color: var(--ink-700);
+    font-size: 13.5px;
+  }
+  .locked-field .lock-ico {
+    color: var(--ink-400); flex-shrink: 0;
+  }
+  .locked-field .lock-val {
+    flex: 1; color: var(--ink-900); font-weight: 500;
+  }
+  .locked-field .lock-tag {
+    font-family: var(--font-mono); font-size: 10.5px;
+    color: var(--ink-400); letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  /* conditional-section annotation banner — sits at the top of a card */
+  .conditional-note {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 14px;
+    background: rgba(167,243,208,0.18);
+    border-bottom: 1px solid rgba(167,243,208,0.5);
+    font-size: 11.5px; color: var(--brand-800);
+    line-height: 1.4;
+  }
+  .conditional-note .ico { color: var(--brand-700); }
+  .conditional-note.warn {
+    background: rgba(253,230,138,0.25);
+    border-bottom-color: rgba(253,230,138,0.7);
+    color: var(--amber-800);
+  }
+  .conditional-note.warn .ico { color: var(--amber-700); }
+  .conditional-note .pick { font-family: var(--font-mono); font-weight: 500; }
+
+  /* shape-fork picker (Variation B step 1) */
+  .fork-grid {
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px;
+  }
+  .fork-card {
+    background: white;
+    border: 1px solid rgba(201,194,177,0.7);
+    border-radius: 10px;
+    padding: 18px 16px 16px;
+    cursor: pointer; transition: all 120ms;
+    position: relative; overflow: hidden;
+    text-align: left;
+  }
+  .fork-card:hover { border-color: var(--ink-400); }
+  .fork-card.on {
+    border-color: var(--ink-900);
+    box-shadow: 0 1px 2px rgba(26,24,20,0.04), 0 0 0 1px var(--ink-900) inset;
+  }
+  .fork-card .top {
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  }
+  .fork-card .top.flat  { background: var(--ink-300); }
+  .fork-card .top.vs    { background: linear-gradient(to right, var(--brand-500), var(--brand-700)); }
+  .fork-card .top.net   { background: linear-gradient(to right, var(--sky-200), var(--sky-700)); }
+  .fork-card .top.gross { background: linear-gradient(to right, var(--amber-200), var(--amber-700)); }
+  .fork-card .top.door  { background: linear-gradient(to right, var(--rose-200), var(--rose-700)); }
+  .fork-card .nm {
+    font-family: var(--font-display); font-weight: 500;
+    font-size: 18px; letter-spacing: -0.012em; color: var(--ink-900);
+    margin-bottom: 2px; font-optical-sizing: auto;
+  }
+  .fork-card .sm {
+    font-family: var(--font-mono); font-size: 10.5px;
+    color: var(--ink-400); letter-spacing: 0.05em;
+    margin-bottom: 12px;
+  }
+  .fork-card .blurb {
+    font-size: 11.5px; color: var(--ink-600);
+    line-height: 1.5; margin-bottom: 10px;
+  }
+  .fork-card .step-c {
+    font-family: var(--font-mono); font-size: 10.5px;
+    color: var(--ink-400); letter-spacing: 0.04em;
+    padding-top: 10px; border-top: 1px solid var(--ink-100);
+  }
+  .fork-card .step-c b {
+    color: var(--brand-700); font-weight: 500;
+  }
+  .fork-card.on .nm { color: var(--ink-900); }
+  .fork-card .check-dot {
+    position: absolute; top: 14px; right: 14px;
+    width: 16px; height: 16px; border-radius: 50%;
+    border: 1px solid var(--ink-300);
+    background: white;
+  }
+  .fork-card.on .check-dot {
+    background: var(--ink-900); border-color: var(--ink-900);
+  }
+  .fork-card.on .check-dot::after {
+    content: ""; position: absolute; left: 4px; top: 2px;
+    width: 4px; height: 8px; border: solid white; border-width: 0 1.5px 1.5px 0;
+    transform: rotate(45deg);
+  }
+
+  /* responsive — collapse to single column at narrow widths */
+  @media (max-width: 1100px) {
+    .va-grid, .vb-body, .vc-shell {
+      grid-template-columns: 1fr;
+    }
+    .va-rail, .vb-preview, .vc-right { position: static; }
+    .vc-right { border-left: 0; border-top: 1px solid rgba(228,223,210,0.7); }
+    .shape-grid, .fork-grid { grid-template-columns: repeat(2, 1fr); }
+    .principle-strip { grid-template-columns: 1fr; gap: 14px; }
+  }
+  @media (max-width: 700px) {
+    .canvas-page { padding: 32px 16px 80px; }
+    .cover h1 { font-size: 52px; }
+    .sec-head { flex-direction: column; align-items: stretch; }
+    .sec-head .sub { text-align: left; max-width: none; }
+    .form-grid-2, .form-grid-3, .form-grid-4 { grid-template-columns: 1fr; }
+    .va-grid, .vb-body, .vc-left { padding-left: 18px; padding-right: 18px; }
+    .vb-stepper { padding: 12px 12px 0; overflow-x: auto; }
+    .vb-step { min-width: 130px; }
+    .shape-grid, .fork-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<main class="canvas-page">
+
+  <!-- ───────── COVER ───────── -->
+  <section class="cover">
+    <div class="meta-row">
+      <span>Greenroom</span><span class="dot"></span>
+      <span>Design canvas</span><span class="dot"></span>
+      <span>Slice 02 · Deal entry form</span><span class="dot"></span>
+      <span>v0.1</span>
+    </div>
+    <h1>One form.<br />Five shapes. <em>No</em><br />ambiguity through.</h1>
+    <p class="lede">
+      Mariana picks the deal type first; the form reveals only the sections that apply.
+      Flat hides almost everything. Vs surfaces the full surface area. Door swaps in a
+      walkout pot. The <span style="color: var(--brand-700); font-weight: 500;">&ldquo;Send for sign-off&rdquo;</span>
+      button is gated by the required set for the <em>currently selected</em> deal type &mdash;
+      that&rsquo;s what enforces the no-ambiguity promise.
+    </p>
+    <nav class="toc">
+      <a href="#shape"><span class="n">00 /</span> The fork &middot; how the five deal types reshape the form</a>
+      <a href="#va"><span class="n">A /</span> Worksheet &middot; long-scroll with a sticky send rail</a>
+      <a href="#vb"><span class="n">B /</span> Wizard &middot; five guided steps</a>
+      <a href="#vc"><span class="n">C /</span> Split &middot; live agent preview as you type</a>
+    </nav>
+  </section>
+
+  <!-- ═══════════════ §00 · ADAPTIVE SHAPE OVERVIEW ═══════════════ -->
+  <section id="shape">
+    <div class="sec-head">
+      <span class="num">00 / 03</span>
+      <h2>The&nbsp;fork</h2>
+      <div class="sub">
+        Before any layout decision: the form is <em>one</em> component with a union data model.
+        Sections render conditionally on <span class="mono" style="color: var(--ink-700); font-size: 12px;">deal.dealType</span>.
+        Each card below shows the exact field surface for that deal type.
+      </div>
+    </div>
+
+    <div class="shape-grid">
+      <!-- Flat -->
+      <div class="shape-card">
+        <div class="accent flat"></div>
+        <div class="name">Flat</div>
+        <div class="tag">simplest &middot; most hidden</div>
+        <ul>
+          <li class="on"><span class="mk">●</span> Guarantee</li>
+          <li class="off"><span class="mk">—</span> Percentage</li>
+          <li class="off"><span class="mk">—</span> Basis</li>
+          <li class="off"><span class="mk">—</span> Caps</li>
+          <li class="opt"><span class="mk">○</span> Recoups (rare)</li>
+          <li class="off"><span class="mk">—</span> Deduction order</li>
+          <li class="on"><span class="mk">●</span> Comp rules</li>
+          <li class="opt"><span class="mk">○</span> Bonuses</li>
+          <li class="off"><span class="mk">—</span> Walkout pot</li>
+        </ul>
+        <div class="foot">
+          <strong>3 sections.</strong> Guarantee, comp rules, optional bonuses.
+        </div>
+      </div>
+
+      <!-- Vs -->
+      <div class="shape-card">
+        <div class="accent vs"></div>
+        <div class="name">Vs</div>
+        <div class="tag">full surface area</div>
+        <ul>
+          <li class="on"><span class="mk">●</span> Guarantee</li>
+          <li class="on"><span class="mk">●</span> Percentage</li>
+          <li class="lock"><span class="mk">🔒</span> Basis &middot; <em>Net</em></li>
+          <li class="on"><span class="mk">●</span> Expense cap</li>
+          <li class="on"><span class="mk">●</span> Hospitality cap</li>
+          <li class="on"><span class="mk">●</span> Recoups + bucket</li>
+          <li class="on"><span class="mk">●</span> Deduction order</li>
+          <li class="on"><span class="mk">●</span> Comp rules</li>
+          <li class="on"><span class="mk">●</span> Bonuses</li>
+          <li class="off"><span class="mk">—</span> Walkout pot</li>
+        </ul>
+        <div class="foot">
+          <strong>9 sections.</strong> The Coastal Spell case &mdash; everything that can dispute, does.
+        </div>
+      </div>
+
+      <!-- % of Net -->
+      <div class="shape-card">
+        <div class="accent net"></div>
+        <div class="name">&#37; of net</div>
+        <div class="tag">Vs minus guarantee</div>
+        <ul>
+          <li class="off"><span class="mk">—</span> Guarantee</li>
+          <li class="on"><span class="mk">●</span> Percentage</li>
+          <li class="lock"><span class="mk">🔒</span> Basis &middot; <em>Net</em></li>
+          <li class="on"><span class="mk">●</span> Expense cap</li>
+          <li class="on"><span class="mk">●</span> Hospitality cap</li>
+          <li class="on"><span class="mk">●</span> Recoups + bucket</li>
+          <li class="on"><span class="mk">●</span> Deduction order</li>
+          <li class="on"><span class="mk">●</span> Comp rules</li>
+          <li class="on"><span class="mk">●</span> Bonuses</li>
+          <li class="off"><span class="mk">—</span> Walkout pot</li>
+        </ul>
+        <div class="foot">
+          <strong>8 sections.</strong> No floor &mdash; artist takes their cut of net regardless.
+        </div>
+      </div>
+
+      <!-- % of Gross -->
+      <div class="shape-card">
+        <div class="accent gross"></div>
+        <div class="name">&#37; of gross</div>
+        <div class="tag">no caps, simpler recoups</div>
+        <ul>
+          <li class="off"><span class="mk">—</span> Guarantee</li>
+          <li class="on"><span class="mk">●</span> Percentage</li>
+          <li class="lock"><span class="mk">🔒</span> Basis &middot; <em>Gross</em></li>
+          <li class="off"><span class="mk">—</span> Expense cap</li>
+          <li class="off"><span class="mk">—</span> Hospo cap</li>
+          <li class="opt"><span class="mk">○</span> Recoups (off-top only)</li>
+          <li class="opt"><span class="mk">○</span> Order &middot; simplified</li>
+          <li class="on"><span class="mk">●</span> Comp rules</li>
+          <li class="opt"><span class="mk">○</span> Bonuses</li>
+          <li class="off"><span class="mk">—</span> Walkout pot</li>
+        </ul>
+        <div class="foot">
+          <strong>5 sections.</strong> Bucket auto-resolves to off-top &mdash; no cap to live inside.
+        </div>
+      </div>
+
+      <!-- Door -->
+      <div class="shape-card">
+        <div class="accent door"></div>
+        <div class="name">Door</div>
+        <div class="tag">walkout pot lives here</div>
+        <ul>
+          <li class="opt"><span class="mk">○</span> Guarantee</li>
+          <li class="on"><span class="mk">●</span> Percentage</li>
+          <li class="lock"><span class="mk">🔒</span> Basis &middot; <em>Door</em></li>
+          <li class="off"><span class="mk">—</span> Expense cap</li>
+          <li class="off"><span class="mk">—</span> Hospo cap</li>
+          <li class="opt"><span class="mk">○</span> Recoups (simpler)</li>
+          <li class="opt"><span class="mk">○</span> Order &middot; simplified</li>
+          <li class="on"><span class="mk">●</span> Comp rules</li>
+          <li class="opt"><span class="mk">○</span> Bonuses</li>
+          <li class="on"><span class="mk">●</span> Walkout pot</li>
+        </ul>
+        <div class="foot">
+          <strong>5 sections.</strong> Door cash, optional floor, the walkout pot rule.
+        </div>
+      </div>
+    </div>
+
+    <div class="principle-strip">
+      <div class="p-item">
+        <div class="ph">Locked</div>
+        <div class="pt"><strong>Percentage basis is never a question.</strong> Pick the deal type, the basis follows. Vs &amp; net &rarr; net. Gross &rarr; gross. Door &rarr; door.</div>
+      </div>
+      <div class="p-item">
+        <div class="ph">Conditional</div>
+        <div class="pt"><strong>Deduction order only renders when there&rsquo;s something to order.</strong> Zero recoups + no cap &rarr; the section disappears entirely.</div>
+      </div>
+      <div class="p-item">
+        <div class="ph">Universal</div>
+        <div class="pt"><strong>Comp counting rules show for every deal type, including flat.</strong> They&rsquo;re cheap to fill, and the agent always wants the answer.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ VARIATION A · WORKSHEET ═══════════════ -->
+  <section id="va">
+    <div class="sec-head">
+      <span class="num">A / 03</span>
+      <h2>Worksheet</h2>
+      <div class="sub">
+        One long surface, every term visible in sequence. A sticky rail on the right
+        shows completion math and what&rsquo;s still missing &mdash; the send button stays
+        disabled until <em>every</em> required field is filled.
+      </div>
+    </div>
+
+    <div class="specimen">
+      <div class="spec-meta">
+        <span>A &middot; Worksheet &middot; desktop-primary</span>
+        <span class="tags">
+          <span class="tag">long-scroll</span>
+          <span class="tag">sticky-send</span>
+          <span class="tag">inline-validation</span>
+        </span>
+      </div>
+      <div class="frame" data-variation="A" data-deal-type="vs">
+
+        <!-- mock app bar -->
+        <div class="app-bar">
+          <div class="crumb">
+            <a href="#">Shows</a><span class="sep">/</span>
+            <a href="#">Coastal Spell &middot; Sat Aug 9</a><span class="sep">/</span>
+            <span class="here">Deal</span>
+          </div>
+          <div class="right">
+            <span class="pulse"><span class="dot"></span> Draft &middot; autosaved 12s ago</span>
+          </div>
+        </div>
+
+        <!-- poster header -->
+        <div class="poster">
+          <a class="crumb" href="#">
+            <svg class="ico ico-sm" viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+            All shows
+          </a>
+          <div class="row">
+            <div>
+              <div class="badge-row">
+                <span class="badge advanced"><span class="dot"></span> Advanced</span>
+                <span class="badge vs">Vs deal &middot; 85/15</span>
+                <span class="badge brand">Unsigned &middot; draft</span>
+              </div>
+              <h2 class="show-title">Coastal Spell</h2>
+              <div class="meta">
+                <span class="strong">Sat, Aug 9 &middot; 2026</span>
+                <span class="sep">&middot;</span>
+                <span>in 12 weeks</span>
+                <span class="sep">&middot;</span>
+                <span><svg class="ico ico-xs" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg> doors 19:00 &middot; set 20:30</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="va-grid">
+          <!-- LEFT: the form -->
+          <div>
+            <!-- section: structure -->
+            <section class="va-section">
+              <h3 class="va-title">Deal structure</h3>
+              <p class="va-desc">
+                Pick the shape first &mdash; <strong style="color: var(--ink-800);">the rest of the form rebuilds itself around it</strong>.
+                Hidden fields aren&rsquo;t saved; locked fields aren&rsquo;t debated.
+              </p>
+
+              <div class="card">
+                <div class="card-body">
+                  <div style="margin-bottom: 18px;">
+                    <label class="field-label">Deal type<span class="req">*</span></label>
+                    <div class="seg" data-deal-type-control>
+                      <button data-type="flat">Flat</button>
+                      <button data-type="gross">% of gross</button>
+                      <button data-type="net">% of net</button>
+                      <button data-type="vs" class="on">Vs deal</button>
+                      <button data-type="door">Door</button>
+                    </div>
+                    <div class="hint" data-type-hint>
+                      Vs &mdash; artist gets the greater of guarantee or percentage after expenses. Most common at The Crescent.
+                      <span style="color: var(--brand-700);">Changing this rewires the sections below.</span>
+                    </div>
+                  </div>
+
+                  <div class="form-grid-3">
+                    <div data-show="flat,vs,door">
+                      <label class="field-label">Guarantee<span class="req" data-req-on="flat,vs">*</span></label>
+                      <div class="input-prefix">
+                        <span class="px">$</span>
+                        <input class="input mono" type="text" value="9,500.00" />
+                      </div>
+                      <div class="hint" data-guarantee-hint>Required on Flat and Vs. Optional on Door.</div>
+                    </div>
+                    <div data-show="vs,net,gross,door">
+                      <label class="field-label">Percentage<span class="req">*</span></label>
+                      <div class="input-prefix">
+                        <input class="input mono" type="text" value="85" />
+                        <span class="px">%</span>
+                      </div>
+                      <div class="hint">Hidden on Flat. Required on every other type.</div>
+                    </div>
+                    <div data-show="vs,net,gross,door">
+                      <label class="field-label">Percentage basis</label>
+                      <div class="locked-field">
+                        <svg class="ico ico-sm lock-ico" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        <span class="lock-val" data-basis-val>Net &middot; after expenses</span>
+                        <span class="lock-tag" data-basis-tag>locked by Vs</span>
+                      </div>
+                      <div class="hint">Not editable &mdash; basis is derived from deal type.</div>
+                    </div>
+                  </div>
+
+                  <div class="form-grid-2" style="margin-top: 16px;" data-show="vs,net">
+                    <div>
+                      <label class="field-label">Expense cap</label>
+                      <div class="input-prefix">
+                        <span class="px">$</span>
+                        <input class="input mono" type="text" value="6,500.00" />
+                      </div>
+                      <div class="hint">Hard cap on what comes off the top.</div>
+                    </div>
+                    <div>
+                      <label class="field-label">Hospitality cap</label>
+                      <div class="input-prefix">
+                        <span class="px">$</span>
+                        <input class="input mono" type="text" value="1,200.00" />
+                      </div>
+                      <div class="hint">Counts inside the expense cap unless agent says otherwise.</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- section: recoups -->
+            <section class="va-section">
+              <h3 class="va-title">Recoups <span style="font-family: var(--font-mono); font-size: 11px; color: var(--ink-400); letter-spacing: 0.04em; font-weight: normal;">&middot; 2 of N</span></h3>
+              <p class="va-desc">
+                Each recoup must declare its <strong>bucket</strong> (inside the expense cap, outside it,
+                or off the gross before the split) <strong>and</strong> when it applies. No more
+                Coastal Spell &mdash; ambiguity is impossible because the form won&rsquo;t allow it.
+              </p>
+
+              <div class="card">
+                <div class="conditional-note" data-recoups-note>
+                  <svg class="ico ico-sm" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/><path d="M12 8v4M12 16h.01"/></svg>
+                  <span data-recoups-note-text>
+                    <span class="pick">Vs deal</span> &mdash; bucket &amp; applies-at are required.
+                    On <span class="pick">% of gross</span> and <span class="pick">Door</span> the bucket auto-resolves to <em>off-gross, before split</em> and these pills disappear.
+                  </span>
+                </div>
+                <div class="card-body">
+
+                  <!-- recoup 1 -->
+                  <div class="recoup-row">
+                    <div class="row-head">
+                      <span class="idx">RECOUP &middot; 01</span>
+                      <button class="btn ghost sm">
+                        <svg class="ico ico-xs" viewBox="0 0 24 24"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>
+                        Remove
+                      </button>
+                    </div>
+                    <div class="grid">
+                      <div>
+                        <label class="field-label">Label<span class="req">*</span></label>
+                        <input class="input" type="text" value="Local radio buy &middot; WNXP" />
+                      </div>
+                      <div>
+                        <label class="field-label">Category<span class="req">*</span></label>
+                        <select class="select">
+                          <option>Marketing</option>
+                          <option>Production overage</option>
+                          <option>Hospitality overage</option>
+                          <option>Prior advance</option>
+                          <option>Damages</option>
+                          <option>Other</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label class="field-label">Amount<span class="req">*</span></label>
+                        <div class="input-prefix">
+                          <span class="px">$</span>
+                          <input class="input mono" type="text" value="850.00" />
+                        </div>
+                      </div>
+                    </div>
+                    <div class="grid-2" data-show="vs,net">
+                      <div>
+                        <label class="field-label">Bucket<span class="req">*</span></label>
+                        <div class="pill-group">
+                          <button class="pill on" data-bucket="inside"><span class="swatch"></span>Inside expense cap</button>
+                          <button class="pill" data-bucket="outside"><span class="swatch"></span>Outside cap</button>
+                          <button class="pill" data-bucket="off-top"><span class="swatch"></span>Off gross, before split</button>
+                        </div>
+                      </div>
+                      <div>
+                        <label class="field-label">Applies<span class="req">*</span></label>
+                        <div class="pill-group">
+                          <button class="pill on">Before the percentage</button>
+                          <button class="pill">After the percentage</button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="hint" data-show="gross,door" style="display: none; margin-top: 8px;">
+                      <span class="badge rose" style="font-size: 9.5px;">Auto-resolved</span>
+                      Off-gross, before split. No cap to live inside, so no bucket choice.
+                    </div>
+                  </div>
+
+                  <!-- recoup 2 -->
+                  <div class="recoup-row">
+                    <div class="row-head">
+                      <span class="idx">RECOUP &middot; 02</span>
+                      <button class="btn ghost sm">
+                        <svg class="ico ico-xs" viewBox="0 0 24 24"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>
+                        Remove
+                      </button>
+                    </div>
+                    <div class="grid">
+                      <div>
+                        <label class="field-label">Label<span class="req">*</span></label>
+                        <input class="input" type="text" value="Tour bus damage deposit return" />
+                      </div>
+                      <div>
+                        <label class="field-label">Category<span class="req">*</span></label>
+                        <select class="select">
+                          <option>Damages</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label class="field-label">Amount<span class="req">*</span></label>
+                        <div class="input-prefix">
+                          <span class="px">$</span>
+                          <input class="input mono" type="text" value="500.00" />
+                        </div>
+                      </div>
+                    </div>
+                    <div class="grid-2" data-show="vs,net">
+                      <div>
+                        <label class="field-label">Bucket<span class="req">*</span></label>
+                        <div class="pill-group">
+                          <button class="pill" data-bucket="inside"><span class="swatch"></span>Inside expense cap</button>
+                          <button class="pill on" data-bucket="outside"><span class="swatch"></span>Outside cap</button>
+                          <button class="pill" data-bucket="off-top"><span class="swatch"></span>Off gross, before split</button>
+                        </div>
+                        <div class="hint" style="color: var(--amber-800);">
+                          <svg class="ico ico-xs" viewBox="0 0 24 24" style="display:inline-block;vertical-align:-2px;margin-right:3px;"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+                          Outside-cap recoups raise the artist&rsquo;s share &mdash; double-check with the agent.
+                        </div>
+                      </div>
+                      <div>
+                        <label class="field-label">Applies<span class="req">*</span></label>
+                        <div class="pill-group">
+                          <button class="pill on">Before the percentage</button>
+                          <button class="pill">After the percentage</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <button class="btn outline" style="margin-top: 16px; width: 100%;">
+                    <svg class="ico ico-sm" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+                    Add recoup
+                  </button>
+                </div>
+              </div>
+            </section>
+
+            <!-- section: deduction order -->
+            <section class="va-section" data-hide="flat">
+              <h3 class="va-title">Deduction order</h3>
+              <p class="va-desc">
+                What comes off the gross first. Drag to reorder &mdash; this resolves the &ldquo;wait, were those fees on top or off the top?&rdquo; arguments before they happen.
+              </p>
+
+              <div class="card">
+                <div class="conditional-note" data-order-note>
+                  <svg class="ico ico-sm" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+                  <span data-order-note-text>
+                    Renders only when there&rsquo;s something to order. <span class="pick">Flat</span> with no recoups &rarr; this whole section disappears.
+                    <span class="pick">% of gross</span> and <span class="pick">Door</span> get a simplified 3-stage order (no in-cap step).
+                  </span>
+                </div>
+                <div class="card-body">
+                  <ol class="order-list">
+                    <li>
+                      <svg class="grip" viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="9" cy="6" r="1.5"/><circle cx="15" cy="6" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="18" r="1.5"/><circle cx="15" cy="18" r="1.5"/></svg>
+                      <span class="num">1</span>
+                      <div class="name">Ticketing fees &middot; <span class="what">facility &amp; convenience</span></div>
+                      <div class="arrows">
+                        <button>↑</button><button>↓</button>
+                      </div>
+                    </li>
+                    <li>
+                      <svg class="grip" viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="9" cy="6" r="1.5"/><circle cx="15" cy="6" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="18" r="1.5"/><circle cx="15" cy="18" r="1.5"/></svg>
+                      <span class="num">2</span>
+                      <div class="name">Off-top recoups <div class="what">e.g. tour bus damage deposit</div></div>
+                      <div class="arrows">
+                        <button>↑</button><button>↓</button>
+                      </div>
+                    </li>
+                    <li>
+                      <svg class="grip" viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="9" cy="6" r="1.5"/><circle cx="15" cy="6" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="18" r="1.5"/><circle cx="15" cy="18" r="1.5"/></svg>
+                      <span class="num">3</span>
+                      <div class="name">Show expenses <div class="what">production, sound, lights, hospitality (capped)</div></div>
+                      <div class="arrows">
+                        <button>↑</button><button>↓</button>
+                      </div>
+                    </li>
+                    <li>
+                      <svg class="grip" viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="9" cy="6" r="1.5"/><circle cx="15" cy="6" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="18" r="1.5"/><circle cx="15" cy="18" r="1.5"/></svg>
+                      <span class="num">4</span>
+                      <div class="name">In-cap recoups <div class="what">included inside the expense cap</div></div>
+                      <div class="arrows">
+                        <button>↑</button><button>↓</button>
+                      </div>
+                    </li>
+                    <li>
+                      <svg class="grip" viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="9" cy="6" r="1.5"/><circle cx="15" cy="6" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="18" r="1.5"/><circle cx="15" cy="18" r="1.5"/></svg>
+                      <span class="num">5</span>
+                      <div class="name">Artist split &middot; <span class="what">85% of remainder</span></div>
+                      <div class="arrows">
+                        <button>↑</button><button>↓</button>
+                      </div>
+                    </li>
+                  </ol>
+                </div>
+                <div class="card-foot">
+                  <span>Order auto-syncs to the agent&rsquo;s read-only view.</span>
+                  <span class="mono" style="font-size: 11px;">5 stages</span>
+                </div>
+              </div>
+            </section>
+
+            <!-- section: comp counting rules -->
+            <section class="va-section">
+              <h3 class="va-title">Comp counting</h3>
+              <p class="va-desc">Per-category rule for whether comps count toward gross. Set once at the deal level so settlement doesn&rsquo;t turn into a category-by-category debate.</p>
+
+              <div class="card">
+                <div class="card-body">
+                  <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px;">
+                    <label class="check on"><span class="box"></span><div>Artist guest list <div style="color: var(--ink-400); font-size: 11px; margin-top: 2px;">does NOT count</div></div></label>
+                    <label class="check on"><span class="box"></span><div>Label &middot; management <div style="color: var(--ink-400); font-size: 11px; margin-top: 2px;">does NOT count</div></div></label>
+                    <label class="check"><span class="box"></span><div>Press <div style="color: var(--amber-800); font-size: 11px; margin-top: 2px;">counts toward gross</div></div></label>
+                    <label class="check on"><span class="box"></span><div>Venue staff <div style="color: var(--ink-400); font-size: 11px; margin-top: 2px;">does NOT count</div></div></label>
+                    <label class="check"><span class="box"></span><div>Sponsor <div style="color: var(--amber-800); font-size: 11px; margin-top: 2px;">counts toward gross</div></div></label>
+                    <label class="check on"><span class="box"></span><div>Promo &middot; radio <div style="color: var(--ink-400); font-size: 11px; margin-top: 2px;">does NOT count</div></div></label>
+                  </div>
+                  <div class="hint" style="margin-top: 14px;">
+                    Default rule: a comp does <strong>not</strong> count unless explicitly checked.
+                    Checked categories appear in gross calculations the agent sees.
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- section: walkout pot — Door-only -->
+            <section class="va-section" data-show="door">
+              <h3 class="va-title">Walkout pot</h3>
+              <p class="va-desc">
+                Cash on the floor at end-of-night after splits and recoups settle. Door deals settle that night
+                &mdash; this is the bag the tour manager walks out with.
+              </p>
+
+              <div class="card">
+                <div class="card-body">
+                  <div class="form-grid-3">
+                    <div>
+                      <label class="field-label">Pot floor<span class="req">*</span></label>
+                      <div class="input-prefix">
+                        <span class="px">$</span>
+                        <input class="input mono" type="text" value="0.00" />
+                      </div>
+                      <div class="hint">Minimum the artist takes home if door is light.</div>
+                    </div>
+                    <div>
+                      <label class="field-label">Pot split<span class="req">*</span></label>
+                      <div class="input-prefix">
+                        <input class="input mono" type="text" value="100" />
+                        <span class="px">%</span>
+                      </div>
+                      <div class="hint">Of remaining cash after artist guarantee &amp; expenses.</div>
+                    </div>
+                    <div>
+                      <label class="field-label">Pays out<span class="req">*</span></label>
+                      <select class="select">
+                        <option>Same night, in cash</option>
+                        <option>End of run</option>
+                      </select>
+                      <div class="hint">Door deals settle that night, not on Monday.</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- section: bonuses -->
+            <section class="va-section">
+              <h3 class="va-title">Bonuses &amp; escalators</h3>
+              <p class="va-desc">Structured only &mdash; if it isn&rsquo;t in this list the in-app tool won&rsquo;t see it.</p>
+
+              <div class="card">
+                <div class="card-body">
+                  <div class="recoup-row" style="margin-top: 0;">
+                    <div class="row-head">
+                      <span class="idx">BONUS &middot; 01 &middot; SELLOUT</span>
+                      <button class="btn ghost sm">Remove</button>
+                    </div>
+                    <div class="grid">
+                      <div>
+                        <label class="field-label">Label</label>
+                        <input class="input" type="text" value="Sellout bonus" />
+                      </div>
+                      <div>
+                        <label class="field-label">Threshold</label>
+                        <input class="input" type="text" value="650 tickets" />
+                      </div>
+                      <div>
+                        <label class="field-label">Amount<span class="req">*</span></label>
+                        <div class="input-prefix">
+                          <span class="px">$</span>
+                          <input class="input mono" type="text" value="1,500.00" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="recoup-row">
+                    <div class="row-head">
+                      <span class="idx">BONUS &middot; 02 &middot; GROSS THRESHOLD</span>
+                      <button class="btn ghost sm">Remove</button>
+                    </div>
+                    <div class="grid">
+                      <div>
+                        <label class="field-label">Label</label>
+                        <input class="input" type="text" value="Stretch goal &mdash; over $25k gross" />
+                      </div>
+                      <div>
+                        <label class="field-label">Gross threshold</label>
+                        <div class="input-prefix">
+                          <span class="px">$</span>
+                          <input class="input mono" type="text" value="25,000.00" />
+                        </div>
+                      </div>
+                      <div>
+                        <label class="field-label">Amount<span class="req">*</span></label>
+                        <div class="input-prefix">
+                          <span class="px">$</span>
+                          <input class="input mono" type="text" value="1,000.00" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <button class="btn outline" style="margin-top: 16px; width: 100%;">
+                    <svg class="ico ico-sm" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+                    Add bonus
+                  </button>
+                </div>
+              </div>
+            </section>
+
+            <!-- section: source email -->
+            <section class="va-section">
+              <h3 class="va-title">Source &middot; agent email</h3>
+              <p class="va-desc">Paste the original email here. It&rsquo;s preserved as source material, not as the truth &mdash; the structure above is what gets signed.</p>
+
+              <div class="card">
+                <div class="card-body">
+                  <textarea class="textarea" style="font-family: var(--font-mono); font-size: 12.5px;">From: Daniel Brooks <daniel.brooks@wme.com>
+Subject: RE: Coastal Spell at The Crescent — Aug 9
+
+Mariana — confirming the deal for the Aug 9 show:
+
+  Vs deal, 9500/85 split of net
+  6500 expense cap, hospo inside the cap (1.2k)
+  Sellout = +1500
+  Over 25k gross → +1000
+
+Recoups: please cover the WNXP buy (~850, inside cap)
+plus return the 500 deposit from the tour bus damage from last year — that one is off the top before the split.
+
+Standard comps — band/family/management don't count, anything we comp for sponsors does.
+
+— Daniel</textarea>
+                </div>
+                <div class="card-foot">
+                  <span>The agent will see this collapsed below the structured recap.</span>
+                  <span class="mono" style="font-size: 11px;">412 words &middot; pasted Wed 14:32</span>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <!-- RIGHT: sticky rail -->
+          <aside class="va-rail">
+            <div class="ticker">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                <div style="font-size: 10.5px; font-weight: 600; letter-spacing: 0.1em; color: var(--ink-500); text-transform: uppercase;">
+                  Sign-off readiness
+                </div>
+                <span class="badge vs" style="font-size: 9.5px;" data-deal-type-badge>Vs &middot; 85/15</span>
+              </div>
+              <div class="progress">
+                <span class="pct"><span data-progress-done>14</span><span style="color:var(--ink-300);">/<span data-progress-total>21</span></span></span>
+                <span class="total">required complete</span>
+              </div>
+              <div class="progress-bar"><div class="fill" data-progress-fill style="width: 67%;"></div></div>
+
+              <div class="missing">
+                <div class="missing-head">Still missing &middot; for this deal type</div>
+                <ul data-missing-list>
+                  <li><span class="x"></span> Recoup 02 &middot; applies-at</li>
+                  <li><span class="x"></span> Comp rule &middot; &ldquo;other&rdquo; category</li>
+                  <li><span class="x"></span> Bonus 02 &middot; whether it stacks</li>
+                </ul>
+                <div style="font-size: 10.5px; color: var(--ink-400); margin-top: 10px; line-height: 1.5; padding-top: 8px; border-top: 1px dashed var(--ink-200);" data-rail-note>
+                  Required set is gated by deal type. Switch above &mdash; counts and sections update live.
+                </div>
+              </div>
+            </div>
+
+            <div class="send">
+              <div class="to">Send to</div>
+              <div class="agent">
+                <div class="av">DB</div>
+                <div class="who">
+                  <div class="nm">Daniel Brooks</div>
+                  <div class="mail">daniel.brooks@wme.com</div>
+                </div>
+              </div>
+              <button class="btn brand lg" style="width: 100%;" aria-disabled="true" data-send-button>
+                <svg class="ico ico-sm" viewBox="0 0 24 24"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg>
+                Send for sign-off
+              </button>
+              <div class="save">
+                <span data-fields-left>3 required fields left</span>
+                <a href="#" style="color: var(--ink-600); text-decoration: none;">Save draft &rarr;</a>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </div>
+
+      <div class="takeaway">
+        <strong>Why this works.</strong> The form lives on the same surface Mariana already uses (poster header,
+        ink + brand, hairline rules). Validation is <span class="kw">always-on</span> in the rail &mdash;
+        she never wonders why the send button is disabled. <strong>Why it might not.</strong> Six sections is a long scroll;
+        on a slower week she may skim past a missing bucket. The rail catches that, but only if she looks at it.
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ VARIATION B · WIZARD ═══════════════ -->
+  <section id="vb">
+    <div class="sec-head">
+      <span class="num">B / 03</span>
+      <h2>Wizard</h2>
+      <div class="sub">
+        Five guided steps. One concept at a time, breathing room around each.
+        A small preview on the right shows what the agent will see so far, so the
+        sign-off page never feels like a black box.
+      </div>
+    </div>
+
+    <div class="specimen">
+      <div class="spec-meta">
+        <span>B &middot; Wizard &middot; desktop &amp; tablet</span>
+        <span class="tags">
+          <span class="tag">stepped</span>
+          <span class="tag">guided</span>
+          <span class="tag">low-density</span>
+        </span>
+      </div>
+      <div class="frame" data-variation="B" data-deal-type="vs">
+        <div class="app-bar">
+          <div class="crumb">
+            <a href="#">Shows</a><span class="sep">/</span>
+            <a href="#">Coastal Spell &middot; Sat Aug 9</a><span class="sep">/</span>
+            <span class="here">New deal</span>
+          </div>
+          <div class="right">
+            <span>Step 1 of <span data-vb-total-steps>5</span></span>
+          </div>
+        </div>
+
+        <div class="vb-shell">
+          <!-- stepper — step count is conditional, signaled with ellipsis -->
+          <div class="vb-stepper">
+            <div class="vb-step active">
+              <div class="si">01</div>
+              <div class="sn">Deal type</div>
+            </div>
+            <div class="vb-step">
+              <div class="si">02</div>
+              <div class="sn">Structure</div>
+            </div>
+            <div class="vb-step">
+              <div class="si">03</div>
+              <div class="sn">Recoups &middot; <em style="font-style: italic; font-weight: 400; color: var(--ink-400);">if any</em></div>
+            </div>
+            <div class="vb-step">
+              <div class="si">04</div>
+              <div class="sn">Comps &amp; bonuses</div>
+            </div>
+            <div class="vb-step">
+              <div class="si">05</div>
+              <div class="sn">Review &amp; send</div>
+            </div>
+          </div>
+
+          <!-- body -->
+          <div class="vb-body">
+            <div class="vb-stage">
+              <div style="margin-bottom: 6px;"><span class="eyebrow">Step 01 &middot; Deal type</span></div>
+              <h3 class="vb-h">Pick the shape.<br/>The form rebuilds itself.</h3>
+              <p class="vb-sub">
+                Every choice locks the percentage basis, hides or reveals sections downstream, and changes
+                what counts as &ldquo;ready to send.&rdquo; <strong>Don&rsquo;t worry &mdash; you can switch later;
+                any fields hidden by the new type are kept as a draft.</strong>
+              </p>
+
+              <div class="fork-grid" data-fork-grid>
+                <button class="fork-card" data-type="flat">
+                  <div class="top flat"></div>
+                  <div class="check-dot"></div>
+                  <div class="nm">Flat</div>
+                  <div class="sm">FLAT</div>
+                  <div class="blurb">A fixed number, full stop. Most hidden fields, easiest to fill.</div>
+                  <div class="step-c">Steps: <b>3</b> &middot; ~45 sec</div>
+                </button>
+                <button class="fork-card on" data-type="vs">
+                  <div class="top vs"></div>
+                  <div class="check-dot"></div>
+                  <div class="nm">Vs deal</div>
+                  <div class="sm">VS</div>
+                  <div class="blurb">Greater of guarantee or % of net. The full form &mdash; recoups, caps, order.</div>
+                  <div class="step-c">Steps: <b>5</b> &middot; ~3 min</div>
+                </button>
+                <button class="fork-card" data-type="net">
+                  <div class="top net"></div>
+                  <div class="check-dot"></div>
+                  <div class="nm">% of net</div>
+                  <div class="sm">NET</div>
+                  <div class="blurb">Pure percentage, no floor. Same shape as Vs minus the guarantee.</div>
+                  <div class="step-c">Steps: <b>5</b> &middot; ~2 min</div>
+                </button>
+                <button class="fork-card" data-type="gross">
+                  <div class="top gross"></div>
+                  <div class="check-dot"></div>
+                  <div class="nm">% of gross</div>
+                  <div class="sm">GROSS</div>
+                  <div class="blurb">No caps, no buckets. Recoups land off-top by default.</div>
+                  <div class="step-c">Steps: <b>4</b> &middot; ~90 sec</div>
+                </button>
+                <button class="fork-card" data-type="door">
+                  <div class="top door"></div>
+                  <div class="check-dot"></div>
+                  <div class="nm">Door</div>
+                  <div class="sm">DOOR</div>
+                  <div class="blurb">Door cash, optional floor, walkout pot. Settles same night.</div>
+                  <div class="step-c">Steps: <b>4</b> &middot; ~90 sec</div>
+                </button>
+              </div>
+
+              <div style="margin-top: 28px; padding: 14px 16px; background: var(--brand-50); border: 1px solid rgba(167,243,208,0.6); border-radius: 10px; display: flex; gap: 12px; align-items: flex-start;" data-vb-hint>
+                <svg class="ico" viewBox="0 0 24 24" style="color: var(--brand-700); margin-top: 2px;"><path d="m22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/></svg>
+                <div style="font-size: 12.5px; color: var(--ink-700); line-height: 1.55;" data-vb-hint-text>
+                  <strong style="color: var(--ink-900);">Suggested: Vs deal.</strong>
+                  Daniel&rsquo;s email mentions a 9,500 guarantee, an 85/15 split, and an expense cap &mdash; that&rsquo;s a Vs.
+                </div>
+              </div>
+            </div>
+
+            <!-- right: live preview, showing how the wizard adapts to the chosen type -->
+            <aside class="vb-preview">
+              <div class="head">
+                <span class="lh">Form shape preview</span>
+                <span class="rh"><span data-vb-preview-name>Vs</span> selected</span>
+              </div>
+              <div class="body">
+                <div class="sect-h">If you pick <span data-vb-preview-name>Vs</span></div>
+                <div class="row"><span class="k">Steps after this</span><span class="v" data-vb-steps-after>4</span></div>
+                <div class="row"><span class="k">Percentage basis</span><span class="v" style="font-family: var(--font-sans); color: var(--ink-700);" data-vb-basis>Net &middot; locked</span></div>
+                <div class="row"><span class="k">Required fields</span><span class="v" data-vb-req>21</span></div>
+
+                <div class="sect-h">Sections that will show</div>
+                <ul data-vb-sections style="list-style: none; padding: 0; margin: 0;">
+                  <li class="row" style="font-size: 11.5px;"><span class="k" style="color: var(--brand-700);">●</span><span class="v" style="font-family: var(--font-sans); color: var(--ink-800);">Guarantee &amp; %</span></li>
+                  <li class="row" style="font-size: 11.5px;"><span class="k" style="color: var(--brand-700);">●</span><span class="v" style="font-family: var(--font-sans); color: var(--ink-800);">Expense + hospo caps</span></li>
+                  <li class="row" style="font-size: 11.5px;"><span class="k" style="color: var(--brand-700);">●</span><span class="v" style="font-family: var(--font-sans); color: var(--ink-800);">Recoups w/ bucket pills</span></li>
+                  <li class="row" style="font-size: 11.5px;"><span class="k" style="color: var(--brand-700);">●</span><span class="v" style="font-family: var(--font-sans); color: var(--ink-800);">Deduction order &middot; 5 stage</span></li>
+                  <li class="row" style="font-size: 11.5px;"><span class="k" style="color: var(--brand-700);">●</span><span class="v" style="font-family: var(--font-sans); color: var(--ink-800);">Comp rules + bonuses</span></li>
+                </ul>
+
+                <div class="sect-h">Hidden on <span data-vb-preview-name>Vs</span></div>
+                <ul data-vb-hidden style="list-style: none; padding: 0; margin: 0;">
+                  <li class="row pending" style="font-size: 11.5px;"><span class="k">Walkout pot</span><span class="v">door only</span></li>
+                </ul>
+
+                <div style="margin-top: 14px; padding-top: 10px; border-top: 1px dashed var(--ink-200); font-size: 10.5px; color: var(--ink-400); line-height: 1.5;" data-vb-compare></div>
+              </div>
+            </aside>
+          </div>
+
+          <!-- foot -->
+          <div class="vb-foot">
+            <span class="meta">Step 01 is irreversible-ish &mdash; switching deal type after page 02 will warn you about unsaved sections.</span>
+            <div class="actions">
+              <button class="btn ghost" aria-disabled="true">
+                <svg class="ico ico-sm" viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+                Back
+              </button>
+              <button class="btn secondary">Save draft</button>
+              <button class="btn brand" data-vb-continue>
+                Continue with <span data-vb-preview-name>Vs</span> deal
+                <svg class="ico ico-sm" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="takeaway">
+        <strong>Why this works.</strong> Step 01 makes the fork explicit &mdash; the user picks the shape
+        and the preview shows exactly how many steps follow and what will appear.
+        No mystery scrolling to find out a section is gone or a field is locked.
+        <strong>Why it might not.</strong> Mariana enters 8&ndash;15 deals a week &mdash; clicking through five
+        steps every time is more pageweight than she needs once the model is muscle memory.
+        Likely needs a &ldquo;skip to worksheet&rdquo; escape hatch once a deal type is selected.
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ VARIATION C · SPLIT ═══════════════ -->
+  <section id="vc">
+    <div class="sec-head">
+      <span class="num">C / 03</span>
+      <h2>Split</h2>
+      <div class="sub">
+        Form on the left, the agent&rsquo;s read-only recap on the right &mdash; live.
+        The spec&rsquo;s claim that &ldquo;the structure is what got signed, not the email&rdquo;
+        is the headline of the layout itself.
+      </div>
+    </div>
+
+    <div class="specimen">
+      <div class="spec-meta">
+        <span>C &middot; Split &middot; desktop-only (collapses on tablet)</span>
+        <span class="tags">
+          <span class="tag">live-preview</span>
+          <span class="tag">canonical-truth</span>
+          <span class="tag">tabbed-form</span>
+        </span>
+      </div>
+      <div class="frame" data-variation="C" data-deal-type="vs">
+
+        <div class="app-bar">
+          <div class="crumb">
+            <a href="#">Shows</a><span class="sep">/</span>
+            <a href="#">Coastal Spell &middot; Sat Aug 9</a><span class="sep">/</span>
+            <span class="here">Deal</span>
+          </div>
+          <div class="right">
+            <span class="pulse"><span class="dot"></span> Draft &middot; saved continuously</span>
+          </div>
+        </div>
+
+        <div class="vc-statusbar">
+          <div class="lh">
+            <span class="badge advanced"><span class="dot"></span> Coastal Spell &middot; Sat Aug 9</span>
+            <span class="badge vs" data-deal-type-badge>Vs &middot; 85/15</span>
+            <span class="progress-pill">
+              <span class="word">Required:</span>
+              <span class="pi" data-progress-done>14</span>
+              <span class="all">/ <span data-progress-total>21</span></span>
+            </span>
+            <span style="font-size: 11.5px; color: var(--ink-400);" data-fields-left>3 required fields left before sign-off</span>
+          </div>
+          <div style="display: flex; gap: 10px; align-items: center;">
+            <span style="font-size: 11px; color: var(--ink-400); font-family: var(--font-mono);">v1 &middot; never sent</span>
+            <button class="btn secondary sm">Save draft</button>
+            <button class="btn brand sm" aria-disabled="true" data-send-button>
+              <svg class="ico ico-xs" viewBox="0 0 24 24"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg>
+              Send for sign-off
+            </button>
+          </div>
+        </div>
+
+        <div class="vc-shell">
+          <!-- LEFT: editor -->
+          <div class="vc-left">
+
+            <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 16px; padding: 12px 14px; background: white; border: 1px solid rgba(228,223,210,0.8); border-radius: 10px;">
+              <span style="font-size: 10.5px; font-weight: 600; letter-spacing: 0.1em; color: var(--ink-500); text-transform: uppercase;">Deal type</span>
+              <div class="seg" data-deal-type-control>
+                <button data-type="flat">Flat</button>
+                <button data-type="gross">% of gross</button>
+                <button data-type="net">% of net</button>
+                <button data-type="vs" class="on">Vs</button>
+                <button data-type="door">Door</button>
+              </div>
+              <span style="font-size: 11px; color: var(--ink-400); margin-left: auto;">Live preview on the right updates as you switch.</span>
+            </div>
+
+            <nav class="vc-tabs">
+              <div class="t"><span class="n">01</span> Structure</div>
+              <div class="t on"><span class="n">02</span> Recoups &amp; deductions</div>
+              <div class="t warn"><span class="n">03</span> Comps</div>
+              <div class="t"><span class="n">04</span> Bonuses</div>
+              <div class="t"><span class="n">05</span> Source email</div>
+              <div class="t" data-walkout-tab style="opacity: 0.4; pointer-events: none;" title="Door deals only">
+                <span class="n">—</span> Walkout pot
+                <span style="margin-left: 6px; font-family: var(--font-mono); font-size: 9.5px; color: var(--rose-700); letter-spacing: 0.04em;">DOOR</span>
+              </div>
+            </nav>
+
+            <div style="margin-bottom: 18px; padding: 10px 14px; background: rgba(167,243,208,0.18); border: 1px solid rgba(167,243,208,0.55); border-radius: 8px; font-size: 12px; color: var(--brand-800); display: flex; align-items: center; gap: 10px;" data-tabs-note>
+              <svg class="ico ico-sm" viewBox="0 0 24 24" style="color: var(--brand-700);"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+              <span data-tabs-note-text>Tabs above match the active deal type. <strong style="color: var(--ink-800); font-weight: 500;">Walkout pot</strong> is dim because Vs doesn&rsquo;t use it &mdash; pick Door to make it light up.</span>
+            </div>
+
+            <section class="vc-section">
+              <h3 class="vc-h">Recoups &amp; deduction order</h3>
+              <p class="vc-d">Every recoup forces a bucket and an applies-at choice. The list to the right shows exactly how the agent will read it.</p>
+
+              <div class="card">
+                <div class="card-head">
+                  <div>
+                    <div class="card-title">Recoups</div>
+                    <div class="card-desc">Two structured. Add or edit below.</div>
+                  </div>
+                  <span class="badge brand">2 entered</span>
+                </div>
+                <div class="card-body">
+                  <div class="recoup-row" style="margin-top: 0;">
+                    <div class="row-head">
+                      <span class="idx">RECOUP &middot; 01</span>
+                      <span class="badge sky" data-recoup-badge="01">Inside cap &middot; before split</span>
+                    </div>
+                    <div class="grid">
+                      <div>
+                        <label class="field-label">Label</label>
+                        <input class="input" type="text" value="Local radio buy &middot; WNXP" />
+                      </div>
+                      <div>
+                        <label class="field-label">Category</label>
+                        <select class="select"><option>Marketing</option></select>
+                      </div>
+                      <div>
+                        <label class="field-label">Amount</label>
+                        <div class="input-prefix">
+                          <span class="px">$</span>
+                          <input class="input mono" type="text" value="850.00" />
+                        </div>
+                      </div>
+                    </div>
+                    <div style="margin-top: 14px;" data-show="vs,net">
+                      <div class="pill-group">
+                        <button class="pill on" data-bucket="inside"><span class="swatch"></span>Inside cap</button>
+                        <button class="pill" data-bucket="outside"><span class="swatch"></span>Outside cap</button>
+                        <button class="pill" data-bucket="off-top"><span class="swatch"></span>Off-top</button>
+                        <span style="width: 16px;"></span>
+                        <button class="pill on">Before %</button>
+                        <button class="pill">After %</button>
+                      </div>
+                    </div>
+                    <div data-show="gross,door" style="display: none; margin-top: 8px; font-size: 11px; color: var(--ink-500);">
+                      <span class="badge rose" style="font-size: 9.5px;">Auto</span> Off-gross, before split &mdash; no cap, no choice.
+                    </div>
+                  </div>
+
+                  <div class="recoup-row">
+                    <div class="row-head">
+                      <span class="idx">RECOUP &middot; 02</span>
+                      <span class="badge rose" data-recoup-badge="02">Off-top &middot; before split</span>
+                    </div>
+                    <div class="grid">
+                      <div>
+                        <label class="field-label">Label</label>
+                        <input class="input" type="text" value="Tour bus damage deposit return" />
+                      </div>
+                      <div>
+                        <label class="field-label">Category</label>
+                        <select class="select"><option>Damages</option></select>
+                      </div>
+                      <div>
+                        <label class="field-label">Amount</label>
+                        <div class="input-prefix">
+                          <span class="px">$</span>
+                          <input class="input mono" type="text" value="500.00" />
+                        </div>
+                      </div>
+                    </div>
+                    <div style="margin-top: 14px;" data-show="vs,net">
+                      <div class="pill-group">
+                        <button class="pill" data-bucket="inside"><span class="swatch"></span>Inside cap</button>
+                        <button class="pill" data-bucket="outside"><span class="swatch"></span>Outside cap</button>
+                        <button class="pill on" data-bucket="off-top"><span class="swatch"></span>Off-top</button>
+                        <span style="width: 16px;"></span>
+                        <button class="pill on">Before %</button>
+                        <button class="pill">After %</button>
+                      </div>
+                    </div>
+                    <div data-show="gross,door" style="display: none; margin-top: 8px; font-size: 11px; color: var(--ink-500);">
+                      <span class="badge rose" style="font-size: 9.5px;">Auto</span> Off-gross, before split &mdash; no cap, no choice.
+                    </div>
+                  </div>
+
+                  <button class="btn outline" style="margin-top: 16px; width: 100%;">
+                    <svg class="ico ico-sm" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+                    Add recoup
+                  </button>
+                </div>
+              </div>
+
+              <div class="card" style="margin-top: 18px;">
+                <div class="card-head">
+                  <div>
+                    <div class="card-title">Deduction order</div>
+                    <div class="card-desc">Drag to reorder. Affects the agent&rsquo;s recap on the right immediately.</div>
+                  </div>
+                  <span class="badge flat">5 stages</span>
+                </div>
+                <div class="card-body">
+                  <ol class="order-list">
+                    <li>
+                      <svg class="grip" viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="9" cy="6" r="1.5"/><circle cx="15" cy="6" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="18" r="1.5"/><circle cx="15" cy="18" r="1.5"/></svg>
+                      <span class="num">1</span><div class="name">Ticketing fees</div>
+                      <div class="arrows"><button>↑</button><button>↓</button></div>
+                    </li>
+                    <li>
+                      <svg class="grip" viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="9" cy="6" r="1.5"/><circle cx="15" cy="6" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="18" r="1.5"/><circle cx="15" cy="18" r="1.5"/></svg>
+                      <span class="num">2</span><div class="name">Off-top recoups</div>
+                      <div class="arrows"><button>↑</button><button>↓</button></div>
+                    </li>
+                    <li>
+                      <svg class="grip" viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="9" cy="6" r="1.5"/><circle cx="15" cy="6" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="18" r="1.5"/><circle cx="15" cy="18" r="1.5"/></svg>
+                      <span class="num">3</span><div class="name">Show expenses (in cap)</div>
+                      <div class="arrows"><button>↑</button><button>↓</button></div>
+                    </li>
+                    <li>
+                      <svg class="grip" viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="9" cy="6" r="1.5"/><circle cx="15" cy="6" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="18" r="1.5"/><circle cx="15" cy="18" r="1.5"/></svg>
+                      <span class="num">4</span><div class="name">In-cap recoups</div>
+                      <div class="arrows"><button>↑</button><button>↓</button></div>
+                    </li>
+                    <li>
+                      <svg class="grip" viewBox="0 0 24 24" fill="currentColor" stroke="none"><circle cx="9" cy="6" r="1.5"/><circle cx="15" cy="6" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="18" r="1.5"/><circle cx="15" cy="18" r="1.5"/></svg>
+                      <span class="num">5</span><div class="name">Artist split (85%)</div>
+                      <div class="arrows"><button>↑</button><button>↓</button></div>
+                    </li>
+                  </ol>
+                </div>
+              </div>
+            </section>
+
+          </div>
+
+          <!-- RIGHT: live recap (what the agent will see) -->
+          <aside class="vc-right">
+            <div class="recap">
+              <div class="recap-head">What Daniel will see</div>
+              <div class="recap-title">Coastal Spell</div>
+              <div class="recap-sub">Sat, Aug 9 &middot; 2026 &middot; The Crescent &middot; Nashville</div>
+
+              <div style="margin: -6px 0 16px; padding: 8px 12px; background: white; border: 1px dashed var(--ink-300); border-radius: 8px; display: flex; align-items: center; justify-content: space-between; font-size: 11.5px; color: var(--ink-500);">
+                <span>Recap reshapes to match <span class="mono" style="color: var(--ink-700);">deal.dealType</span></span>
+                <span class="badge vs" style="font-size: 9.5px;" data-recap-badge>Vs &middot; 9 sections</span>
+              </div>
+
+              <div class="recap-block">
+                <div class="bk-h">Deal structure</div>
+                <table>
+                  <tr><td class="k">Deal type</td><td class="v txt" data-recap-type>Vs &middot; 85/15</td></tr>
+                  <tr data-show="flat,vs,door"><td class="k">Guarantee</td><td class="v">$9,500.00</td></tr>
+                  <tr data-show="vs,net,gross,door"><td class="k">Percentage</td><td class="v"><span data-recap-pct>85% of net</span></td></tr>
+                  <tr data-show="vs,net"><td class="k">Expense cap</td><td class="v">$6,500.00</td></tr>
+                  <tr data-show="vs,net"><td class="k">Hospitality cap</td><td class="v">$1,200.00 &middot; inside cap</td></tr>
+                </table>
+              </div>
+
+              <div class="recap-block" data-hide="flat">
+                <div class="bk-h">Recoups</div>
+                <div class="recoup-line">
+                  <div class="lbl">
+                    Local radio buy &middot; WNXP
+                    <span class="sub" data-recap-recoup-sub-1>Marketing &middot; inside cap &middot; before split</span>
+                  </div>
+                  <div class="amt">$850.00</div>
+                </div>
+                <div class="recoup-line">
+                  <div class="lbl">
+                    Tour bus damage deposit return
+                    <span class="sub" data-recap-recoup-sub-2>Damages &middot; off the top &middot; before split</span>
+                  </div>
+                  <div class="amt">$500.00</div>
+                </div>
+              </div>
+
+              <div class="recap-block" data-hide="flat">
+                <div class="bk-h">Deduction order</div>
+                <table data-show="vs,net">
+                  <tr><td class="k">1.</td><td class="v txt">Ticketing fees</td></tr>
+                  <tr><td class="k">2.</td><td class="v txt">Off-top recoups</td></tr>
+                  <tr><td class="k">3.</td><td class="v txt">Show expenses (in cap)</td></tr>
+                  <tr><td class="k">4.</td><td class="v txt">In-cap recoups</td></tr>
+                  <tr><td class="k">5.</td><td class="v txt">Artist split &middot; 85%</td></tr>
+                </table>
+                <table data-show="gross,door" style="display: none;">
+                  <tr><td class="k">1.</td><td class="v txt">Ticketing fees</td></tr>
+                  <tr><td class="k">2.</td><td class="v txt">Off-top recoups</td></tr>
+                  <tr><td class="k">3.</td><td class="v txt">Artist split</td></tr>
+                </table>
+              </div>
+
+              <div class="recap-block" data-show="door" style="display: none;">
+                <div class="bk-h">Walkout pot</div>
+                <table>
+                  <tr><td class="k">Pot floor</td><td class="v">$0.00</td></tr>
+                  <tr><td class="k">Pot split</td><td class="v">100% to artist</td></tr>
+                  <tr><td class="k">Pays out</td><td class="v txt">Same night, in cash</td></tr>
+                </table>
+              </div>
+
+              <div class="recap-block">
+                <div class="bk-h">Bonuses</div>
+                <table>
+                  <tr><td class="k">Sellout &middot; 650 tix</td><td class="v">+$1,500.00</td></tr>
+                  <tr><td class="k">Gross &gt; $25k</td><td class="v">+$1,000.00</td></tr>
+                </table>
+              </div>
+
+              <div class="recap-block">
+                <div class="bk-h">Comp rules</div>
+                <table>
+                  <tr><td class="k">Press, Sponsor</td><td class="v txt" style="color: var(--amber-800);">count toward gross</td></tr>
+                  <tr><td class="k">Artist GL, label, staff, promo</td><td class="v txt">do not count</td></tr>
+                  <tr><td class="k">Other</td><td class="v txt" style="color: var(--rose-700);">missing &mdash; agent will be asked</td></tr>
+                </table>
+              </div>
+
+              <div class="recap-stamp">
+                <svg class="ico" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                When you press <strong style="color: var(--ink-700);">Send for sign-off</strong>, this exact view is what
+                Daniel gets in his magic-link email. No login, one click to sign.
+              </div>
+            </div>
+          </aside>
+        </div>
+      </div>
+
+      <div class="takeaway">
+        <strong>Why this works.</strong> The recap on the right is the canonical artifact &mdash;
+        every edit shows up there in the same shape the agent will see, and it visibly
+        <span class="kw">reshapes per deal type</span> (Vs &rarr; 9 blocks, Flat &rarr; 3, Door &rarr; with a walkout pot).
+        The &ldquo;structure is what got signed&rdquo; idea from the spec stops being a sentence and becomes the literal layout.
+        <strong>Why it might not.</strong> It costs ~460px of horizontal real estate. On smaller screens it collapses to the
+        worksheet pattern, which is fine &mdash; but Mariana&rsquo;s 13&Prime; MacBook may feel cramped.
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ COMPARISON ═══════════════ -->
+  <section>
+    <div class="sec-head">
+      <span class="num">07 / 07</span>
+      <h2>Compare</h2>
+      <div class="sub">A quick read on where each variation is strongest.</div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px;">
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">A &middot; Worksheet</div>
+            <div class="card-desc">Long-scroll, sticky send rail.</div>
+          </div>
+          <span class="badge flat">desktop-primary</span>
+        </div>
+        <div class="card-body" style="font-size: 12.5px; color: var(--ink-700); line-height: 1.65;">
+          <strong style="color: var(--ink-900);">Best for</strong> the daily reality: Mariana enters 8&ndash;15 deals a week, gets fast at the
+          shape, and a single surface beats clicking through stages.<br/><br/>
+          <strong style="color: var(--ink-900);">Risk:</strong> the rail does most of the validation work &mdash;
+          if she ignores it, the form still lets her scroll past unanswered choices.
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">B &middot; Wizard</div>
+            <div class="card-desc">Five guided steps, agent preview.</div>
+          </div>
+          <span class="badge brand">tablet-friendly</span>
+        </div>
+        <div class="card-body" style="font-size: 12.5px; color: var(--ink-700); line-height: 1.65;">
+          <strong style="color: var(--ink-900);">Best for</strong> the first 50 deals (the spec&rsquo;s &ldquo;watch
+          Mariana enter 50 real deals manually&rdquo; phase) &mdash; guardrails are explicit, no required
+          field can be skipped.<br/><br/>
+          <strong style="color: var(--ink-900);">Risk:</strong> click-fatigue once the form becomes routine.
+          May need a &ldquo;back to worksheet mode&rdquo; toggle later.
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">C &middot; Split</div>
+            <div class="card-desc">Form left, live agent view right.</div>
+          </div>
+          <span class="badge sky">desktop-only</span>
+        </div>
+        <div class="card-body" style="font-size: 12.5px; color: var(--ink-700); line-height: 1.65;">
+          <strong style="color: var(--ink-900);">Best for</strong> conveying the core insight &mdash;
+          the agent will sign <em>this</em>, not the email. Every change is visible in the canonical artifact.<br/><br/>
+          <strong style="color: var(--ink-900);">Risk:</strong> heaviest layout, costs horizontal space.
+          Collapses cleanly but loses its punchline when it does.
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top: 36px; padding: 18px 22px; border-left: 3px solid var(--brand-700); background: rgba(167,243,208,0.12); border-radius: 0 10px 10px 0;">
+      <div class="eyebrow" style="margin-bottom: 6px;">Recommendation</div>
+      <div style="font-size: 14px; color: var(--ink-800); line-height: 1.6; max-width: 760px;">
+        All three variations share the same backbone: <strong>one component, one union data model,
+        sections gated by <span class="mono" style="font-size: 12.5px; color: var(--ink-900);">deal.dealType</span></strong>.
+        That&rsquo;s the implementation hint from the spec, and it&rsquo;s what makes the &ldquo;form
+        can&rsquo;t send an ambiguous deal&rdquo; promise enforceable &mdash; the required set itself adapts.
+        <br/><br/>
+        Ship <strong>A &middot; Worksheet</strong> first. The deal-type segmented control at the top of the
+        Structure card drives the rest of the page; locked basis, conditional caps, the Door-only walkout pot,
+        and the conditional deduction order all flow from it. Steal <strong>B&rsquo;s Step 01 fork screen</strong>
+        as the very first interaction the first time a venue creates a deal &mdash; it makes the choice explicit
+        when the muscle memory isn&rsquo;t there yet. Reuse <strong>C&rsquo;s live recap</strong> as the
+        read-only confirm screen between &ldquo;ready to send&rdquo; and the actual send.
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+  // ═══════════════════════════════════════════════════════════════════════
+  //  Deal-type rules — single source of truth for the prototype
+  // ═══════════════════════════════════════════════════════════════════════
+  const RULES = {
+    flat:  { label: 'Flat',       badgeClass: 'flat',  basis: '—',                    req: 6,  stepsAfter: 2 },
+    vs:    { label: 'Vs',         badgeClass: 'vs',    basis: 'Net · after expenses', req: 21, stepsAfter: 4 },
+    net:   { label: '% of net',   badgeClass: 'sky',   basis: 'Net · after expenses', req: 19, stepsAfter: 4 },
+    gross: { label: '% of gross', badgeClass: 'amber', basis: 'Gross box office',     req: 11, stepsAfter: 3 },
+    door:  { label: 'Door',       badgeClass: 'rose',  basis: 'Door cash',            req: 12, stepsAfter: 3 },
+  };
+
+  const BADGE_TEXT = {
+    flat:  'Flat',
+    vs:    'Vs · 85/15',
+    net:   '% of net · 85',
+    gross: '% of gross · 85',
+    door:  'Door · 85/15',
+  };
+
+  const RECAP_SECTIONS = { flat: 3, vs: 9, net: 8, gross: 5, door: 6 };
+
+  // Missing-fields list, per variation A's rail
+  const MISSING = {
+    flat:  ['Guarantee amount', 'Comp rule · "other" category'],
+    vs:    ['Recoup 02 · applies-at', 'Comp rule · "other" category', 'Bonus 02 · whether it stacks'],
+    net:   ['Recoup 02 · applies-at', 'Comp rule · "other" category'],
+    gross: ['Comp rule · "other" category'],
+    door:  ['Walkout pot · pot floor', 'Comp rule · "other" category'],
+  };
+
+  // Progress fill width per type — % completed
+  const PROGRESS = {
+    flat:  { done: 4,  total: 6  },
+    vs:    { done: 14, total: 21 },
+    net:  { done: 13, total: 19 },
+    gross: { done: 8,  total: 11 },
+    door:  { done: 9,  total: 12 },
+  };
+
+  // For Variation B preview: what shows on each type
+  const PREVIEW_SECTIONS = {
+    flat:  ['Guarantee', 'Comp rules', 'Bonuses (optional)'],
+    vs:    ['Guarantee & %', 'Expense + hospo caps', 'Recoups w/ bucket pills', 'Deduction order · 5 stage', 'Comp rules + bonuses'],
+    net:   ['Percentage (no floor)', 'Expense + hospo caps', 'Recoups w/ bucket pills', 'Deduction order · 5 stage', 'Comp rules + bonuses'],
+    gross: ['Percentage', 'Recoups (off-top auto)', 'Order · simplified 3-stage', 'Comp rules + bonuses'],
+    door:  ['Percentage of door', 'Optional guarantee', 'Walkout pot', 'Comp rules + bonuses'],
+  };
+
+  const PREVIEW_HIDDEN = {
+    flat:  ['Percentage', 'Caps', 'Recoups', 'Deduction order', 'Walkout pot'],
+    vs:    ['Walkout pot'],
+    net:   ['Guarantee', 'Walkout pot'],
+    gross: ['Guarantee', 'Caps', 'Walkout pot'],
+    door:  ['Caps', 'Bucket pills'],
+  };
+
+  // ═══════════════════════════════════════════════════════════════════════
+  //  Visibility engine — same for all three variations
+  // ═══════════════════════════════════════════════════════════════════════
+  function applyVisibility(root, type) {
+    // data-show="vs,net" → show only when type ∈ list
+    root.querySelectorAll('[data-show]').forEach(el => {
+      const list = el.dataset.show.split(',').map(s => s.trim());
+      const show = list.includes(type);
+      el.style.display = show ? '' : 'none';
+    });
+    // data-hide="flat" → hide when type ∈ list
+    root.querySelectorAll('[data-hide]').forEach(el => {
+      const list = el.dataset.hide.split(',').map(s => s.trim());
+      const hide = list.includes(type);
+      el.style.display = hide ? 'none' : '';
+    });
+    // data-req-on="flat,vs" → show "*" only on these types
+    root.querySelectorAll('[data-req-on]').forEach(el => {
+      const list = el.dataset.reqOn.split(',').map(s => s.trim());
+      el.style.display = list.includes(type) ? '' : 'none';
+    });
+  }
+
+  function updateBadges(root, type) {
+    const rules = RULES[type];
+    root.querySelectorAll('[data-deal-type-badge]').forEach(el => {
+      el.textContent = BADGE_TEXT[type];
+      el.className = 'badge ' + rules.badgeClass;
+      el.dataset.dealTypeBadge = '';
+    });
+    root.querySelectorAll('[data-basis-val]').forEach(el => {
+      el.textContent = rules.basis;
+    });
+    root.querySelectorAll('[data-basis-tag]').forEach(el => {
+      el.textContent = type === 'flat'
+        ? 'n/a on flat'
+        : 'locked by ' + rules.label;
+    });
+  }
+
+  function updateProgress(root, type) {
+    const p = PROGRESS[type];
+    if (!p) return;
+    root.querySelectorAll('[data-progress-done]').forEach(el => el.textContent = p.done);
+    root.querySelectorAll('[data-progress-total]').forEach(el => el.textContent = p.total);
+    const pct = Math.round((p.done / p.total) * 100);
+    root.querySelectorAll('[data-progress-fill]').forEach(el => el.style.width = pct + '%');
+    const left = p.total - p.done;
+    root.querySelectorAll('[data-fields-left]').forEach(el => {
+      el.textContent = left === 0
+        ? 'Ready to send'
+        : left + ' required field' + (left === 1 ? '' : 's') + ' left' + (el.tagName === 'SPAN' && el.parentElement.classList.contains('lh') ? ' before sign-off' : '');
+    });
+    // Send button is enabled when all required are done
+    root.querySelectorAll('[data-send-button]').forEach(btn => {
+      if (left === 0) btn.removeAttribute('aria-disabled');
+      else btn.setAttribute('aria-disabled', 'true');
+    });
+  }
+
+  function updateMissingList(root, type) {
+    const items = MISSING[type] || [];
+    root.querySelectorAll('[data-missing-list]').forEach(ul => {
+      ul.innerHTML = items.length
+        ? items.map(t => `<li><span class="x"></span> ${t}</li>`).join('')
+        : '<li style="color: var(--brand-700);"><span class="x" style="background: var(--brand-700);"></span> All required fields complete.</li>';
+    });
+  }
+
+  function updateSegControl(root, type) {
+    root.querySelectorAll('[data-deal-type-control]').forEach(seg => {
+      seg.querySelectorAll('button').forEach(btn => {
+        btn.classList.toggle('on', btn.dataset.type === type);
+      });
+    });
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════
+  //  Variation A — Worksheet
+  // ═══════════════════════════════════════════════════════════════════════
+  function setupVariationA() {
+    const root = document.querySelector('[data-variation="A"]');
+    if (!root) return;
+
+    const TYPE_HINT = {
+      flat:  'Flat &mdash; one number, no math. Most of the form is hidden.',
+      vs:    'Vs &mdash; artist gets the greater of guarantee or percentage after expenses. Most common at The Crescent.',
+      net:   '% of net &mdash; pure percentage of net. No floor.',
+      gross: '% of gross &mdash; no caps, no bucket choices. Recoups land off-top.',
+      door:  'Door &mdash; door cash, optional floor, walkout pot. Settles that night.',
+    };
+    const RECOUPS_NOTE = {
+      flat:  '<span class="pick">Flat</span> &mdash; recoups are rare on this type. If used, no bucket choice.',
+      vs:    '<span class="pick">Vs deal</span> &mdash; bucket &amp; applies-at are required.',
+      net:   '<span class="pick">% of net</span> &mdash; bucket &amp; applies-at are required.',
+      gross: '<span class="pick">% of gross</span> &mdash; bucket auto-resolves to <em>off-gross, before split</em>. No choice shown.',
+      door:  '<span class="pick">Door</span> &mdash; bucket auto-resolves to <em>off-gross, before split</em>. No choice shown.',
+    };
+    const ORDER_NOTE = {
+      flat:  'Section hidden &mdash; no recoups, no cap, nothing to order.',
+      vs:    'Full 5-stage order: fees &rarr; off-top &rarr; expenses &rarr; in-cap recoups &rarr; split.',
+      net:   'Full 5-stage order: fees &rarr; off-top &rarr; expenses &rarr; in-cap recoups &rarr; split.',
+      gross: 'Simplified 3-stage order: fees &rarr; off-top recoups &rarr; split.',
+      door:  'Simplified 3-stage order: fees &rarr; off-top recoups &rarr; split.',
+    };
+
+    function apply(type) {
+      root.dataset.dealType = type;
+      applyVisibility(root, type);
+      updateBadges(root, type);
+      updateProgress(root, type);
+      updateMissingList(root, type);
+      updateSegControl(root, type);
+
+      const hint = root.querySelector('[data-type-hint]');
+      if (hint) hint.innerHTML = TYPE_HINT[type] + ' <span style="color: var(--brand-700);">Changing this rewires the sections below.</span>';
+
+      const recoupsNote = root.querySelector('[data-recoups-note-text]');
+      if (recoupsNote) recoupsNote.innerHTML = RECOUPS_NOTE[type];
+
+      const orderNote = root.querySelector('[data-order-note-text]');
+      if (orderNote) orderNote.innerHTML = ORDER_NOTE[type];
+
+      // Guarantee hint adapts
+      const gHint = root.querySelector('[data-guarantee-hint]');
+      if (gHint) {
+        gHint.textContent = type === 'door'
+          ? 'Optional on Door — a floor for slow nights.'
+          : 'Required on Flat and Vs. Hidden on % of net / gross.';
+      }
+    }
+
+    root.querySelectorAll('[data-deal-type-control] button').forEach(btn => {
+      btn.addEventListener('click', () => apply(btn.dataset.type));
+    });
+
+    apply('vs');
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════
+  //  Variation B — Wizard
+  // ═══════════════════════════════════════════════════════════════════════
+  function setupVariationB() {
+    const root = document.querySelector('[data-variation="B"]');
+    if (!root) return;
+
+    const HINTS = {
+      flat:  '<strong style="color: var(--ink-900);">Flat picked.</strong> The fastest path &mdash; guarantee and comp rules and you&rsquo;re done.',
+      vs:    '<strong style="color: var(--ink-900);">Suggested: Vs deal.</strong> Daniel&rsquo;s email mentions a $9,500 guarantee, an 85/15 split, and an expense cap &mdash; that&rsquo;s a Vs.',
+      net:   '<strong style="color: var(--ink-900);">% of net picked.</strong> Same shape as Vs, no floor &mdash; choose this when the agent didn&rsquo;t give a guarantee.',
+      gross: '<strong style="color: var(--ink-900);">% of gross picked.</strong> Off-top recoups by default, no cap to live inside, no bucket choices.',
+      door:  '<strong style="color: var(--ink-900);">Door picked.</strong> Cash settlement that night &mdash; the walkout pot section becomes required.',
+    };
+
+    function apply(type) {
+      root.dataset.dealType = type;
+      updateSegControl(root, type);
+
+      // Update fork-card selection
+      root.querySelectorAll('[data-fork-grid] .fork-card').forEach(card => {
+        card.classList.toggle('on', card.dataset.type === type);
+      });
+
+      const rules = RULES[type];
+
+      // Step total + post-this counter
+      const totalSteps = rules.stepsAfter + 1;
+      root.querySelectorAll('[data-vb-total-steps]').forEach(el => el.textContent = totalSteps);
+      root.querySelectorAll('[data-vb-steps-after]').forEach(el => el.textContent = rules.stepsAfter);
+      root.querySelectorAll('[data-vb-req]').forEach(el => el.textContent = rules.req);
+      root.querySelectorAll('[data-vb-basis]').forEach(el => el.textContent = type === 'flat' ? 'n/a · no percentage' : rules.basis + ' · locked');
+
+      // Preview-name swaps everywhere
+      root.querySelectorAll('[data-vb-preview-name]').forEach(el => el.textContent = rules.label);
+
+      // Sections that will show
+      const sections = PREVIEW_SECTIONS[type] || [];
+      const list = root.querySelector('[data-vb-sections]');
+      if (list) {
+        list.innerHTML = sections.map(s =>
+          `<li class="row" style="font-size: 11.5px;"><span class="k" style="color: var(--brand-700);">●</span><span class="v" style="font-family: var(--font-sans); color: var(--ink-800);">${s}</span></li>`
+        ).join('');
+      }
+
+      // Hidden sections
+      const hidden = PREVIEW_HIDDEN[type] || [];
+      const hiddenList = root.querySelector('[data-vb-hidden]');
+      if (hiddenList) {
+        hiddenList.innerHTML = hidden.length
+          ? hidden.map(s =>
+              `<li class="row pending" style="font-size: 11.5px;"><span class="k">${s}</span><span class="v">hidden</span></li>`
+            ).join('')
+          : '<li class="row" style="font-size: 11.5px; color: var(--ink-400);"><span class="k">All sections shown.</span></li>';
+      }
+
+      // Comparison footnote
+      const compare = root.querySelector('[data-vb-compare]');
+      if (compare) {
+        const altType = type === 'vs' ? 'flat' : 'vs';
+        const alt = RULES[altType];
+        compare.innerHTML = `Switching to <span class="mono" style="color: var(--ink-700);">${alt.label}</span> ${altType === 'flat' ? 'drops' : 'raises'} this to <b style="color: var(--ink-700);">${alt.stepsAfter}</b> more steps and <b style="color: var(--ink-700);">${alt.req}</b> required fields.`;
+      }
+
+      // Hint banner
+      const hintText = root.querySelector('[data-vb-hint-text]');
+      if (hintText) hintText.innerHTML = HINTS[type];
+    }
+
+    root.querySelectorAll('[data-fork-grid] .fork-card').forEach(card => {
+      card.addEventListener('click', () => apply(card.dataset.type));
+    });
+
+    apply('vs');
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════
+  //  Variation C — Split
+  // ═══════════════════════════════════════════════════════════════════════
+  function setupVariationC() {
+    const root = document.querySelector('[data-variation="C"]');
+    if (!root) return;
+
+    const TABS_NOTE = {
+      flat:  'Tabs above match the active deal type. <strong style="color: var(--ink-800); font-weight: 500;">Most tabs are dim</strong> &mdash; Flat only uses Structure, Comps, Bonuses, and Source.',
+      vs:    'Tabs above match the active deal type. <strong style="color: var(--ink-800); font-weight: 500;">Walkout pot</strong> is dim because Vs doesn&rsquo;t use it &mdash; pick Door to make it light up.',
+      net:   '% of net uses every tab except Walkout pot.',
+      gross: '% of gross hides the bucket pills and uses a simplified deduction order.',
+      door:  '<strong style="color: var(--ink-800); font-weight: 500;">Walkout pot is now active.</strong> Other tabs adapt &mdash; recoups have no bucket choice on Door.',
+    };
+
+    const RECAP_BADGE_TEXT = {
+      flat:  'Flat · 3 sections',
+      vs:    'Vs · 9 sections',
+      net:   '% of net · 8 sections',
+      gross: '% of gross · 5 sections',
+      door:  'Door · 6 sections',
+    };
+
+    const RECOUP_BADGE_1 = {
+      vs: { text: 'Inside cap · before split', cls: 'sky' },
+      net: { text: 'Inside cap · before split', cls: 'sky' },
+      gross: { text: 'Off-gross · auto', cls: 'rose' },
+      door: { text: 'Off-gross · auto', cls: 'rose' },
+      flat: { text: '—', cls: 'flat' },
+    };
+    const RECOUP_BADGE_2 = {
+      vs: { text: 'Off-top · before split', cls: 'rose' },
+      net: { text: 'Off-top · before split', cls: 'rose' },
+      gross: { text: 'Off-gross · auto', cls: 'rose' },
+      door: { text: 'Off-gross · auto', cls: 'rose' },
+      flat: { text: '—', cls: 'flat' },
+    };
+    const RECAP_RECOUP_SUB_1 = {
+      flat:  '',
+      vs:    'Marketing · inside cap · before split',
+      net:   'Marketing · inside cap · before split',
+      gross: 'Marketing · off-gross · before split',
+      door:  'Marketing · off-gross · before split',
+    };
+    const RECAP_RECOUP_SUB_2 = {
+      flat:  '',
+      vs:    'Damages · off the top · before split',
+      net:   'Damages · off the top · before split',
+      gross: 'Damages · off-gross · before split',
+      door:  'Damages · off-gross · before split',
+    };
+    const RECAP_PCT = {
+      flat:  '—',
+      vs:    '85% of net',
+      net:   '85% of net',
+      gross: '85% of gross',
+      door:  '85% of door',
+    };
+    const RECAP_TYPE = {
+      flat:  'Flat · $9,500',
+      vs:    'Vs · 85/15',
+      net:   '% of net · 85',
+      gross: '% of gross · 85',
+      door:  'Door · 85/15',
+    };
+
+    function apply(type) {
+      root.dataset.dealType = type;
+      applyVisibility(root, type);
+      updateBadges(root, type);
+      updateProgress(root, type);
+      updateSegControl(root, type);
+
+      // Walkout pot tab — dim unless Door
+      const walkoutTab = root.querySelector('[data-walkout-tab]');
+      if (walkoutTab) {
+        if (type === 'door') {
+          walkoutTab.style.opacity = '1';
+          walkoutTab.style.pointerEvents = '';
+          walkoutTab.classList.add('warn');
+        } else {
+          walkoutTab.style.opacity = '0.4';
+          walkoutTab.style.pointerEvents = 'none';
+          walkoutTab.classList.remove('warn');
+        }
+      }
+
+      // Tabs note
+      const tabsNote = root.querySelector('[data-tabs-note-text]');
+      if (tabsNote) tabsNote.innerHTML = TABS_NOTE[type];
+
+      // Recoup badges in the editor
+      const b1 = root.querySelector('[data-recoup-badge="01"]');
+      if (b1) { b1.textContent = RECOUP_BADGE_1[type].text; b1.className = 'badge ' + RECOUP_BADGE_1[type].cls; }
+      const b2 = root.querySelector('[data-recoup-badge="02"]');
+      if (b2) { b2.textContent = RECOUP_BADGE_2[type].text; b2.className = 'badge ' + RECOUP_BADGE_2[type].cls; }
+
+      // Recap badge + section count
+      const recapBadge = root.querySelector('[data-recap-badge]');
+      if (recapBadge) {
+        recapBadge.textContent = RECAP_BADGE_TEXT[type];
+        recapBadge.className = 'badge ' + RULES[type].badgeClass;
+      }
+
+      // Recap row content
+      const recapType = root.querySelector('[data-recap-type]');
+      if (recapType) recapType.textContent = RECAP_TYPE[type];
+      const recapPct = root.querySelector('[data-recap-pct]');
+      if (recapPct) recapPct.textContent = RECAP_PCT[type];
+      const rrs1 = root.querySelector('[data-recap-recoup-sub-1]');
+      if (rrs1) rrs1.textContent = RECAP_RECOUP_SUB_1[type];
+      const rrs2 = root.querySelector('[data-recap-recoup-sub-2]');
+      if (rrs2) rrs2.textContent = RECAP_RECOUP_SUB_2[type];
+
+      // Fields-left text for the C status bar (different copy than A)
+      const left = PROGRESS[type].total - PROGRESS[type].done;
+      root.querySelectorAll('[data-fields-left]').forEach(el => {
+        el.textContent = left === 0 ? 'Ready to send' : `${left} required field${left === 1 ? '' : 's'} left before sign-off`;
+      });
+    }
+
+    root.querySelectorAll('[data-deal-type-control] button').forEach(btn => {
+      btn.addEventListener('click', () => apply(btn.dataset.type));
+    });
+
+    apply('vs');
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════
+  //  Local interactivity that's independent of deal type
+  // ═══════════════════════════════════════════════════════════════════════
+  document.querySelectorAll('.pill-group').forEach(group => {
+    group.addEventListener('click', e => {
+      const pill = e.target.closest('.pill');
+      if (!pill) return;
+      const isBucket = pill.hasAttribute('data-bucket');
+      group.querySelectorAll('.pill').forEach(p => {
+        if (isBucket && p.hasAttribute('data-bucket')) p.classList.remove('on');
+        if (!isBucket && !p.hasAttribute('data-bucket')) p.classList.remove('on');
+      });
+      pill.classList.add('on');
+    });
+  });
+
+  document.querySelectorAll('.check').forEach(c => {
+    c.addEventListener('click', () => c.classList.toggle('on'));
+  });
+
+  document.querySelectorAll('.vc-tabs').forEach(tabs => {
+    tabs.addEventListener('click', e => {
+      const t = e.target.closest('.t');
+      if (!t) return;
+      if (getComputedStyle(t).pointerEvents === 'none') return;
+      tabs.querySelectorAll('.t').forEach(x => x.classList.remove('on'));
+      t.classList.add('on');
+    });
+  });
+
+  document.querySelectorAll('.vb-stepper').forEach(stepper => {
+    stepper.addEventListener('click', e => {
+      const s = e.target.closest('.vb-step');
+      if (!s) return;
+      const steps = Array.from(stepper.querySelectorAll('.vb-step'));
+      const i = steps.indexOf(s);
+      steps.forEach((x, j) => {
+        x.classList.remove('active', 'done');
+        if (j < i) x.classList.add('done');
+        if (j === i) x.classList.add('active');
+      });
+    });
+  });
+
+  // ═══════════════════════════════════════════════════════════════════════
+  //  Order-list up/down arrow buttons — reordering with renumbering
+  // ═══════════════════════════════════════════════════════════════════════
+  document.querySelectorAll('.order-list').forEach(list => {
+    list.addEventListener('click', e => {
+      const btn = e.target.closest('.arrows button');
+      if (!btn) return;
+      const li = btn.closest('li');
+      const dir = btn.textContent.trim() === '↑' ? 'up' : 'down';
+      const sibling = dir === 'up' ? li.previousElementSibling : li.nextElementSibling;
+      if (!sibling) return;
+      if (dir === 'up') list.insertBefore(li, sibling);
+      else list.insertBefore(sibling, li);
+      // Renumber
+      Array.from(list.children).forEach((child, i) => {
+        const numEl = child.querySelector('.num');
+        if (numEl) numEl.textContent = i + 1;
+      });
+    });
+  });
+
+  // ═══════════════════════════════════════════════════════════════════════
+  //  Boot
+  // ═══════════════════════════════════════════════════════════════════════
+  setupVariationA();
+  setupVariationB();
+  setupVariationC();
+</script>
+
+</body>
+</html>
