@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Greenroom · Pill active state — six color variations</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Geist+Mono:wght@400;500&family=Geist:wght@400;450;500;600&display=swap"
+  rel="stylesheet"
+/>
+
+<style>
+  :root {
+    --canvas:      #faf7f0;
+    --canvas-soft: #fdfbf6;
+
+    --brand-50:  #ecfdf5;
+    --brand-100: #d1fae5;
+    --brand-200: #a7f3d0;
+    --brand-300: #6ee7b7;
+    --brand-500: #10b981;
+    --brand-600: #059669;
+    --brand-700: #047857;
+    --brand-800: #065f46;
+    --brand-900: #064e3b;
+
+    --ink-50:  #faf8f4;
+    --ink-100: #f3f0e9;
+    --ink-200: #e4dfd2;
+    --ink-300: #c9c2b1;
+    --ink-400: #94907f;
+    --ink-500: #6b6759;
+    --ink-600: #4f4c41;
+    --ink-700: #3a3830;
+    --ink-800: #26241e;
+    --ink-900: #1a1814;
+
+    --amber-50:  #fef7e6;
+    --amber-100: #fef0c7;
+    --amber-200: #fde68a;
+    --amber-700: #b45309;
+    --amber-800: #92400e;
+
+    --rose-50:  #fef2f2;
+    --rose-100: #ffe4e6;
+    --rose-200: #fecaca;
+    --rose-700: #be123c;
+    --rose-800: #9f1239;
+
+    --sky-50:  #eff6ff;
+    --sky-100: #dbeafe;
+    --sky-200: #bfdbfe;
+    --sky-700: #1d4ed8;
+    --sky-800: #1e40af;
+
+    --font-display: 'Fraunces', Georgia, serif;
+    --font-sans:    'Geist', ui-sans-serif, system-ui, sans-serif;
+    --font-mono:    'Geist Mono', ui-monospace, monospace;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: var(--font-sans);
+    color: var(--ink-900);
+    background: var(--canvas);
+    font-feature-settings: "cv11", "ss01", "ss03";
+    -webkit-font-smoothing: antialiased;
+    position: relative;
+  }
+  body::before {
+    content: ""; position: fixed; inset: 0;
+    pointer-events: none; z-index: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 50% 0%, rgba(16,185,129,0.05), transparent 60%),
+      radial-gradient(ellipse 50% 30% at 100% 100%, rgba(245,158,11,0.03), transparent 60%);
+  }
+  body::after {
+    content: ""; position: fixed; inset: 0;
+    pointer-events: none; z-index: 1;
+    opacity: 0.025;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 256px 256px;
+  }
+
+  .page { position: relative; z-index: 2; max-width: 1100px; margin: 0 auto; padding: 64px 48px 120px; }
+
+  /* cover */
+  .cover { margin-bottom: 56px; }
+  .cover .meta-row {
+    display: flex; align-items: center; gap: 14px;
+    font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--ink-400); margin-bottom: 22px;
+  }
+  .cover .meta-row .dot { width: 4px; height: 4px; border-radius: 50%; background: var(--ink-300); }
+  .cover h1 {
+    font-family: var(--font-display); font-weight: 500;
+    font-size: 56px; line-height: 1.02; letter-spacing: -0.03em;
+    margin: 0 0 14px; color: var(--ink-900); font-optical-sizing: auto;
+  }
+  .cover h1 em { font-style: italic; font-weight: 400; color: var(--brand-700); }
+  .cover .lede {
+    max-width: 640px; font-size: 16px; line-height: 1.55; color: var(--ink-600);
+  }
+  .eyebrow {
+    font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.12em;
+    color: var(--brand-700);
+  }
+
+  /* variation card */
+  .v {
+    background: white;
+    border: 1px solid rgba(228,223,210,0.7);
+    border-radius: 12px;
+    padding: 22px 26px 24px;
+    margin-bottom: 18px;
+    box-shadow: 0 1px 2px rgba(26,24,20,0.03);
+  }
+  .v .hd {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 4px;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed var(--ink-200);
+  }
+  .v .hd .num {
+    font-family: var(--font-mono); font-size: 11px;
+    letter-spacing: 0.08em; color: var(--ink-400);
+  }
+  .v .hd h3 {
+    font-family: var(--font-display); font-weight: 500;
+    font-size: 22px; letter-spacing: -0.018em;
+    margin: 4px 0 0; color: var(--ink-900); font-optical-sizing: auto;
+  }
+  .v .hd .tag {
+    font-family: var(--font-mono); font-size: 10px;
+    letter-spacing: 0.06em; color: var(--ink-500);
+    background: var(--canvas-soft); padding: 2px 8px; border-radius: 4px;
+    box-shadow: inset 0 0 0 1px var(--ink-200);
+  }
+  .v .desc {
+    font-size: 12.5px; color: var(--ink-600); line-height: 1.55;
+    margin: 4px 0 16px; max-width: 620px;
+  }
+  .v .desc strong { color: var(--ink-900); font-weight: 500; }
+  .v .desc code {
+    font-family: var(--font-mono); font-size: 11.5px;
+    color: var(--ink-700); background: var(--ink-50);
+    padding: 1px 6px; border-radius: 4px;
+  }
+
+  /* recoup card mockup so the pills are seen in context */
+  .row {
+    background: var(--canvas-soft);
+    border: 1px solid rgba(228,223,210,0.7);
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .row .idx {
+    font-family: var(--font-mono); font-size: 10.5px;
+    color: var(--ink-400); letter-spacing: 0.06em;
+    margin-bottom: 10px;
+  }
+  .row .grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .row .col label {
+    display: block; font-size: 10px; font-weight: 600; letter-spacing: 0.1em;
+    color: var(--ink-500); text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .row .col label .req { color: var(--rose-700); margin-left: 2px; }
+  .pillset { display: flex; flex-wrap: wrap; gap: 6px; }
+
+  /* base pill (inactive) — same for all variations */
+  .pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 10px; border-radius: 6px;
+    font-size: 12px; font-weight: 500;
+    color: var(--ink-700); background: white;
+    border: 1px solid var(--ink-300);
+    cursor: default;
+  }
+  .pill .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+  }
+  .pill .dot.sky   { background: var(--sky-700); }
+  .pill .dot.amber { background: var(--amber-700); }
+  .pill .dot.rose  { background: var(--rose-700); }
+
+  /* ───── Variation A — current brand-700 emerald solid ───── */
+  .va .pill.on {
+    background: var(--brand-700); color: white;
+    border-color: var(--brand-700);
+    box-shadow: 0 1px 2px rgba(4,120,87,0.15);
+  }
+  .va .pill.on .dot { box-shadow: 0 0 0 2px rgba(255,255,255,0.45); }
+
+  /* ───── Variation B — soft brand tint ───── */
+  .vb .pill.on {
+    background: var(--brand-50); color: var(--brand-800);
+    border-color: var(--brand-700); border-width: 1.5px;
+    padding-block: 5.5px;
+  }
+  .vb .pill.on .dot { box-shadow: 0 0 0 2px var(--brand-50); }
+
+  /* ───── Variation C — semantic per-pill color ───── */
+  .vc .pill.on { color: white; }
+  .vc .pill.on.inside {
+    background: var(--sky-700); border-color: var(--sky-700);
+    box-shadow: 0 1px 2px rgba(29,78,216,0.15);
+  }
+  .vc .pill.on.outside {
+    background: var(--amber-700); border-color: var(--amber-700);
+    box-shadow: 0 1px 2px rgba(180,83,9,0.15);
+  }
+  .vc .pill.on.offtop {
+    background: var(--rose-700); border-color: var(--rose-700);
+    box-shadow: 0 1px 2px rgba(190,18,60,0.15);
+  }
+  .vc .pill.on .dot {
+    background: white;
+  }
+  /* For Applies row (no semantic mapping) → use ink-900 */
+  .vc .pill.on.neutral {
+    background: var(--ink-900); color: white; border-color: var(--ink-900);
+  }
+
+  /* ───── Variation D — white + brand border + check ───── */
+  .vd .pill.on {
+    background: white; color: var(--brand-800);
+    border-color: var(--brand-700); border-width: 1.5px;
+    padding-inline: 9px;
+  }
+  .vd .pill.on::before {
+    content: "";
+    width: 12px; height: 12px;
+    background: var(--brand-700);
+    -webkit-mask: url("data:image/svg+xml;utf8,<svg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'><path d='M5 12l5 5L20 7' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/></svg>") center / contain no-repeat;
+            mask: url("data:image/svg+xml;utf8,<svg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'><path d='M5 12l5 5L20 7' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/></svg>") center / contain no-repeat;
+    margin-right: -2px;
+  }
+
+  /* ───── Variation E — brand-100 fill, brand-900 text ───── */
+  .ve .pill.on {
+    background: var(--brand-100); color: var(--brand-900);
+    border-color: var(--brand-300);
+  }
+  .ve .pill.on .dot { box-shadow: 0 0 0 2px var(--brand-100); }
+
+  /* ───── Variation F — ink-50 fill + brand-700 underline ───── */
+  .vf .pill.on {
+    background: var(--ink-50); color: var(--ink-900);
+    border-color: var(--ink-300);
+    box-shadow: inset 0 -2px 0 0 var(--brand-700);
+    padding-bottom: 5px;
+  }
+
+  /* ───── Variation G — strong sky tint (single-accent system) ───── */
+  .vg .pill.on {
+    background: var(--sky-700); color: white;
+    border-color: var(--sky-700);
+    box-shadow: 0 1px 2px rgba(29,78,216,0.15);
+  }
+  .vg .pill.on .dot { box-shadow: 0 0 0 2px rgba(255,255,255,0.45); }
+
+  /* Side-by-side comparison strip */
+  .compare {
+    display: grid; grid-template-columns: repeat(2, 1fr);
+    gap: 18px; margin-top: 36px;
+  }
+  .compare .cell {
+    background: white; border: 1px solid rgba(228,223,210,0.7);
+    border-radius: 10px; padding: 18px;
+  }
+  .compare .cell .lbl {
+    font-family: var(--font-mono); font-size: 10.5px;
+    color: var(--ink-400); letter-spacing: 0.08em;
+    margin-bottom: 12px; text-transform: uppercase;
+  }
+  .compare .cell .lbl b { color: var(--ink-700); font-weight: 500; }
+  .compare .pillset { gap: 6px; }
+
+  /* recommendation block */
+  .rec {
+    margin-top: 36px;
+    background: rgba(167,243,208,0.12);
+    border-left: 3px solid var(--brand-700);
+    padding: 18px 22px;
+    border-radius: 0 10px 10px 0;
+  }
+  .rec .ph {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.12em;
+    color: var(--brand-700); text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .rec .body {
+    font-size: 14px; color: var(--ink-800); line-height: 1.6;
+    max-width: 760px;
+  }
+  .rec .body strong { color: var(--ink-900); font-weight: 500; }
+  .rec .body code {
+    font-family: var(--font-mono); font-size: 12.5px;
+    color: var(--ink-900); background: var(--ink-50);
+    padding: 1px 6px; border-radius: 4px;
+  }
+
+  @media (max-width: 720px) {
+    .page { padding: 32px 16px 80px; }
+    .cover h1 { font-size: 38px; }
+    .row .grid { grid-template-columns: 1fr; }
+    .compare { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<main class="page">
+
+  <section class="cover">
+    <div class="meta-row">
+      <span>Greenroom</span><span class="dot"></span>
+      <span>Design canvas</span><span class="dot"></span>
+      <span>Recoup pill · active state</span>
+    </div>
+    <h1>Six takes on the<br/><em>active pill</em>.</h1>
+    <p class="lede">
+      The current brand-emerald active state reads as a primary action and competes
+      with the Save &amp; Generate CTA. Six candidate treatments &mdash; from
+      semantic per-pill colors to subtle underlines &mdash; for the Bucket and
+      Applies pills inside the recoup row.
+    </p>
+  </section>
+
+  <!-- ───────── A · Current brand emerald solid ───────── -->
+  <article class="v va">
+    <div class="hd">
+      <div>
+        <div class="num">VAR A</div>
+        <h3>Brand emerald solid <span style="color: var(--ink-400); font-size: 12px; font-family: var(--font-mono); letter-spacing: 0.06em; margin-left: 6px;">current</span></h3>
+      </div>
+      <span class="tag">bg-brand-700</span>
+    </div>
+    <p class="desc">
+      Solid emerald fill with white text — same vocabulary as the Save &amp; Generate button.
+      <strong>Trade-off:</strong> reads as primary action; competes for attention with the rail&rsquo;s
+      main CTA. Three of these in a single recoup row can feel loud.
+    </p>
+    <div class="row">
+      <div class="idx">RECOUP · 01</div>
+      <div class="grid">
+        <div class="col">
+          <label>Bucket <span class="req">*</span></label>
+          <div class="pillset">
+            <button class="pill on"><span class="dot sky"></span>Inside expense cap</button>
+            <button class="pill"><span class="dot amber"></span>Outside cap</button>
+            <button class="pill"><span class="dot rose"></span>Off gross, before split</button>
+          </div>
+        </div>
+        <div class="col">
+          <label>Applies <span class="req">*</span></label>
+          <div class="pillset">
+            <button class="pill on">Before the percentage</button>
+            <button class="pill">After the percentage</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- ───────── B · Soft brand tint ───────── -->
+  <article class="v vb">
+    <div class="hd">
+      <div>
+        <div class="num">VAR B</div>
+        <h3>Soft brand tint</h3>
+      </div>
+      <span class="tag">bg-brand-50 + brand-700 border</span>
+    </div>
+    <p class="desc">
+      Pale emerald fill with a clear emerald border and brand-800 text.
+      <strong>Trade-off:</strong> quieter than the solid; dot keeps its own color cleanly without ringing.
+      Reads as "selected" without claiming primary-action status.
+    </p>
+    <div class="row">
+      <div class="idx">RECOUP · 01</div>
+      <div class="grid">
+        <div class="col">
+          <label>Bucket <span class="req">*</span></label>
+          <div class="pillset">
+            <button class="pill on"><span class="dot sky"></span>Inside expense cap</button>
+            <button class="pill"><span class="dot amber"></span>Outside cap</button>
+            <button class="pill"><span class="dot rose"></span>Off gross, before split</button>
+          </div>
+        </div>
+        <div class="col">
+          <label>Applies <span class="req">*</span></label>
+          <div class="pillset">
+            <button class="pill on">Before the percentage</button>
+            <button class="pill">After the percentage</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- ───────── C · Semantic per-pill color ───────── -->
+  <article class="v vc">
+    <div class="hd">
+      <div>
+        <div class="num">VAR C</div>
+        <h3>Semantic per-pill</h3>
+      </div>
+      <span class="tag">Bucket → its own dot color</span>
+    </div>
+    <p class="desc">
+      Each bucket pill takes on its own semantic color when active &mdash;
+      <strong>Inside → sky</strong>, <strong>Outside → amber</strong>, <strong>Off-top → rose</strong>.
+      The dot color escalates to the full fill, reinforcing meaning. Applies pills (no semantic mapping)
+      use ink-900 as a neutral.
+    </p>
+    <div class="row">
+      <div class="idx">RECOUP · 01 — example: Inside</div>
+      <div class="grid">
+        <div class="col">
+          <label>Bucket <span class="req">*</span></label>
+          <div class="pillset">
+            <button class="pill on inside"><span class="dot"></span>Inside expense cap</button>
+            <button class="pill"><span class="dot amber"></span>Outside cap</button>
+            <button class="pill"><span class="dot rose"></span>Off gross, before split</button>
+          </div>
+        </div>
+        <div class="col">
+          <label>Applies <span class="req">*</span></label>
+          <div class="pillset">
+            <button class="pill on neutral">Before the percentage</button>
+            <button class="pill">After the percentage</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row" style="margin-top: 10px;">
+      <div class="idx">RECOUP · 02 — example: Outside</div>
+      <div class="grid">
+        <div class="col">
+          <label>Bucket <span class="req">*</span></label>
+          <div class="pillset">
+            <button class="pill"><span class="dot sky"></span>Inside expense cap</button>
+            <button class="pill on outside"><span class="dot"></span>Outside cap</button>
+            <button class="pill"><span class="dot rose"></span>Off gross, before split</button>
+          </div>
+        </div>
+        <div class="col">
+          <label>Applies <span class="req">*</span></label>
+          <div class="pillset">
+            <button class="pill">Before the percentage</button>
+            <button class="pill on neutral">After the percentage</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row" style="margin-top: 10px;">
+      <div class="idx">RECOUP · 03 — example: Off-top</div>
+      <div class="grid">
+        <div class="col">
+          <label>Bucket <span class="req">*</span></label>
+          <div class="pillset">
+            <button class="pill"><span class="dot sky"></span>Inside expense cap</button>
+            <button class="pill"><span class="dot amber"></span>Outside cap</button>
+            <button class="pill on offtop"><span class="dot"></span>Off gross, before split</button>
+          </div>
+        </div>
+        <div class="col">
+          <label>Applies <span class="req">*</span></label>
+          <div class="pillset">
+            <button class="pill on neutral">Before the percentage</button>
+            <button class="pill">After the percentage</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- ───────── D · White + brand border + check ───────── -->
+  <article class="v vd">
+    <div class="hd">
+      <div>
+        <div class="num">VAR D</div>
+        <h3>White + brand border + check</h3>
+      </div>
+      <span class="tag">bg-white + ring-brand + ✓</span>
+    </div>
+    <p class="desc">
+      Stays white; the affordance is a brand-emerald check mark and a thicker emerald border.
+      <strong>Trade-off:</strong> very quiet — closest to a checkbox in feel. May not register
+      as "selected" at a glance for users who are scanning quickly.
+    </p>
+    <div class="row">
+      <div class="idx">RECOUP · 01</div>
+      <div class="grid">
+        <div class="col">
+          <label>Bucket <span class="req">*</span></label>
+          <div class="pillset">
+            <button class="pill on"><span class="dot sky"></span>Inside expense cap</button>
+            <button class="pill"><span class="dot amber"></span>Outside cap</button>
+            <button class="pill"><span class="dot rose"></span>Off gross, before split</button>
+          </div>
+        </div>
+        <div class="col">
+          <label>Applies <span class="req">*</span></label>
+          <div class="pillset">
+            <button class="pill on">Before the percentage</button>
+            <button class="pill">After the percentage</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- ───────── E · Brand-100 pale ───────── -->
+  <article class="v ve">
+    <div class="hd">
+      <div>
+        <div class="num">VAR E</div>
+        <h3>Brand-100 pale chip</h3>
+      </div>
+      <span class="tag">bg-brand-100 + brand-300 border</span>
+    </div>
+    <p class="desc">
+      Slightly more saturated than variation B — a pale chip rather than a hint of tint.
+      Border is brand-300 (mid emerald) so the chip reads warm rather than outlined.
+      Closest neighbor to the existing "Signed" badge color so the form vocabulary stays consistent.
+    </p>
+    <div class="row">
+      <div class="idx">RECOUP · 01</div>
+      <div class="grid">
+        <div class="col">
+          <label>Bucket <span class="req">*</span></label>
+          <div class="pillset">
+            <button class="pill on"><span class="dot sky"></span>Inside expense cap</button>
+            <button class="pill"><span class="dot amber"></span>Outside cap</button>
+            <button class="pill"><span class="dot rose"></span>Off gross, before split</button>
+          </div>
+        </div>
+        <div class="col">
+          <label>Applies <span class="req">*</span></label>
+          <div class="pillset">
+            <button class="pill on">Before the percentage</button>
+            <button class="pill">After the percentage</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- ───────── F · Ink-50 + brand underline ───────── -->
+  <article class="v vf">
+    <div class="hd">
+      <div>
+        <div class="num">VAR F</div>
+        <h3>Underline accent</h3>
+      </div>
+      <span class="tag">bg-ink-50 + brand-700 underline</span>
+    </div>
+    <p class="desc">
+      Faint ink-50 background with a 2px brand underline like a tab. Reads as "selected"
+      via tab vocabulary rather than chip fill.
+      <strong>Trade-off:</strong> works great horizontally, can look truncated when pills wrap to a new line.
+    </p>
+    <div class="row">
+      <div class="idx">RECOUP · 01</div>
+      <div class="grid">
+        <div class="col">
+          <label>Bucket <span class="req">*</span></label>
+          <div class="pillset">
+            <button class="pill on"><span class="dot sky"></span>Inside expense cap</button>
+            <button class="pill"><span class="dot amber"></span>Outside cap</button>
+            <button class="pill"><span class="dot rose"></span>Off gross, before split</button>
+          </div>
+        </div>
+        <div class="col">
+          <label>Applies <span class="req">*</span></label>
+          <div class="pillset">
+            <button class="pill on">Before the percentage</button>
+            <button class="pill">After the percentage</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- ───────── G · Sky solid ───────── -->
+  <article class="v vg">
+    <div class="hd">
+      <div>
+        <div class="num">VAR G</div>
+        <h3>Sky-700 solid</h3>
+      </div>
+      <span class="tag">bg-sky-700 + white text</span>
+    </div>
+    <p class="desc">
+      Same shape as the current brand variant, but in sky-700 blue.
+      <strong>Trade-off:</strong> doesn&rsquo;t compete with brand emerald (which is reserved for primary action),
+      but introduces a new accent. Reads as "informational selection" rather than "primary action".
+    </p>
+    <div class="row">
+      <div class="idx">RECOUP · 01</div>
+      <div class="grid">
+        <div class="col">
+          <label>Bucket <span class="req">*</span></label>
+          <div class="pillset">
+            <button class="pill on"><span class="dot sky"></span>Inside expense cap</button>
+            <button class="pill"><span class="dot amber"></span>Outside cap</button>
+            <button class="pill"><span class="dot rose"></span>Off gross, before split</button>
+          </div>
+        </div>
+        <div class="col">
+          <label>Applies <span class="req">*</span></label>
+          <div class="pillset">
+            <button class="pill on">Before the percentage</button>
+            <button class="pill">After the percentage</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- ───────── side-by-side comparison ───────── -->
+  <section style="margin-top: 56px;">
+    <div class="eyebrow" style="margin-bottom: 8px;">Side-by-side</div>
+    <h2 style="font-family: var(--font-display); font-weight: 500; font-size: 28px; letter-spacing: -0.02em; margin: 0 0 18px; color: var(--ink-900);">All seven, same pill</h2>
+
+    <div class="compare">
+      <div class="cell va">
+        <div class="lbl">A · <b>Brand emerald solid</b> (current)</div>
+        <div class="pillset">
+          <button class="pill on"><span class="dot sky"></span>Inside expense cap</button>
+          <button class="pill"><span class="dot amber"></span>Outside cap</button>
+          <button class="pill"><span class="dot rose"></span>Off gross, before split</button>
+        </div>
+      </div>
+      <div class="cell vb">
+        <div class="lbl">B · <b>Soft brand tint</b></div>
+        <div class="pillset">
+          <button class="pill on"><span class="dot sky"></span>Inside expense cap</button>
+          <button class="pill"><span class="dot amber"></span>Outside cap</button>
+          <button class="pill"><span class="dot rose"></span>Off gross, before split</button>
+        </div>
+      </div>
+      <div class="cell vc">
+        <div class="lbl">C · <b>Semantic per-pill</b></div>
+        <div class="pillset">
+          <button class="pill on inside"><span class="dot"></span>Inside expense cap</button>
+          <button class="pill"><span class="dot amber"></span>Outside cap</button>
+          <button class="pill"><span class="dot rose"></span>Off gross, before split</button>
+        </div>
+      </div>
+      <div class="cell vd">
+        <div class="lbl">D · <b>White + brand check</b></div>
+        <div class="pillset">
+          <button class="pill on"><span class="dot sky"></span>Inside expense cap</button>
+          <button class="pill"><span class="dot amber"></span>Outside cap</button>
+          <button class="pill"><span class="dot rose"></span>Off gross, before split</button>
+        </div>
+      </div>
+      <div class="cell ve">
+        <div class="lbl">E · <b>Brand-100 pale chip</b></div>
+        <div class="pillset">
+          <button class="pill on"><span class="dot sky"></span>Inside expense cap</button>
+          <button class="pill"><span class="dot amber"></span>Outside cap</button>
+          <button class="pill"><span class="dot rose"></span>Off gross, before split</button>
+        </div>
+      </div>
+      <div class="cell vf">
+        <div class="lbl">F · <b>Underline accent</b></div>
+        <div class="pillset">
+          <button class="pill on"><span class="dot sky"></span>Inside expense cap</button>
+          <button class="pill"><span class="dot amber"></span>Outside cap</button>
+          <button class="pill"><span class="dot rose"></span>Off gross, before split</button>
+        </div>
+      </div>
+      <div class="cell vg" style="grid-column: span 2;">
+        <div class="lbl">G · <b>Sky-700 solid</b></div>
+        <div class="pillset">
+          <button class="pill on"><span class="dot sky"></span>Inside expense cap</button>
+          <button class="pill"><span class="dot amber"></span>Outside cap</button>
+          <button class="pill"><span class="dot rose"></span>Off gross, before split</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────── recommendation ───────── -->
+  <div class="rec">
+    <div class="ph">My pick</div>
+    <div class="body">
+      <strong>C · Semantic per-pill.</strong> The bucket dot already encodes meaning
+      (sky = inside, amber = outside, rose = off-top). Letting that color escalate to
+      the entire pill when active turns the dot from decoration into the affordance
+      &mdash; <em>"this pill means inside-cap, and it's the one you picked"</em>.
+      For the Applies row (no semantic colors), fall back to a quieter neutral so
+      it doesn&rsquo;t compete with the bucket choice.
+      <br/><br/>
+      <strong>Runner-up: B · Soft brand tint.</strong> If the multi-color treatment
+      feels chaotic in practice, B&rsquo;s pale fill + clear emerald border preserves
+      "selected" without competing with the rail&rsquo;s primary CTA.
+      <br/><br/>
+      Variation A (current) is solid but loud. Variations D and F are too quiet for
+      a required field. E is OK but blends into the deal-type badges and signed-badge
+      family. G works but introduces a second strong accent into a form that doesn&rsquo;t need it.
+    </div>
+  </div>
+
+</main>
+
+</body>
+</html>

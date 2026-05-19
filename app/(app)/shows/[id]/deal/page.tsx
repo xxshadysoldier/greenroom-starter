@@ -20,44 +20,46 @@ export default async function DealEntryPage({
 
   const initial = hydrateForm(data.deal);
 
-  // Pull any live magic links so the rail starts in status mode if a sign-off
-  // is already in flight. Sign + view link from the most recent send.
+  // Pull any live magic links so the rail starts in link-ready mode if a
+  // sign-off is already in flight. Sign + view links can exist independently:
+  // after the sign link is consumed, the view link may still be active for
+  // preview, so we surface activeSend whenever EITHER role is live.
   let activeSend: ActiveSendState | null = null;
   let lastSignoff: LastSignoff | null = null;
   if (data.deal) {
     const links = await getActiveLinksForDeal(data.deal.id);
     const sign = links.find((l) => l.role === "sign");
     const view = links.find((l) => l.role === "view");
-    if (sign) {
+    if (sign || view) {
       activeSend = {
-        sentAt: sign.sentAt.toISOString(),
-        sign: {
-          url: buildLinkUrl(sign),
-          recipientName: sign.recipientName ?? "—",
-          recipientEmail: sign.recipientEmail ?? "—",
-          status: statusOf(sign),
-          openedAt: sign.openedAt?.toISOString() ?? null,
-        },
+        sentAt: (sign?.sentAt ?? view!.sentAt).toISOString(),
+        sign: sign
+          ? {
+              url: buildLinkUrl(sign),
+              recipientName: sign.recipientName ?? "—",
+              recipientEmail: sign.recipientEmail ?? "—",
+              status: statusOf(sign),
+              openedAt: sign.openedAt?.toISOString() ?? null,
+            }
+          : null,
         view: view ? { url: buildLinkUrl(view) } : null,
       };
     }
 
-    // If there's no live link but a previous one was signed (or declined),
-    // surface that in the rail so the next Save & send reads as an amendment,
-    // not a first send. For declines, also pass through the agent's comment
-    // so the form can render it prominently above Deal structure.
-    if (!activeSend) {
-      const last = await getLastConsumedLink(data.deal.id);
-      if (last && last.outcome) {
-        lastSignoff = {
-          outcome: last.outcome,
-          consumedAt: last.consumedAt!.toISOString(),
-          signedBy: last.printedName ?? last.recipientName ?? null,
-          declinerName: last.recipientName ?? last.printedName ?? null,
-          declineComment: last.declineComment ?? null,
-          invalidated: !!last.invalidatedAt,
-        };
-      }
+    // Always look up the last consumed sign link. Used by:
+    //   - the pre-send rail's "Previously signed" / "Agent feedback" banners
+    //   - the link-ready panel's signer attribution on the disabled sign btn
+    //     when activeSend.sign is null because the link was just signed.
+    const last = await getLastConsumedLink(data.deal.id);
+    if (last && last.outcome) {
+      lastSignoff = {
+        outcome: last.outcome,
+        consumedAt: last.consumedAt!.toISOString(),
+        signedBy: last.printedName ?? last.recipientName ?? null,
+        declinerName: last.recipientName ?? last.printedName ?? null,
+        declineComment: last.declineComment ?? null,
+        invalidated: !!last.invalidatedAt,
+      };
     }
   }
 

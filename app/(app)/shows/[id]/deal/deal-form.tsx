@@ -54,13 +54,18 @@ import { saveDeal, type SaveDealResult, type SentLinks } from "./actions";
 
 export type ActiveSendState = {
   sentAt: string; // ISO
+  /**
+   * The active sign-role link. Null when the previous sign link was
+   * consumed (signed/declined) and no fresh one has been generated yet —
+   * in that case the view link may still be active for preview purposes.
+   */
   sign: {
     url: string;
     recipientName: string;
     recipientEmail: string;
     status: "sent" | "opened" | "signed" | "declined" | "expired" | "invalidated";
     openedAt: string | null;
-  };
+  } | null;
   view: { url: string } | null;
 };
 
@@ -137,8 +142,20 @@ export function DealForm({
   const vis = useMemo(() => visibilityFor(state.dealType), [state.dealType]);
   const ready = useMemo(() => readiness(state), [state]);
   const canSend = ready.missing.length === 0;
-  // True while we have a live sign-off link the agent could act on.
+  // True while we have ANY live link (sign or view).
   const hasActiveSend = activeSend !== null && !justSent;
+  // True only when there's a sign link the agent could still act on.
+  // After signing/declining, this is false even if the view link is still
+  // active — used to drive the "Previously signed/declined" callouts so
+  // they don't hide just because the TM-preview link is alive.
+  const hasActiveSignLink = !justSent && activeSend?.sign != null;
+  // Has the user changed the deal since it was loaded? Drives the
+  // "changes pending" alert in the rail so Mariana knows to regenerate
+  // — the agent's link still points to the older snapshot until then.
+  const isDirty = useMemo(
+    () => JSON.stringify(state) !== JSON.stringify(initial),
+    [state, initial],
+  );
 
   // ─── Setters
   const setType = useCallback((dealType: DealType) => {
@@ -277,9 +294,10 @@ export function DealForm({
         {/* ─── LEFT: the form ─────────────────────────────────────── */}
         <div className="space-y-7 min-w-0">
           {/* ─── Agent decline note — surfaces the comment from a declined
-                 link so Mariana sees the objection before editing. Hidden
-                 once a fresh link is in flight (rail takes over). ─── */}
-          {lastSignoff?.outcome === "declined" && !hasActiveSend && (
+                 link so Mariana sees the objection before editing. Stays
+                 visible even when the view link is still active (TM preview);
+                 only hides once a fresh sign link is in flight. ─── */}
+          {lastSignoff?.outcome === "declined" && !hasActiveSignLink && (
             <section>
               <div className="rounded-xl bg-amber-50 ring-1 ring-amber-200/80 overflow-hidden">
                 <div className="px-5 py-3 border-b border-amber-200/60 flex items-baseline justify-between gap-3">
@@ -704,122 +722,170 @@ export function DealForm({
             </div>
           </Card>
 
-          {/* ─── Brief "just sent" flash (T+1s scene from the canvas) ─── */}
+          {/* ─── Brief flash on first generation ─── */}
           {justSent && (
             <Card className="bg-brand-50 border-brand-200/70">
               <div className="px-5 py-4 flex items-start gap-3">
                 <CheckCircle2 className="h-4 w-4 text-brand-700 mt-0.5 flex-shrink-0" />
                 <div className="min-w-0">
                   <div className="text-[13px] font-medium text-brand-800">
-                    Link sent to {justSent.sign.recipientName.split(" ")[0]}
+                    Link generated
                   </div>
                   <div className="text-[11.5px] text-brand-700 mt-0.5 leading-snug">
-                    Magic link delivered &middot; valid 14 days &middot; one-use sign
+                    Copy below and email it manually &middot; valid 14 days
                   </div>
                 </div>
               </div>
             </Card>
           )}
 
-          {/* ─── Post-send status panel (T+20s onward) ─── */}
+          {/* ─── Link-ready panel — URLs to copy manually + Save & Generate.
+                No email-tracking framing; the dirty alert nudges Mariana to
+                regenerate when she's edited the terms. ─── */}
           {hasActiveSend && activeSend && (
             <Card>
               <div className="px-5 py-4">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="eyebrow text-[10px] text-brand-700">
-                    Sign-off status
-                  </div>
-                  <span className="font-mono text-[10.5px] text-ink-400">
-                    {relativeSentLabel(activeSend.sentAt)}
-                  </span>
+                <div className="eyebrow text-[10px] text-brand-700 mb-1">
+                  Link ready
+                </div>
+                <div className="text-[11.5px] text-ink-500 mb-3 leading-relaxed">
+                  Copy and email manually.
                 </div>
 
-                {/* Recipient line */}
-                <div className="flex items-center gap-2.5 px-2.5 py-2 rounded-md bg-canvas-soft ring-1 ring-ink-200/70 mb-3">
-                  <div className="w-7 h-7 rounded-full bg-gradient-to-br from-brand-300 to-brand-700 text-white flex items-center justify-center text-[10.5px] font-semibold tracking-wide">
-                    {initials(activeSend.sign.recipientName)}
-                  </div>
-                  <div className="leading-tight min-w-0">
-                    <div className="text-[12.5px] font-medium text-ink-900 truncate">
-                      {activeSend.sign.recipientName}
-                    </div>
-                    <div className="font-mono text-[10.5px] text-ink-500 truncate">
-                      {activeSend.sign.recipientEmail}
-                    </div>
-                  </div>
-                </div>
+                <div className="flex flex-col gap-2">
+                  {/* Sign link — three disabled cases: no active sign link
+                      (consumed/invalidated), out-of-date due to edits, or
+                      already-signed (lastSignoff with outcome=signed). */}
+                  {(() => {
+                    const signUrl = activeSend.sign?.url ?? null;
+                    const signConsumed = activeSend.sign === null;
+                    const signDisabled = signConsumed || isDirty;
+                    const signTitle = signConsumed
+                      ? lastSignoff?.outcome === "signed"
+                        ? `Already signed by ${lastSignoff.signedBy ?? "the agent"} — sign link is single-use.`
+                        : lastSignoff?.outcome === "declined"
+                          ? "This sign link was declined. Save & Generate a new one."
+                          : "Sign link is no longer active."
+                      : isDirty
+                        ? "Save & Generate a new link first — the current one points to the old deal terms."
+                        : undefined;
+                    return (
+                      <button
+                        type="button"
+                        onClick={() => signUrl && copyToClipboard(signUrl)}
+                        disabled={signDisabled}
+                        title={signTitle}
+                        className={cn(
+                          "inline-flex items-center justify-center gap-1.5 px-2.5 py-2 rounded-md text-[12px] ring-1",
+                          signDisabled
+                            ? "bg-canvas-soft text-ink-400 ring-ink-200 cursor-not-allowed"
+                            : "bg-white text-ink-700 ring-ink-200 hover:ring-ink-300 hover:text-ink-900",
+                        )}
+                      >
+                        {signUrl && copiedUrl === signUrl ? (
+                          <>
+                            <Check className="h-3 w-3 text-brand-700" /> Sign link copied
+                          </>
+                        ) : signConsumed && lastSignoff?.outcome === "signed" ? (
+                          <>
+                            <Check className="h-3 w-3" /> Signed by{" "}
+                            {lastSignoff.signedBy ?? "agent"}
+                          </>
+                        ) : signConsumed && lastSignoff?.outcome === "declined" ? (
+                          <>
+                            <Lock className="h-3 w-3" /> Sign link &middot; declined
+                          </>
+                        ) : isDirty ? (
+                          <>
+                            <Lock className="h-3 w-3" /> Sign link &middot; out of date
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="h-3 w-3" /> Copy sign link
+                          </>
+                        )}
+                      </button>
+                    );
+                  })()}
 
-                {/* Timeline */}
-                <ul className="space-y-2 mb-3">
-                  <li className="flex items-start gap-2 text-[12px] text-ink-700">
-                    <Send className="h-3 w-3 text-ink-500 mt-1 flex-shrink-0" />
-                    <span className="font-mono text-[10px] text-ink-400 w-12 flex-shrink-0">
-                      {formatTime(activeSend.sentAt)}
-                    </span>
-                    <span className="flex-1">
-                      Sent to <strong className="font-medium text-ink-900">{activeSend.sign.recipientName.split(" ")[0]}</strong>
-                    </span>
-                  </li>
-                  {activeSend.sign.openedAt ? (
-                    <li className="flex items-start gap-2 text-[12px] text-ink-700">
-                      <Eye className="h-3 w-3 text-sky-700 mt-1 flex-shrink-0" />
-                      <span className="font-mono text-[10px] text-ink-400 w-12 flex-shrink-0">
-                        {formatTime(activeSend.sign.openedAt)}
-                      </span>
-                      <span className="flex-1">Opened</span>
-                    </li>
-                  ) : (
-                    <li className="flex items-start gap-2 text-[12px] text-ink-400">
-                      <Clock className="h-3 w-3 mt-1 flex-shrink-0" />
-                      <span className="font-mono text-[10px] w-12 flex-shrink-0">…</span>
-                      <span className="flex-1">Awaiting open</span>
-                    </li>
-                  )}
-                </ul>
-
-                {/* Controls */}
-                <div className="grid grid-cols-2 gap-2 pt-3 border-t border-ink-100">
-                  <button
-                    type="button"
-                    onClick={() => copyToClipboard(activeSend.sign.url)}
-                    className="inline-flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-md bg-white text-[11.5px] text-ink-700 ring-1 ring-ink-200 hover:ring-ink-300 hover:text-ink-900"
-                  >
-                    {copiedUrl === activeSend.sign.url ? (
-                      <>
-                        <Check className="h-3 w-3 text-brand-700" /> Copied
-                      </>
-                    ) : (
-                      <>
-                        <Copy className="h-3 w-3" /> Sign link
-                      </>
-                    )}
-                  </button>
+                  {/* View link — only disabled when dirty. Stays usable after
+                      the sign link is consumed so Mariana can still share a
+                      read-only preview with TM, label, etc. */}
                   {activeSend.view && (
                     <button
                       type="button"
                       onClick={() => copyToClipboard(activeSend.view!.url)}
-                      className="inline-flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-md bg-white text-[11.5px] text-ink-700 ring-1 ring-ink-200 hover:ring-ink-300 hover:text-ink-900"
+                      disabled={isDirty}
+                      title={
+                        isDirty
+                          ? "Save & Generate a new link first — the current one points to the old deal terms."
+                          : undefined
+                      }
+                      className={cn(
+                        "inline-flex items-center justify-center gap-1.5 px-2.5 py-2 rounded-md text-[12px] ring-1",
+                        isDirty
+                          ? "bg-canvas-soft text-ink-400 ring-ink-200 cursor-not-allowed"
+                          : "bg-white text-ink-700 ring-ink-200 hover:ring-ink-300 hover:text-ink-900",
+                      )}
                     >
                       {copiedUrl === activeSend.view.url ? (
                         <>
-                          <Check className="h-3 w-3 text-brand-700" /> Copied
+                          <Check className="h-3 w-3 text-brand-700" /> View link copied
+                        </>
+                      ) : isDirty ? (
+                        <>
+                          <Lock className="h-3 w-3" /> View link &middot; out of date
                         </>
                       ) : (
                         <>
-                          <Copy className="h-3 w-3" /> View link (TM)
+                          <Copy className="h-3 w-3" /> Copy view link (TM)
                         </>
                       )}
                     </button>
                   )}
                 </div>
+
+                {/* Dirty-state alert — appears when form has edits relative
+                    to the link's snapshot, urging Mariana to regenerate. */}
+                {isDirty && (
+                  <div className="mt-3 px-3 py-2.5 rounded-md bg-amber-50 ring-1 ring-amber-200/80">
+                    <div className="text-[10px] font-semibold uppercase tracking-[0.1em] text-amber-800 mb-1 inline-flex items-center gap-1.5">
+                      <AlertCircle className="h-3 w-3" />
+                      Changes pending
+                    </div>
+                    <div className="text-[12px] text-ink-700 leading-relaxed">
+                      You&rsquo;ve edited the deal. The current link still
+                      points to the old terms &mdash;{" "}
+                      <strong className="text-ink-900 font-medium">
+                        Save &amp; Generate
+                      </strong>{" "}
+                      to send a fresh link with the new info.
+                    </div>
+                  </div>
+                )}
+
+                {/* Save & Generate CTA — prominent action button restored.
+                    Wording adapts to dirty state. */}
                 <button
                   type="button"
                   onClick={() => handleSave("send")}
                   disabled={!canSend || isPending}
-                  className="mt-2 w-full inline-flex items-center justify-center gap-1.5 px-2.5 py-2 rounded-md bg-white text-[12px] text-ink-700 ring-1 ring-ink-200 hover:ring-ink-300 hover:text-ink-900 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className={cn(
+                    "mt-3 w-full h-10 px-4 inline-flex items-center justify-center gap-2 rounded-lg text-[13px] font-medium transition-all",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-700 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas",
+                    !canSend || isPending
+                      ? "bg-ink-100 text-ink-400 ring-1 ring-inset ring-ink-200 cursor-not-allowed"
+                      : isDirty
+                        ? "bg-brand-700 text-white hover:bg-brand-800 shadow-sm shadow-brand-700/15 ring-1 ring-inset ring-brand-800/20 cursor-pointer active:translate-y-px"
+                        : "bg-white text-ink-800 ring-1 ring-inset ring-ink-300 hover:bg-ink-50 cursor-pointer",
+                  )}
                 >
-                  <RefreshCw className={cn("h-3 w-3", isPending && saveMode === "send" && "animate-spin")} />
-                  {isPending && saveMode === "send" ? "Re-sending…" : "Resend (invalidates the old link)"}
+                  <RefreshCw className={cn("h-3.5 w-3.5", isPending && saveMode === "send" && "animate-spin")} />
+                  {isPending && saveMode === "send"
+                    ? "Generating…"
+                    : isDirty
+                      ? "Save & Generate new link"
+                      : "Save & Generate link"}
                 </button>
 
                 {saveResult && !saveResult.ok && (
@@ -893,7 +959,7 @@ export function DealForm({
                       ? "No agent on file"
                       : !canSend
                         ? `${ready.missing.length} field${ready.missing.length === 1 ? "" : "s"} to go`
-                        : "Generate the link"}
+                        : "Save & Generate link"}
                 </button>
                 <div className="flex items-center justify-between text-[11px] mt-2.5">
                   <span
@@ -1315,17 +1381,13 @@ function PillGroup<T extends string>({
             className={cn(
               "inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[12px] font-medium transition-all",
               isOn
-                ? "bg-ink-900 text-white border border-ink-900"
+                ? "bg-brand-100 text-brand-900 border border-brand-300 hover:bg-brand-200"
                 : "bg-white text-ink-700 border border-ink-300/70 hover:border-ink-400",
             )}
           >
             {o.dot && (
               <span
-                className={cn(
-                  "w-2 h-2 rounded-full",
-                  isOn ? "ring-1 ring-white/40" : "",
-                  dotClass[o.dot],
-                )}
+                className={cn("w-2 h-2 rounded-full", dotClass[o.dot])}
               />
             )}
             {o.label}
