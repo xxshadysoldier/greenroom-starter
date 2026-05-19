@@ -9,7 +9,7 @@
 import { randomBytes } from "crypto";
 import { db } from "@/db";
 import { dealLinks, type DealLink } from "@/db/schema";
-import { and, eq, isNull, gt, desc } from "drizzle-orm";
+import { and, eq, isNull, gt, desc, inArray } from "drizzle-orm";
 
 export const LINK_LIFETIME_DAYS = 14;
 
@@ -130,6 +130,125 @@ export async function getLastConsumedLink(dealId: string): Promise<DealLink | nu
     .where(and(eq(dealLinks.dealId, dealId), eq(dealLinks.role, "sign")))
     .orderBy(desc(dealLinks.consumedAt));
   return rows.find((r) => !!r.consumedAt) ?? null;
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Sign-off snapshot — derived state used by the shows-list badges (slice 06)
+// ─────────────────────────────────────────────────────────────────────────
+
+export type SignoffStatus =
+  | "signed"
+  | "declined"
+  | "pending"
+  | "unsigned"
+  | "not_sent";
+
+export type SignoffSnapshot = {
+  status: SignoffStatus;
+  /** Signer (signed only) — pulled from printedName or falls back to recipientName. */
+  signedBy?: string | null;
+  /** ISO timestamp of the consumption (signed/declined). */
+  consumedAt?: string | null;
+  /** Decline reason (declined only). */
+  declineComment?: string | null;
+  /** ISO of when the latest active link was sent (pending only). */
+  sentAt?: string | null;
+  /** Whole days since the link was sent (pending only). */
+  daysSinceSent?: number | null;
+  /** Whole days from now until the show (unsigned only — used by the ≤48h badge). */
+  daysToShow?: number | null;
+};
+
+const DAY_MS = 1000 * 60 * 60 * 24;
+const UNSIGNED_WINDOW_DAYS = 2;
+
+/**
+ * Derive the dashboard-facing sign-off state for one show from its
+ * sign-role links and date. Pure — no DB calls.
+ */
+export function computeSignoffSnapshot(args: {
+  links: DealLink[];
+  /** Show date as YYYY-MM-DD. */
+  showDate: string;
+  hasDeal: boolean;
+  /** Override "now" for tests. */
+  now?: Date;
+}): SignoffSnapshot {
+  const { links, showDate, hasDeal } = args;
+  const now = args.now ?? new Date();
+
+  // No deal → never any sign-off to surface.
+  if (!hasDeal) return { status: "not_sent" };
+
+  // Latest non-invalidated sign-role link wins. Earlier amendments are
+  // invalidated and so ignored here.
+  const active = links
+    .filter((l) => l.role === "sign" && !l.invalidatedAt)
+    .sort((a, b) => b.sentAt.getTime() - a.sentAt.getTime());
+  const sign = active[0];
+
+  if (!sign) {
+    // No live sign link. If the show is within the unsigned window,
+    // surface a red badge; otherwise keep it quiet as "not sent".
+    const showTs = parseShowDate(showDate);
+    const days = Math.ceil((showTs - now.getTime()) / DAY_MS);
+    if (days >= 0 && days <= UNSIGNED_WINDOW_DAYS) {
+      return { status: "unsigned", daysToShow: Math.max(0, days) };
+    }
+    return { status: "not_sent" };
+  }
+
+  if (sign.consumedAt) {
+    if (sign.outcome === "signed") {
+      return {
+        status: "signed",
+        signedBy: sign.printedName ?? sign.recipientName ?? null,
+        consumedAt: sign.consumedAt.toISOString(),
+      };
+    }
+    if (sign.outcome === "declined") {
+      return {
+        status: "declined",
+        declineComment: sign.declineComment ?? null,
+        consumedAt: sign.consumedAt.toISOString(),
+      };
+    }
+  }
+
+  const daysSinceSent = Math.floor((now.getTime() - sign.sentAt.getTime()) / DAY_MS);
+  return {
+    status: "pending",
+    sentAt: sign.sentAt.toISOString(),
+    daysSinceSent,
+  };
+}
+
+function parseShowDate(yyyyMmDd: string): number {
+  // Treat show date as start-of-day in local time. Good enough for the
+  // ≤48h window — we're not splitting hairs across timezones here.
+  const [y, m, d] = yyyyMmDd.split("-").map(Number);
+  return new Date(y, (m ?? 1) - 1, d ?? 1).getTime();
+}
+
+/**
+ * Batch-fetch sign-role links for many deals at once. Used by the
+ * shows-list query to avoid an N+1.
+ */
+export async function getSignLinksByDealIds(
+  dealIds: string[],
+): Promise<Map<string, DealLink[]>> {
+  const grouped = new Map<string, DealLink[]>();
+  if (dealIds.length === 0) return grouped;
+  const rows = await db
+    .select()
+    .from(dealLinks)
+    .where(and(inArray(dealLinks.dealId, dealIds), eq(dealLinks.role, "sign")));
+  for (const row of rows) {
+    const list = grouped.get(row.dealId);
+    if (list) list.push(row);
+    else grouped.set(row.dealId, [row]);
+  }
+  return grouped;
 }
 
 export type CreateLinkInput = {

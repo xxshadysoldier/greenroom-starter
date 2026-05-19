@@ -1,0 +1,2001 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Greenroom · Dashboard sign-off status — three variations</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Geist+Mono:wght@400;500&family=Geist:wght@400;450;500;600&display=swap"
+  rel="stylesheet"
+/>
+
+<style>
+  /* ───────── tokens — mirrored from app/globals.css ───────── */
+  :root {
+    --canvas:        #faf7f0;
+    --canvas-soft:   #fdfbf6;
+
+    --brand-50:  #ecfdf5;
+    --brand-100: #d1fae5;
+    --brand-200: #a7f3d0;
+    --brand-300: #6ee7b7;
+    --brand-500: #10b981;
+    --brand-600: #059669;
+    --brand-700: #047857;
+    --brand-800: #065f46;
+    --brand-900: #064e3b;
+
+    --ink-50:  #faf8f4;
+    --ink-100: #f3f0e9;
+    --ink-200: #e4dfd2;
+    --ink-300: #c9c2b1;
+    --ink-400: #94907f;
+    --ink-500: #6b6759;
+    --ink-600: #4f4c41;
+    --ink-700: #3a3830;
+    --ink-800: #26241e;
+    --ink-900: #1a1814;
+
+    --amber-50:  #fef7e6;
+    --amber-100: #fef0c7;
+    --amber-200: #fde68a;
+    --amber-700: #b45309;
+    --amber-800: #92400e;
+
+    --rose-50:  #fef2f2;
+    --rose-100: #ffe4e6;
+    --rose-200: #fecaca;
+    --rose-700: #be123c;
+    --rose-800: #9f1239;
+
+    --sky-50:  #eff6ff;
+    --sky-100: #dbeafe;
+    --sky-200: #bfdbfe;
+    --sky-700: #1d4ed8;
+    --sky-800: #1e40af;
+
+    --font-display: 'Fraunces', Georgia, serif;
+    --font-sans:    'Geist', ui-sans-serif, system-ui, sans-serif;
+    --font-mono:    'Geist Mono', ui-monospace, monospace;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: var(--font-sans);
+    color: var(--ink-900);
+    background: var(--canvas);
+    font-feature-settings: "cv11", "ss01", "ss03";
+    -webkit-font-smoothing: antialiased;
+    position: relative;
+    min-height: 100vh;
+  }
+
+  body::before {
+    content: ""; position: fixed; inset: 0;
+    pointer-events: none; z-index: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 50% 0%, rgba(16,185,129,0.05), transparent 60%),
+      radial-gradient(ellipse 50% 30% at 100% 100%, rgba(245,158,11,0.03), transparent 60%);
+  }
+  body::after {
+    content: ""; position: fixed; inset: 0;
+    pointer-events: none; z-index: 1;
+    opacity: 0.025;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 256px 256px;
+  }
+
+  .tabular { font-variant-numeric: tabular-nums; font-feature-settings: "tnum"; }
+  .mono    { font-family: var(--font-mono); }
+  .display { font-family: var(--font-display); font-weight: 500; letter-spacing: -0.025em; font-optical-sizing: auto; }
+  .eyebrow {
+    font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.12em;
+    color: var(--brand-700);
+  }
+
+  /* ───────── canvas chrome ───────── */
+  .canvas-page { position: relative; z-index: 2; max-width: 1320px; margin: 0 auto; padding: 80px 56px 160px; }
+
+  .cover { margin-bottom: 88px; }
+  .cover .meta-row {
+    display: flex; align-items: center; gap: 14px;
+    font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--ink-400);
+    margin-bottom: 28px;
+  }
+  .cover .meta-row .dot { width: 4px; height: 4px; border-radius: 50%; background: var(--ink-300); }
+  .cover h1 {
+    font-family: var(--font-display); font-weight: 500;
+    font-size: 88px; line-height: 0.98; letter-spacing: -0.035em;
+    margin: 0 0 22px;
+    color: var(--ink-900);
+    font-optical-sizing: auto;
+  }
+  .cover h1 em { font-style: italic; font-weight: 400; color: var(--brand-700); }
+  .cover .lede {
+    max-width: 720px;
+    font-size: 17px; line-height: 1.55;
+    color: var(--ink-600);
+  }
+  .cover .toc {
+    margin-top: 36px; display: flex; gap: 28px; flex-wrap: wrap;
+    border-top: 1px solid var(--ink-200);
+    padding-top: 18px;
+  }
+  .cover .toc a {
+    text-decoration: none; color: var(--ink-700);
+    font-size: 13px; display: flex; align-items: baseline; gap: 8px;
+  }
+  .cover .toc a:hover { color: var(--brand-700); }
+  .cover .toc a .n { font-family: var(--font-mono); font-size: 10.5px; color: var(--ink-400); letter-spacing: 0.04em; }
+
+  .sec-head {
+    margin-bottom: 32px; display: flex; align-items: baseline; gap: 24px;
+    border-bottom: 1px solid var(--ink-200); padding-bottom: 16px;
+  }
+  .sec-head .num {
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em;
+    color: var(--ink-400); flex-shrink: 0; padding-top: 8px;
+  }
+  .sec-head h2 {
+    font-family: var(--font-display); font-weight: 500;
+    font-size: 36px; letter-spacing: -0.02em; margin: 0;
+    color: var(--ink-900); flex: 1; font-optical-sizing: auto;
+  }
+  .sec-head .sub {
+    font-size: 13px; color: var(--ink-500); max-width: 380px;
+    line-height: 1.55; text-align: right;
+  }
+
+  .specimen {
+    background: var(--canvas-soft);
+    border: 1px solid rgba(228,223,210,0.7);
+    border-radius: 14px;
+    padding: 18px;
+    margin-bottom: 96px;
+    box-shadow: 0 1px 2px rgba(26,24,20,0.03);
+  }
+  .specimen .spec-meta {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 4px 10px 16px;
+    font-family: var(--font-mono); font-size: 10.5px;
+    letter-spacing: 0.06em; color: var(--ink-400);
+    text-transform: uppercase;
+  }
+  .specimen .spec-meta .tags { display: flex; gap: 8px; }
+  .specimen .spec-meta .tag {
+    background: white; padding: 3px 8px; border-radius: 6px;
+    box-shadow: inset 0 0 0 1px rgba(228,223,210,0.8);
+    color: var(--ink-600); letter-spacing: 0.05em;
+  }
+  .specimen .takeaway {
+    margin-top: 14px; padding: 14px 18px;
+    font-size: 12.5px; color: var(--ink-600);
+    line-height: 1.6; max-width: 980px;
+  }
+  .specimen .takeaway strong { color: var(--ink-900); font-weight: 600; }
+  .specimen .takeaway .kw { color: var(--brand-700); font-weight: 500; }
+
+  /* ───────── shared primitives ───────── */
+
+  .badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 10.5px; font-weight: 500;
+    box-shadow: inset 0 0 0 1px var(--ring, rgba(228,223,210,0.8));
+  }
+  .badge .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--dot, var(--ink-400)); }
+  .badge.default  { background: var(--ink-100); color: var(--ink-700); --ring: rgba(228,223,210,0.8); --dot: var(--ink-400); }
+  .badge.brand    { background: var(--brand-50); color: var(--brand-800); --ring: rgba(167,243,208,0.8); --dot: var(--brand-700); }
+  .badge.amber    { background: var(--amber-50); color: var(--amber-800); --ring: rgba(253,230,138,0.8); --dot: var(--amber-700); }
+  .badge.rose     { background: var(--rose-50);  color: var(--rose-800);  --ring: rgba(254,202,202,0.8); --dot: var(--rose-700); }
+  .badge.sky      { background: var(--sky-50);   color: var(--sky-800);   --ring: rgba(191,219,254,0.8); --dot: var(--sky-700); }
+  .badge.flat     { background: var(--ink-50);   color: var(--ink-700);   --ring: rgba(228,223,210,0.8); }
+  .badge.vs       { background: var(--brand-50); color: var(--brand-800); --ring: rgba(167,243,208,0.8); }
+  .badge.gross    { background: var(--amber-50); color: var(--amber-800); --ring: rgba(253,230,138,0.8); }
+  .badge.net      { background: var(--sky-50);   color: var(--sky-800);   --ring: rgba(191,219,254,0.8); }
+  .badge.door     { background: var(--rose-50);  color: var(--rose-800);  --ring: rgba(254,202,202,0.8); }
+
+  /* sign-off status — the new vocabulary this slice introduces */
+  .so-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 10.5px; font-weight: 500;
+    box-shadow: inset 0 0 0 1px var(--so-ring, rgba(228,223,210,0.8));
+    background: var(--so-bg, var(--ink-100));
+    color: var(--so-fg, var(--ink-700));
+    white-space: nowrap;
+  }
+  .so-badge .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--so-dot, var(--ink-400));
+  }
+  .so-badge.signed   { --so-bg: var(--brand-50);  --so-fg: var(--brand-800); --so-ring: rgba(167,243,208,0.8); --so-dot: var(--brand-700); }
+  .so-badge.pending  { --so-bg: var(--ink-100);   --so-fg: var(--ink-700);   --so-ring: rgba(228,223,210,0.8); --so-dot: var(--ink-500); }
+  .so-badge.opened   { --so-bg: var(--sky-50);    --so-fg: var(--sky-800);   --so-ring: rgba(191,219,254,0.8); --so-dot: var(--sky-700); }
+  .so-badge.declined { --so-bg: var(--amber-50);  --so-fg: var(--amber-800); --so-ring: rgba(253,230,138,0.8); --so-dot: var(--amber-700); }
+  .so-badge.unsigned { --so-bg: var(--rose-50);   --so-fg: var(--rose-800);  --so-ring: rgba(254,202,202,0.8); --so-dot: var(--rose-700); }
+  .so-badge.not-sent { --so-bg: var(--canvas-soft); --so-fg: var(--ink-500); --so-ring: rgba(228,223,210,0.8); --so-dot: var(--ink-300); }
+  .so-badge.unsigned .dot {
+    animation: pulse-rose 1.6s ease-in-out infinite;
+  }
+  @keyframes pulse-rose {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(190,18,60,0.5); }
+    50%      { box-shadow: 0 0 0 4px rgba(190,18,60,0); }
+  }
+
+  /* buttons */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    border-radius: 8px;
+    font-size: 13px; font-weight: 500;
+    font-family: var(--font-sans);
+    transition: all 150ms;
+    height: 36px; padding: 0 16px;
+    border: 0; cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+  }
+  .btn.sm { height: 26px; padding: 0 9px; font-size: 11.5px; }
+  .btn.brand {
+    background: var(--brand-700); color: white;
+    box-shadow: 0 1px 2px rgba(4,120,87,0.15), inset 0 0 0 1px rgba(6,95,70,0.2);
+  }
+  .btn.brand:hover { background: var(--brand-800); }
+  .btn.secondary {
+    background: white; color: var(--ink-900);
+    box-shadow: 0 1px 2px rgba(26,24,20,0.04), inset 0 0 0 1px rgba(228,223,210,0.8);
+  }
+  .btn.outline {
+    background: rgba(255,255,255,0.8); color: var(--ink-800);
+    border: 1px solid rgba(201,194,177,0.8);
+  }
+  .btn.ghost   { background: transparent; color: var(--ink-600); }
+  .btn.ghost:hover { background: var(--ink-100); color: var(--ink-900); }
+  .btn.danger {
+    background: var(--rose-700); color: white;
+  }
+
+  .ico { width: 16px; height: 16px; stroke-width: 1.75; stroke: currentColor; fill: none; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+  .ico-sm { width: 14px; height: 14px; }
+  .ico-xs { width: 12px; height: 12px; }
+
+  /* ───────── §00 state overview ───────── */
+  .states {
+    background: white;
+    border: 1px solid rgba(228,223,210,0.8);
+    border-radius: 12px;
+    padding: 26px 32px 30px;
+    box-shadow: 0 1px 2px rgba(26,24,20,0.03);
+  }
+  .states .grid {
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px;
+  }
+  .states .state {
+    border: 1px dashed var(--ink-200);
+    border-radius: 10px;
+    padding: 14px 16px 12px;
+    background: var(--canvas-soft);
+  }
+  .states .state .swatch {
+    width: 28px; height: 28px; border-radius: 50%;
+    margin-bottom: 10px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .states .state.signed .swatch   { background: var(--brand-50);  box-shadow: inset 0 0 0 1px var(--brand-200); color: var(--brand-700); }
+  .states .state.pending .swatch  { background: var(--ink-100);   box-shadow: inset 0 0 0 1px var(--ink-200);   color: var(--ink-600); }
+  .states .state.declined .swatch { background: var(--amber-50);  box-shadow: inset 0 0 0 1px var(--amber-200); color: var(--amber-700); }
+  .states .state.unsigned .swatch { background: var(--rose-50);   box-shadow: inset 0 0 0 1px var(--rose-200);  color: var(--rose-700); }
+  .states .state.not-sent .swatch { background: var(--canvas-soft); box-shadow: inset 0 0 0 1px var(--ink-200);  color: var(--ink-400); }
+  .states .state .nm {
+    font-family: var(--font-display); font-weight: 500;
+    font-size: 18px; letter-spacing: -0.015em;
+    color: var(--ink-900); font-optical-sizing: auto;
+    margin: 0 0 4px;
+  }
+  .states .state .ds {
+    font-size: 12px; color: var(--ink-600); line-height: 1.5;
+  }
+  .states .state .ds strong { color: var(--ink-900); font-weight: 500; }
+  .states .state .show-on {
+    font-family: var(--font-mono); font-size: 10px;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--ink-400); margin-top: 8px;
+    padding-top: 8px; border-top: 1px dashed var(--ink-200);
+  }
+  .states .footer {
+    margin-top: 22px; padding-top: 18px;
+    border-top: 1px solid var(--ink-100);
+    font-size: 12.5px; color: var(--ink-700); line-height: 1.55;
+  }
+  .states .footer strong { color: var(--ink-900); font-weight: 500; }
+
+  /* ───────── show list — shared row structure ───────── */
+  .browser-frame {
+    background: white;
+    border: 1px solid rgba(228,223,210,0.8);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(26,24,20,0.05);
+  }
+  .browser-frame .b-bar {
+    background: var(--canvas-soft);
+    border-bottom: 1px solid var(--ink-100);
+    padding: 8px 14px;
+    display: flex; align-items: center; gap: 10px;
+    font-size: 11px; color: var(--ink-500);
+  }
+  .browser-frame .b-bar .traffic {
+    display: flex; gap: 6px;
+  }
+  .browser-frame .b-bar .traffic span {
+    width: 11px; height: 11px; border-radius: 50%;
+    background: var(--ink-200);
+  }
+  .browser-frame .b-bar .traffic span:nth-child(1) { background: #ff5f57; }
+  .browser-frame .b-bar .traffic span:nth-child(2) { background: #ffbd2e; }
+  .browser-frame .b-bar .traffic span:nth-child(3) { background: #28c840; }
+  .browser-frame .b-bar .addr {
+    font-family: var(--font-mono); font-size: 11px; color: var(--ink-400);
+    background: white; padding: 3px 10px; border-radius: 6px;
+    box-shadow: inset 0 0 0 1px var(--ink-100);
+    flex: 1; max-width: 360px;
+  }
+  .browser-frame .b-bar .addr strong { color: var(--ink-800); font-weight: 500; }
+
+  .app-shell {
+    display: grid; grid-template-columns: 220px 1fr;
+    min-height: 600px;
+  }
+  .app-shell .sidebar {
+    background: var(--canvas-soft);
+    border-right: 1px solid rgba(228,223,210,0.7);
+    padding: 16px 12px;
+    display: flex; flex-direction: column;
+    font-size: 12px;
+  }
+  .app-shell .sidebar .logo {
+    display: flex; align-items: center; gap: 8px;
+    padding: 4px 6px; margin-bottom: 16px;
+  }
+  .app-shell .sidebar .logo .gm {
+    width: 22px; height: 22px; border-radius: 5px;
+    background: linear-gradient(135deg, var(--brand-500), var(--brand-700));
+  }
+  .app-shell .sidebar .logo .nm {
+    font-family: var(--font-display); font-weight: 500;
+    font-size: 14px; letter-spacing: -0.012em; color: var(--ink-900);
+    line-height: 1.1;
+  }
+  .app-shell .sidebar .logo .ver {
+    font-size: 9px; color: var(--ink-400);
+    text-transform: uppercase; letter-spacing: 0.08em;
+    margin-top: 1px;
+  }
+  .app-shell .sidebar nav {
+    flex: 1; display: flex; flex-direction: column; gap: 2px;
+  }
+  .app-shell .sidebar nav a {
+    display: flex; align-items: center; gap: 8px;
+    padding: 7px 9px; border-radius: 6px;
+    text-decoration: none; color: var(--ink-600);
+    font-size: 12.5px;
+  }
+  .app-shell .sidebar nav a.on {
+    background: white; color: var(--ink-900); font-weight: 500;
+    box-shadow: 0 1px 2px rgba(26,24,20,0.04), inset 0 0 0 1px rgba(228,223,210,0.7);
+  }
+  .app-shell .sidebar .user {
+    margin-top: auto; padding-top: 12px; border-top: 1px solid rgba(228,223,210,0.6);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .app-shell .sidebar .user .av {
+    width: 24px; height: 24px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--ink-600), var(--ink-900));
+    color: white; display: flex; align-items: center; justify-content: center;
+    font-size: 9px; font-weight: 600;
+  }
+  .app-shell .sidebar .user .nm { font-size: 11.5px; font-weight: 500; color: var(--ink-900); line-height: 1.2; }
+  .app-shell .sidebar .user .role { font-size: 10px; color: var(--ink-400); }
+
+  .app-shell .main {
+    padding: 22px 28px 32px;
+    overflow: auto;
+  }
+  .app-shell .main h1.page-h {
+    font-family: var(--font-display); font-weight: 500;
+    font-size: 36px; letter-spacing: -0.025em; line-height: 1.05;
+    margin: 0 0 4px; color: var(--ink-900); font-optical-sizing: auto;
+  }
+  .app-shell .main .page-sub {
+    font-size: 13px; color: var(--ink-500); margin-bottom: 22px;
+    max-width: 480px; line-height: 1.55;
+  }
+  .app-shell .main .month-head {
+    font-family: var(--font-display); font-weight: 500;
+    font-size: 18px; letter-spacing: -0.015em;
+    color: var(--ink-900); margin: 14px 0 8px;
+    display: flex; align-items: baseline; justify-content: space-between;
+  }
+  .app-shell .main .month-head .count {
+    font-family: var(--font-mono); font-size: 10.5px;
+    color: var(--ink-400); letter-spacing: 0.06em;
+  }
+
+  /* ───────── show row variants ───────── */
+
+  /* Base row — used by A; B + C extend */
+  .show-row {
+    display: grid; align-items: center;
+    padding: 10px 12px; gap: 14px;
+    border-radius: 8px;
+    border-left: 3px solid transparent;
+    transition: background 120ms;
+  }
+  .show-row:hover { background: var(--canvas-soft); }
+  .show-row.upcoming.signed   { border-left-color: var(--brand-300); }
+  .show-row.upcoming.pending  { border-left-color: var(--ink-300); }
+  .show-row.upcoming.declined { border-left-color: var(--amber-300, var(--amber-200)); }
+  .show-row.upcoming.unsigned { border-left-color: var(--rose-300, var(--rose-200)); }
+  .show-row.upcoming.not-sent { border-left-color: var(--ink-200); }
+  .show-row.past              { border-left-color: var(--ink-100); opacity: 0.85; }
+
+  .show-row .date-col {
+    width: 110px;
+    flex-shrink: 0;
+  }
+  .show-row .date-col .day {
+    font-size: 12px; color: var(--ink-900); font-weight: 500;
+  }
+  .show-row .date-col .rel {
+    font-size: 11px; color: var(--ink-400);
+    margin-top: 1px;
+  }
+  .show-row .artist-col {
+    min-width: 0;
+  }
+  .show-row .artist-col .nm {
+    font-size: 13.5px; color: var(--ink-900); font-weight: 500;
+    line-height: 1.2;
+  }
+  .show-row .artist-col .meta {
+    display: inline-flex; gap: 5px; margin-top: 4px; align-items: center;
+  }
+  .show-row .money-col {
+    text-align: right;
+    flex-shrink: 0;
+    min-width: 100px;
+  }
+  .show-row .money-col .amt {
+    font-family: var(--font-mono); font-size: 13px; font-weight: 500;
+    color: var(--ink-900); font-variant-numeric: tabular-nums;
+  }
+  .show-row .money-col .lbl {
+    font-size: 9.5px; color: var(--ink-400);
+    letter-spacing: 0.08em; text-transform: uppercase;
+    margin-top: 1px;
+  }
+
+  /* ───────── Variation A · inline badge ───────── */
+  .show-row.va {
+    grid-template-columns: 110px 1fr auto auto;
+  }
+  .show-row.va .so-cluster {
+    display: flex; align-items: center; gap: 6px;
+  }
+  .show-row.va .resend-on-hover {
+    opacity: 0; transition: opacity 120ms;
+  }
+  .show-row.va:hover .resend-on-hover {
+    opacity: 1;
+  }
+
+  /* hover overlay simulation — used to show what a hovered row "looks like" */
+  .show-row.va.is-hovered {
+    background: var(--canvas-soft);
+  }
+  .show-row.va.is-hovered .resend-on-hover { opacity: 1; }
+
+  /* tooltip above a row to demo signed/declined hover */
+  .row-tooltip {
+    position: absolute;
+    background: var(--ink-900); color: var(--ink-50);
+    padding: 8px 12px; border-radius: 8px;
+    font-size: 11.5px; line-height: 1.45;
+    box-shadow: 0 8px 24px rgba(26,24,20,0.15);
+    max-width: 280px;
+    z-index: 10;
+  }
+  .row-tooltip::before {
+    content: ""; position: absolute;
+    bottom: -5px; left: 28px;
+    width: 10px; height: 10px;
+    background: var(--ink-900);
+    transform: rotate(45deg);
+  }
+  .row-tooltip strong { color: white; font-weight: 600; }
+  .row-tooltip .meta {
+    font-family: var(--font-mono); font-size: 10px;
+    color: var(--ink-300); letter-spacing: 0.06em;
+    margin-top: 3px;
+  }
+
+  /* ───────── Variation B · dedicated column ───────── */
+  .show-row.vb {
+    grid-template-columns: 110px 1fr 200px auto;
+  }
+  .show-row.vb .signoff-col {
+    display: flex; flex-direction: column; gap: 4px;
+    min-width: 0;
+  }
+  .show-row.vb .signoff-col .top {
+    display: flex; align-items: center; gap: 6px;
+  }
+  .show-row.vb .signoff-col .sub {
+    font-size: 10.5px; color: var(--ink-500); line-height: 1.3;
+    display: inline-flex; align-items: center; gap: 5px;
+  }
+  .show-row.vb .signoff-col .sub.muted { color: var(--ink-400); }
+  .show-row.vb .signoff-col .sub strong { color: var(--ink-800); font-weight: 500; }
+  .show-row.vb .signoff-col .quick {
+    margin-top: 1px;
+  }
+
+  /* ───────── Variation C · triage + filter ───────── */
+  .triage-strip {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+    margin: -4px 0 18px;
+  }
+  .triage-card {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid;
+    background: white;
+  }
+  .triage-card .ico-wrap {
+    width: 30px; height: 30px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .triage-card.urgent { border-color: rgba(254,202,202,0.8); background: var(--rose-50); }
+  .triage-card.urgent .ico-wrap { background: white; color: var(--rose-700); box-shadow: inset 0 0 0 1px var(--rose-200); }
+  .triage-card.attention { border-color: rgba(253,230,138,0.8); background: var(--amber-50); }
+  .triage-card.attention .ico-wrap { background: white; color: var(--amber-700); box-shadow: inset 0 0 0 1px var(--amber-200); }
+  .triage-card.routine { border-color: rgba(228,223,210,0.8); background: var(--canvas-soft); }
+  .triage-card.routine .ico-wrap { background: white; color: var(--ink-500); box-shadow: inset 0 0 0 1px var(--ink-200); }
+  .triage-card .body { flex: 1; min-width: 0; }
+  .triage-card .body .h {
+    font-family: var(--font-display); font-weight: 500;
+    font-size: 16px; letter-spacing: -0.012em; line-height: 1.15;
+    color: var(--ink-900); font-optical-sizing: auto;
+  }
+  .triage-card .body .d {
+    font-size: 11.5px; line-height: 1.5; margin-top: 2px;
+    color: var(--ink-700);
+  }
+  .triage-card.urgent .body .d { color: var(--rose-800); }
+  .triage-card.attention .body .d { color: var(--amber-800); }
+  .triage-card .body .actions {
+    margin-top: 6px; display: flex; gap: 6px;
+  }
+
+  .filter-chips {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    margin: 18px 0 12px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--ink-100);
+  }
+  .filter-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 5px 10px;
+    border-radius: 999px;
+    font-size: 12px; font-weight: 500;
+    border: 1px solid rgba(228,223,210,0.8);
+    background: white;
+    color: var(--ink-700);
+    cursor: pointer;
+  }
+  .filter-chip:hover { border-color: var(--ink-300); color: var(--ink-900); }
+  .filter-chip.on {
+    background: var(--ink-900); color: white; border-color: var(--ink-900);
+  }
+  .filter-chip .count {
+    font-family: var(--font-mono); font-size: 10px;
+    background: var(--ink-100); color: var(--ink-600);
+    padding: 1px 5px; border-radius: 4px;
+    letter-spacing: 0.04em;
+  }
+  .filter-chip.on .count { background: rgba(255,255,255,0.2); color: white; }
+  .filter-chip.urgent .count { background: var(--rose-100); color: var(--rose-800); }
+  .filter-chip.on.urgent { background: var(--rose-700); border-color: var(--rose-700); }
+
+  .show-row.vc {
+    grid-template-columns: 110px 1fr 160px auto;
+  }
+
+  /* ───────── phone (mobile rendering) ───────── */
+  .phone {
+    background: var(--ink-900);
+    border-radius: 32px;
+    padding: 8px;
+    box-shadow: 0 8px 32px rgba(26,24,20,0.18);
+    width: 320px;
+    margin: 0 auto;
+  }
+  .phone .screen {
+    background: var(--canvas);
+    border-radius: 26px;
+    overflow: hidden;
+    position: relative;
+    padding-bottom: 12px;
+    min-height: 600px;
+  }
+  .phone .notch {
+    position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+    width: 92px; height: 22px; background: var(--ink-900);
+    border-radius: 0 0 12px 12px;
+  }
+  .phone .home-bar {
+    position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%);
+    width: 100px; height: 4px; background: var(--ink-700);
+    border-radius: 2px; opacity: 0.7;
+  }
+  .phone .status-bar {
+    height: 28px;
+    padding: 0 18px 0 22px;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 11px; font-weight: 600; color: var(--ink-900);
+    font-family: var(--font-mono);
+  }
+  .phone .top-bar {
+    padding: 6px 14px 10px;
+    border-bottom: 1px solid var(--ink-100);
+  }
+  .phone .top-bar h2 {
+    font-family: var(--font-display); font-weight: 500;
+    font-size: 24px; letter-spacing: -0.022em; line-height: 1;
+    margin: 0; color: var(--ink-900); font-optical-sizing: auto;
+  }
+  .phone .top-bar .sub {
+    font-size: 11px; color: var(--ink-500); margin-top: 4px;
+  }
+  .phone .m-list {
+    padding: 6px 6px;
+  }
+  .phone .m-row {
+    padding: 10px 10px;
+    border-radius: 8px;
+    border-left: 3px solid transparent;
+  }
+  .phone .m-row + .m-row { margin-top: 4px; }
+  .phone .m-row.signed   { border-left-color: var(--brand-300); }
+  .phone .m-row.pending  { border-left-color: var(--ink-300); }
+  .phone .m-row.declined { border-left-color: var(--amber-300, var(--amber-200)); }
+  .phone .m-row.unsigned { border-left-color: var(--rose-300, var(--rose-200)); background: rgba(254,242,242,0.5); }
+  .phone .m-row .r1 {
+    display: flex; align-items: baseline; gap: 6px;
+    font-size: 11px; color: var(--ink-400); margin-bottom: 2px;
+  }
+  .phone .m-row .r1 .strong { color: var(--ink-700); font-weight: 500; }
+  .phone .m-row .nm {
+    font-size: 14px; color: var(--ink-900); font-weight: 500;
+    margin: 0 0 6px;
+  }
+  .phone .m-row .r2 {
+    display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  }
+  .phone .m-row .r2 .l { display: flex; align-items: center; gap: 4px; }
+
+  /* mobile triage strip */
+  .phone .triage-strip {
+    grid-template-columns: 1fr;
+    gap: 6px;
+    margin: 6px 10px 4px;
+  }
+  .phone .triage-card { padding: 10px 12px; }
+  .phone .triage-card .body .h { font-size: 14px; }
+  .phone .triage-card .body .d { font-size: 11px; }
+  .phone .triage-card .body .actions .btn.sm { font-size: 11px; height: 24px; padding: 0 8px; }
+
+  /* mobile filter chips */
+  .phone .filter-chips {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding: 0 10px 8px;
+    margin: 6px 0 0;
+    border-bottom: 1px solid var(--ink-100);
+  }
+  .phone .filter-chips .filter-chip {
+    flex-shrink: 0; font-size: 11.5px; padding: 4px 9px;
+  }
+
+  /* ───────── comparison ───────── */
+  .compare-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+  }
+  .compare-card {
+    background: white;
+    border: 1px solid rgba(228,223,210,0.8);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(26,24,20,0.03);
+  }
+  .compare-card .ch {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--ink-100);
+  }
+  .compare-card .ch .ct { font-size: 13px; font-weight: 600; color: var(--ink-900); }
+  .compare-card .ch .cd { font-size: 12px; color: var(--ink-500); margin-top: 2px; line-height: 1.5; }
+  .compare-card .cb { padding: 14px 18px; font-size: 12.5px; color: var(--ink-700); line-height: 1.6; }
+  .compare-card .cb strong { color: var(--ink-900); font-weight: 500; }
+
+  .mobile-adapt {
+    margin-top: 22px; padding-top: 22px;
+    border-top: 1px dashed var(--ink-200);
+    display: grid; grid-template-columns: 320px minmax(0, 1fr); gap: 28px;
+    align-items: start;
+  }
+  .mobile-adapt .label {
+    font-family: var(--font-mono); font-size: 10.5px;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--ink-400); margin-bottom: 8px; text-align: center;
+  }
+  .mobile-adapt .notes {
+    padding-top: 22px;
+    font-size: 12.5px; color: var(--ink-700); line-height: 1.65;
+  }
+  .mobile-adapt .notes h5 {
+    font-family: var(--font-display); font-weight: 500;
+    font-size: 20px; letter-spacing: -0.018em;
+    margin: 0 0 12px; color: var(--ink-900); font-optical-sizing: auto;
+  }
+  .mobile-adapt .notes ul {
+    list-style: none; padding: 0; margin: 0;
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .mobile-adapt .notes li {
+    display: flex; gap: 10px; align-items: flex-start;
+  }
+  .mobile-adapt .notes li .mk {
+    width: 18px; flex-shrink: 0;
+    font-family: var(--font-mono); font-size: 10px;
+    color: var(--brand-700); letter-spacing: 0.06em;
+    padding-top: 2px;
+  }
+  .mobile-adapt .notes li .b strong { color: var(--ink-900); font-weight: 500; }
+
+  /* responsive */
+  @media (max-width: 1100px) {
+    .states .grid { grid-template-columns: repeat(2, 1fr); }
+    .compare-grid { grid-template-columns: 1fr; }
+    .app-shell { grid-template-columns: 1fr; }
+    .app-shell .sidebar { display: none; }
+    .mobile-adapt { grid-template-columns: 1fr; }
+    .mobile-adapt .notes { padding-top: 8px; }
+    .triage-strip { grid-template-columns: 1fr; }
+    .show-row.va, .show-row.vb, .show-row.vc { grid-template-columns: 90px 1fr auto; }
+    .show-row.vb .signoff-col { grid-column: 2 / span 2; padding-top: 4px; padding-left: 0; }
+  }
+  @media (max-width: 700px) {
+    .canvas-page { padding: 32px 16px 80px; }
+    .cover h1 { font-size: 52px; }
+    .sec-head { flex-direction: column; align-items: stretch; }
+    .sec-head .sub { text-align: left; max-width: none; }
+    .states .grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<main class="canvas-page">
+
+  <!-- ───────── COVER ───────── -->
+  <section class="cover">
+    <div class="meta-row">
+      <span>Greenroom</span><span class="dot"></span>
+      <span>Design canvas</span><span class="dot"></span>
+      <span>Slice 06 · Dashboard sign-off status</span><span class="dot"></span>
+      <span>v0.1</span>
+    </div>
+    <h1>Sign-off, <em>at a glance.</em><br />Three takes on<br />Mariana&rsquo;s home row.</h1>
+    <p class="lede">
+      The shows list is Mariana&rsquo;s default screen &mdash; the place she lands every morning
+      to know what&rsquo;s on her plate. Slice 06 adds one new piece of information per row:
+      <strong style="color: var(--brand-700);">is the deal signed yet?</strong> Three approaches
+      to weaving that signal into the list without breaking the scanning rhythm she already has.
+    </p>
+    <nav class="toc">
+      <a href="#states"><span class="n">00 /</span> The four states &middot; signed, pending, declined, unsigned-near-showday</a>
+      <a href="#va"><span class="n">A /</span> Inline badge &middot; smallest change, hover for detail</a>
+      <a href="#vb"><span class="n">B /</span> Dedicated column &middot; always-on status with Resend visible</a>
+      <a href="#vc"><span class="n">C /</span> Triage strip + filter chips &middot; problems first, then the list</a>
+    </nav>
+  </section>
+
+  <!-- ═══════════════ §00 · STATES ═══════════════ -->
+  <section id="states">
+    <div class="sec-head">
+      <span class="num">00 / 04</span>
+      <h2>The four states</h2>
+      <div class="sub">
+        Plus a fifth — <em>not-sent</em> — for deals that exist as drafts but
+        haven&rsquo;t been sent yet. Same vocabulary across all three variations.
+      </div>
+    </div>
+
+    <div class="states">
+      <div class="grid">
+        <div class="state signed">
+          <div class="swatch">
+            <svg class="ico ico-sm" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>
+          </div>
+          <div class="nm">Signed</div>
+          <div class="ds">Agent has signed. The deal is locked. <strong>Hover</strong> shows agent name + date.</div>
+          <div class="show-on">Shown on: upcoming &amp; past</div>
+        </div>
+        <div class="state pending">
+          <div class="swatch">
+            <svg class="ico ico-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+          </div>
+          <div class="nm">Pending</div>
+          <div class="ds">Link sent, awaiting open or sign. Shows <strong>days since sent</strong> inline.</div>
+          <div class="show-on">Shown on: upcoming</div>
+        </div>
+        <div class="state declined">
+          <div class="swatch">
+            <svg class="ico ico-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>
+          </div>
+          <div class="nm">Declined</div>
+          <div class="ds">Agent declined with a comment. <strong>Hover</strong> shows the comment, click jumps to the deal.</div>
+          <div class="show-on">Shown on: upcoming</div>
+        </div>
+        <div class="state unsigned">
+          <div class="swatch">
+            <svg class="ico ico-sm" viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01M3.5 21h17a2 2 0 0 0 1.7-3l-8.5-15a2 2 0 0 0-3.4 0l-8.5 15a2 2 0 0 0 1.7 3z"/></svg>
+          </div>
+          <div class="nm">Unsigned</div>
+          <div class="ds"><strong>Only shown if the show is within 48h</strong> and still not signed. Pulses to draw the eye.</div>
+          <div class="show-on">Shown on: upcoming &amp; ≤48h</div>
+        </div>
+        <div class="state not-sent">
+          <div class="swatch">
+            <svg class="ico ico-sm" viewBox="0 0 24 24"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg>
+          </div>
+          <div class="nm">Not sent</div>
+          <div class="ds">Deal exists as a draft, no link sent yet. Quietest state — quietly inviting attention.</div>
+          <div class="show-on">Shown on: upcoming</div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <strong>Why these five and not more?</strong> The spec calls out four for the dashboard, plus the
+        <em>not-sent</em> case the form already enforces. Anything more granular &mdash; opened-but-not-signed,
+        partial decline, expired-but-still-pending &mdash; lives one level deeper (on the show detail card,
+        slice 07). The dashboard&rsquo;s job is to surface <em>act now</em> states only.
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ VARIATION A · INLINE BADGE ═══════════════ -->
+  <section id="va" style="margin-top: 96px;">
+    <div class="sec-head">
+      <span class="num">A / 04</span>
+      <h2>Inline badge</h2>
+      <div class="sub">
+        Smallest visual change to the existing show row. A new badge sits
+        alongside the settlement badge; the Resend button only appears on
+        hover. The list keeps its current scanning rhythm.
+      </div>
+    </div>
+
+    <div class="specimen">
+      <div class="spec-meta">
+        <span>A &middot; Inline badge &middot; desktop &amp; mobile</span>
+        <span class="tags">
+          <span class="tag">minimal</span>
+          <span class="tag">hover-actions</span>
+          <span class="tag">preserves-density</span>
+        </span>
+      </div>
+
+      <div class="browser-frame">
+        <div class="b-bar">
+          <div class="traffic"><span></span><span></span><span></span></div>
+          <div class="addr">greenroom.app/<strong>shows</strong></div>
+        </div>
+        <div class="app-shell">
+          <aside class="sidebar">
+            <div class="logo">
+              <span class="gm"></span>
+              <div>
+                <div class="nm">Greenroom</div>
+                <div class="ver">v3.4 · The Crescent</div>
+              </div>
+            </div>
+            <nav>
+              <a class="on">
+                <svg class="ico ico-sm" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+                Shows
+              </a>
+              <a>
+                <svg class="ico ico-sm" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                Artists
+              </a>
+              <a>
+                <svg class="ico ico-sm" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 16V11M12 16V7M17 16v-3"/></svg>
+                Reports
+              </a>
+            </nav>
+            <div class="user">
+              <div class="av">MR</div>
+              <div>
+                <div class="nm">Mariana Reyes</div>
+                <div class="role">Lead Booker</div>
+              </div>
+            </div>
+          </aside>
+
+          <div class="main">
+            <h1 class="page-h">Shows</h1>
+            <div class="page-sub">
+              Mariana&rsquo;s home view. 12 upcoming &middot; <span style="color: var(--rose-700); font-weight: 500;">1 unsigned within 48h</span>.
+            </div>
+
+            <div class="month-head">
+              August 2026
+              <span class="count">5 upcoming</span>
+            </div>
+
+            <div style="position: relative;">
+              <!-- Hover tooltip example over the signed row -->
+              <div class="row-tooltip" style="top: -56px; left: 480px;">
+                <strong>Signed by Daniel Brooks</strong> · WME<br/>
+                Aug 1, 14:42 CT · v1 of the deal
+                <div class="meta">click row to view sign-off card</div>
+              </div>
+
+              <!-- Show rows -->
+              <div class="show-row va upcoming signed">
+                <div class="date-col">
+                  <div class="day">Sat, Aug 9</div>
+                  <div class="rel">in 22 days</div>
+                </div>
+                <div class="artist-col">
+                  <div class="nm">Coastal Spell</div>
+                  <div class="meta">
+                    <span class="badge vs">Vs · 85/15</span>
+                  </div>
+                </div>
+                <div class="so-cluster">
+                  <span class="so-badge signed">
+                    <span class="dot"></span>
+                    Signed
+                  </span>
+                </div>
+                <div class="money-col">
+                  <div class="amt">$9,500</div>
+                  <div class="lbl">guarantee</div>
+                </div>
+              </div>
+
+              <div class="show-row va upcoming pending is-hovered">
+                <div class="date-col">
+                  <div class="day">Thu, Aug 14</div>
+                  <div class="rel">in 27 days</div>
+                </div>
+                <div class="artist-col">
+                  <div class="nm">Lonesome West</div>
+                  <div class="meta">
+                    <span class="badge vs">Vs · 80/20</span>
+                  </div>
+                </div>
+                <div class="so-cluster">
+                  <span class="so-badge pending">
+                    <span class="dot"></span>
+                    Pending · 3d
+                  </span>
+                  <span class="resend-on-hover">
+                    <button class="btn ghost sm" style="font-size: 11px;">
+                      <svg class="ico ico-xs" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-9-9"/><path d="M21 4v6h-6"/></svg>
+                      Resend
+                    </button>
+                  </span>
+                </div>
+                <div class="money-col">
+                  <div class="amt">$4,200</div>
+                  <div class="lbl">guarantee</div>
+                </div>
+              </div>
+
+              <div class="show-row va upcoming declined">
+                <div class="date-col">
+                  <div class="day">Sat, Aug 16</div>
+                  <div class="rel">in 29 days</div>
+                </div>
+                <div class="artist-col">
+                  <div class="nm">Red Letter</div>
+                  <div class="meta">
+                    <span class="badge net">% of net · 85</span>
+                  </div>
+                </div>
+                <div class="so-cluster">
+                  <span class="so-badge declined">
+                    <span class="dot"></span>
+                    Declined
+                  </span>
+                </div>
+                <div class="money-col">
+                  <div class="amt">$3,000</div>
+                  <div class="lbl">est.</div>
+                </div>
+              </div>
+
+              <div class="show-row va upcoming not-sent">
+                <div class="date-col">
+                  <div class="day">Wed, Aug 20</div>
+                  <div class="rel">in 33 days</div>
+                </div>
+                <div class="artist-col">
+                  <div class="nm">The Quiet Houses</div>
+                  <div class="meta">
+                    <span class="badge net">% of net · 85</span>
+                  </div>
+                </div>
+                <div class="so-cluster">
+                  <span class="so-badge not-sent">
+                    <span class="dot"></span>
+                    Not sent
+                  </span>
+                </div>
+                <div class="money-col">
+                  <div class="amt">—</div>
+                  <div class="lbl">draft</div>
+                </div>
+              </div>
+
+              <div class="show-row va upcoming unsigned" style="background: rgba(254,242,242,0.4);">
+                <div class="date-col">
+                  <div class="day">Fri, Jul 19</div>
+                  <div class="rel" style="color: var(--rose-700); font-weight: 500;">tomorrow</div>
+                </div>
+                <div class="artist-col">
+                  <div class="nm">Wet Cement</div>
+                  <div class="meta">
+                    <span class="badge door">Door · 85/15</span>
+                  </div>
+                </div>
+                <div class="so-cluster">
+                  <span class="so-badge unsigned">
+                    <span class="dot"></span>
+                    Unsigned · 48h
+                  </span>
+                  <button class="btn brand sm" style="font-size: 11px;">
+                    <svg class="ico ico-xs" viewBox="0 0 24 24"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg>
+                    Send for sign-off
+                  </button>
+                </div>
+                <div class="money-col">
+                  <div class="amt">$800</div>
+                  <div class="lbl">est.</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="month-head">
+              July 2026
+              <span class="count">7 past</span>
+            </div>
+
+            <div class="show-row va past">
+              <div class="date-col">
+                <div class="day">Sun, Jul 13</div>
+                <div class="rel">5 days ago</div>
+              </div>
+              <div class="artist-col">
+                <div class="nm">Blue Dial</div>
+                <div class="meta">
+                  <span class="badge flat">Flat</span>
+                </div>
+              </div>
+              <div class="so-cluster">
+                <span class="so-badge signed">
+                  <span class="dot"></span>
+                  Signed
+                </span>
+              </div>
+              <div class="money-col">
+                <div class="amt">$2,635</div>
+                <div class="lbl">to artist</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile rendering -->
+      <div class="mobile-adapt">
+        <div>
+          <div class="label">A · Mobile rendering</div>
+          <div class="phone">
+            <div class="screen">
+              <div class="notch"></div>
+              <div class="status-bar">
+                <span>9:41</span>
+                <span style="display: flex; gap: 4px;">
+                  <svg viewBox="0 0 24 24" style="width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2;"><path d="M2 12c5-3 15-3 20 0"/><path d="M5 16c3-2 11-2 14 0"/></svg>
+                </span>
+              </div>
+              <div class="top-bar">
+                <h2>Shows</h2>
+                <div class="sub">12 upcoming · <span style="color: var(--rose-700); font-weight: 500;">1 unsigned within 48h</span></div>
+              </div>
+
+              <div class="m-list">
+                <div style="font-family: var(--font-display); font-weight: 500; font-size: 14px; color: var(--ink-700); padding: 6px 4px 4px;">August 2026</div>
+
+                <div class="m-row signed">
+                  <div class="r1"><span class="strong">Sat, Aug 9</span> · in 22d</div>
+                  <div class="nm">Coastal Spell</div>
+                  <div class="r2">
+                    <span class="l">
+                      <span class="badge vs">Vs · 85/15</span>
+                      <span class="so-badge signed"><span class="dot"></span>Signed</span>
+                    </span>
+                    <span style="font-family: var(--font-mono); font-size: 12px; color: var(--ink-900);">$9.5K</span>
+                  </div>
+                </div>
+
+                <div class="m-row pending">
+                  <div class="r1"><span class="strong">Thu, Aug 14</span> · in 27d</div>
+                  <div class="nm">Lonesome West</div>
+                  <div class="r2">
+                    <span class="l">
+                      <span class="badge vs">Vs · 80/20</span>
+                      <span class="so-badge pending"><span class="dot"></span>Pending · 3d</span>
+                    </span>
+                    <button class="btn ghost sm" style="font-size: 10px; padding: 0 6px; height: 22px;">Resend</button>
+                  </div>
+                </div>
+
+                <div class="m-row declined">
+                  <div class="r1"><span class="strong">Sat, Aug 16</span> · in 29d</div>
+                  <div class="nm">Red Letter</div>
+                  <div class="r2">
+                    <span class="l">
+                      <span class="badge net">% net · 85</span>
+                      <span class="so-badge declined"><span class="dot"></span>Declined</span>
+                    </span>
+                    <span style="font-family: var(--font-mono); font-size: 12px; color: var(--ink-900);">$3K</span>
+                  </div>
+                </div>
+
+                <div class="m-row unsigned">
+                  <div class="r1"><span class="strong" style="color: var(--rose-700);">Fri, Jul 19</span> · tomorrow</div>
+                  <div class="nm">Wet Cement</div>
+                  <div class="r2">
+                    <span class="l">
+                      <span class="so-badge unsigned"><span class="dot"></span>Unsigned · 48h</span>
+                    </span>
+                    <button class="btn brand sm" style="font-size: 10px; padding: 0 8px; height: 22px;">Send</button>
+                  </div>
+                </div>
+
+                <div class="m-row not-sent">
+                  <div class="r1"><span class="strong">Wed, Aug 20</span> · in 33d</div>
+                  <div class="nm">The Quiet Houses</div>
+                  <div class="r2">
+                    <span class="l">
+                      <span class="badge net">% net · 85</span>
+                      <span class="so-badge not-sent"><span class="dot"></span>Not sent</span>
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div class="home-bar"></div>
+            </div>
+          </div>
+        </div>
+        <div class="notes">
+          <h5>What changes on the phone</h5>
+          <ul>
+            <li>
+              <span class="mk">01</span>
+              <span class="b"><strong>Row collapses to two lines:</strong> date + days-ago row above, artist name + status chips + money row below. Settlement badge folds into deal-type chip.</span>
+            </li>
+            <li>
+              <span class="mk">02</span>
+              <span class="b"><strong>Resend swaps to a tap-target chip.</strong> No more hover-to-reveal — on phone, the action is always visible on pending and unsigned rows. Other rows have the money column instead.</span>
+            </li>
+            <li>
+              <span class="mk">03</span>
+              <span class="b"><strong>Unsigned rows get a faint rose background</strong> so the eye catches them in a long scroll. Same pulse animation on the dot.</span>
+            </li>
+            <li>
+              <span class="mk">04</span>
+              <span class="b"><strong>Hover details go to tap details</strong> — tapping a signed row drops you into the show detail page where the full signature receipt lives (slice 07).</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="takeaway">
+        <strong>Why this works.</strong> Lightest touch. Mariana&rsquo;s scanning rhythm
+        is intact &mdash; <span class="kw">date → artist → deal type → status badge → money</span>.
+        The new sign-off badge slips in next to the settlement badge as just another
+        chip. Resend hides until needed, which keeps the list quiet.
+        <strong>Why it might not.</strong> Status lives only in the badge, so quick scanning
+        on a busy week relies on color recognition. If Mariana has 20+ pending deals,
+        the badges all look similar and it&rsquo;s hard to spot what needs attention.
+        The <em>unsigned-within-48h</em> rose pulse is the one explicit alarm.
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ VARIATION B · DEDICATED COLUMN ═══════════════ -->
+  <section id="vb">
+    <div class="sec-head">
+      <span class="num">B / 04</span>
+      <h2>Dedicated column</h2>
+      <div class="sub">
+        Sign-off gets its own column with two lines of info plus an
+        always-visible Resend on pending rows. More horizontal space,
+        zero hover-needed actions.
+      </div>
+    </div>
+
+    <div class="specimen">
+      <div class="spec-meta">
+        <span>B &middot; Dedicated column &middot; desktop-primary</span>
+        <span class="tags">
+          <span class="tag">always-on-actions</span>
+          <span class="tag">scannable</span>
+          <span class="tag">denser-rows</span>
+        </span>
+      </div>
+
+      <div class="browser-frame">
+        <div class="b-bar">
+          <div class="traffic"><span></span><span></span><span></span></div>
+          <div class="addr">greenroom.app/<strong>shows</strong></div>
+        </div>
+        <div class="app-shell">
+          <aside class="sidebar">
+            <div class="logo">
+              <span class="gm"></span>
+              <div>
+                <div class="nm">Greenroom</div>
+                <div class="ver">v3.4 · The Crescent</div>
+              </div>
+            </div>
+            <nav>
+              <a class="on">
+                <svg class="ico ico-sm" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+                Shows
+              </a>
+              <a>
+                <svg class="ico ico-sm" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                Artists
+              </a>
+              <a>
+                <svg class="ico ico-sm" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 16V11M12 16V7M17 16v-3"/></svg>
+                Reports
+              </a>
+            </nav>
+            <div class="user">
+              <div class="av">MR</div>
+              <div>
+                <div class="nm">Mariana Reyes</div>
+                <div class="role">Lead Booker</div>
+              </div>
+            </div>
+          </aside>
+
+          <div class="main">
+            <h1 class="page-h">Shows</h1>
+            <div class="page-sub">
+              Mariana&rsquo;s home view. Each upcoming show now lists its current sign-off state with the action attached.
+            </div>
+
+            <!-- Column header guide -->
+            <div style="display: grid; grid-template-columns: 110px 1fr 200px auto; gap: 14px; padding: 0 12px 6px; font-family: var(--font-mono); font-size: 9.5px; letter-spacing: 0.08em; color: var(--ink-400); text-transform: uppercase; border-bottom: 1px solid var(--ink-100); margin-bottom: 6px;">
+              <span>Date</span>
+              <span>Artist &middot; deal</span>
+              <span>Sign-off</span>
+              <span style="text-align: right;">Value</span>
+            </div>
+
+            <div class="month-head" style="margin-top: 4px;">
+              August 2026
+              <span class="count">5 upcoming</span>
+            </div>
+
+            <div class="show-row vb upcoming signed">
+              <div class="date-col">
+                <div class="day">Sat, Aug 9</div>
+                <div class="rel">in 22 days</div>
+              </div>
+              <div class="artist-col">
+                <div class="nm">Coastal Spell</div>
+                <div class="meta">
+                  <span class="badge vs">Vs · 85/15</span>
+                </div>
+              </div>
+              <div class="signoff-col">
+                <div class="top">
+                  <span class="so-badge signed"><span class="dot"></span>Signed</span>
+                </div>
+                <div class="sub">
+                  by <strong>Daniel Brooks</strong> · Aug 1
+                </div>
+              </div>
+              <div class="money-col">
+                <div class="amt">$9,500</div>
+                <div class="lbl">guarantee</div>
+              </div>
+            </div>
+
+            <div class="show-row vb upcoming pending">
+              <div class="date-col">
+                <div class="day">Thu, Aug 14</div>
+                <div class="rel">in 27 days</div>
+              </div>
+              <div class="artist-col">
+                <div class="nm">Lonesome West</div>
+                <div class="meta">
+                  <span class="badge vs">Vs · 80/20</span>
+                </div>
+              </div>
+              <div class="signoff-col">
+                <div class="top">
+                  <span class="so-badge pending"><span class="dot"></span>Pending</span>
+                  <span class="sub muted">sent 3 days ago, not opened</span>
+                </div>
+                <div class="quick">
+                  <button class="btn ghost sm" style="font-size: 11px;">
+                    <svg class="ico ico-xs" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-9-9"/><path d="M21 4v6h-6"/></svg>
+                    Resend
+                  </button>
+                  <button class="btn ghost sm" style="font-size: 11px;">
+                    <svg class="ico ico-xs" viewBox="0 0 24 24"><path d="M4 4h16c1 0 2 1 2 2v12c0 1-1 2-2 2H4c-1 0-2-1-2-2V6c0-1 1-2 2-2z"/><path d="m22 6-10 7L2 6"/></svg>
+                    Copy link
+                  </button>
+                </div>
+              </div>
+              <div class="money-col">
+                <div class="amt">$4,200</div>
+                <div class="lbl">guarantee</div>
+              </div>
+            </div>
+
+            <div class="show-row vb upcoming declined">
+              <div class="date-col">
+                <div class="day">Sat, Aug 16</div>
+                <div class="rel">in 29 days</div>
+              </div>
+              <div class="artist-col">
+                <div class="nm">Red Letter</div>
+                <div class="meta">
+                  <span class="badge net">% of net · 85</span>
+                </div>
+              </div>
+              <div class="signoff-col">
+                <div class="top">
+                  <span class="so-badge declined"><span class="dot"></span>Declined</span>
+                  <span class="sub muted">Aug 3</span>
+                </div>
+                <div class="sub" style="color: var(--amber-800); font-style: italic; line-height: 1.4;">
+                  &ldquo;The 85/15 split looks off &mdash; we agreed 87/13&hellip;&rdquo;
+                </div>
+              </div>
+              <div class="money-col">
+                <div class="amt">$3,000</div>
+                <div class="lbl">est.</div>
+              </div>
+            </div>
+
+            <div class="show-row vb upcoming not-sent">
+              <div class="date-col">
+                <div class="day">Wed, Aug 20</div>
+                <div class="rel">in 33 days</div>
+              </div>
+              <div class="artist-col">
+                <div class="nm">The Quiet Houses</div>
+                <div class="meta">
+                  <span class="badge net">% of net · 85</span>
+                </div>
+              </div>
+              <div class="signoff-col">
+                <div class="top">
+                  <span class="so-badge not-sent"><span class="dot"></span>Not sent</span>
+                </div>
+                <div class="quick">
+                  <button class="btn outline sm" style="font-size: 11px;">
+                    <svg class="ico ico-xs" viewBox="0 0 24 24"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg>
+                    Send deal
+                  </button>
+                </div>
+              </div>
+              <div class="money-col">
+                <div class="amt">—</div>
+                <div class="lbl">draft</div>
+              </div>
+            </div>
+
+            <div class="show-row vb upcoming unsigned" style="background: rgba(254,242,242,0.4);">
+              <div class="date-col">
+                <div class="day">Fri, Jul 19</div>
+                <div class="rel" style="color: var(--rose-700); font-weight: 500;">tomorrow</div>
+              </div>
+              <div class="artist-col">
+                <div class="nm">Wet Cement</div>
+                <div class="meta">
+                  <span class="badge door">Door · 85/15</span>
+                </div>
+              </div>
+              <div class="signoff-col">
+                <div class="top">
+                  <span class="so-badge unsigned"><span class="dot"></span>Unsigned</span>
+                  <span class="sub" style="color: var(--rose-800); font-weight: 500;">show in 24h</span>
+                </div>
+                <div class="quick">
+                  <button class="btn brand sm" style="font-size: 11px;">
+                    <svg class="ico ico-xs" viewBox="0 0 24 24"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg>
+                    Send for sign-off
+                  </button>
+                </div>
+              </div>
+              <div class="money-col">
+                <div class="amt">$800</div>
+                <div class="lbl">est.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile rendering -->
+      <div class="mobile-adapt">
+        <div>
+          <div class="label">B · Mobile rendering</div>
+          <div class="phone">
+            <div class="screen">
+              <div class="notch"></div>
+              <div class="status-bar">
+                <span>9:41</span>
+              </div>
+              <div class="top-bar">
+                <h2>Shows</h2>
+                <div class="sub">12 upcoming · with sign-off and action below</div>
+              </div>
+
+              <div class="m-list">
+                <div style="font-family: var(--font-display); font-weight: 500; font-size: 14px; color: var(--ink-700); padding: 6px 4px 4px;">August 2026</div>
+
+                <div class="m-row signed" style="padding: 12px 10px;">
+                  <div class="r1"><span class="strong">Sat, Aug 9</span> · in 22d</div>
+                  <div class="nm">Coastal Spell</div>
+                  <div style="display: flex; align-items: center; gap: 6px; margin-top: 6px;">
+                    <span class="so-badge signed"><span class="dot"></span>Signed</span>
+                    <span style="font-size: 10.5px; color: var(--ink-500);">by Daniel Brooks · Aug 1</span>
+                  </div>
+                </div>
+
+                <div class="m-row pending" style="padding: 12px 10px;">
+                  <div class="r1"><span class="strong">Thu, Aug 14</span> · in 27d</div>
+                  <div class="nm">Lonesome West</div>
+                  <div style="display: flex; align-items: center; gap: 6px; margin-top: 6px;">
+                    <span class="so-badge pending"><span class="dot"></span>Pending · 3d</span>
+                  </div>
+                  <div style="margin-top: 6px;">
+                    <button class="btn outline sm" style="font-size: 11px; padding: 0 10px; height: 26px; width: 100%; justify-content: center;">
+                      <svg class="ico ico-xs" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-9-9"/><path d="M21 4v6h-6"/></svg>
+                      Resend link
+                    </button>
+                  </div>
+                </div>
+
+                <div class="m-row declined" style="padding: 12px 10px;">
+                  <div class="r1"><span class="strong">Sat, Aug 16</span> · in 29d</div>
+                  <div class="nm">Red Letter</div>
+                  <div style="display: flex; align-items: center; gap: 6px; margin-top: 6px;">
+                    <span class="so-badge declined"><span class="dot"></span>Declined</span>
+                  </div>
+                  <div style="font-size: 11px; color: var(--amber-800); font-style: italic; margin-top: 4px; line-height: 1.4;">
+                    &ldquo;The 85/15 split looks off &mdash; we agreed 87/13&hellip;&rdquo;
+                  </div>
+                </div>
+
+                <div class="m-row unsigned" style="padding: 12px 10px;">
+                  <div class="r1"><span class="strong" style="color: var(--rose-700);">Fri, Jul 19</span> · tomorrow</div>
+                  <div class="nm">Wet Cement</div>
+                  <div style="display: flex; align-items: center; gap: 6px; margin-top: 6px;">
+                    <span class="so-badge unsigned"><span class="dot"></span>Unsigned · 24h</span>
+                  </div>
+                  <div style="margin-top: 6px;">
+                    <button class="btn brand sm" style="font-size: 11px; padding: 0 10px; height: 26px; width: 100%; justify-content: center;">
+                      <svg class="ico ico-xs" viewBox="0 0 24 24"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg>
+                      Send for sign-off
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div class="home-bar"></div>
+            </div>
+          </div>
+        </div>
+        <div class="notes">
+          <h5>What changes on the phone</h5>
+          <ul>
+            <li>
+              <span class="mk">01</span>
+              <span class="b"><strong>Row gains a third line</strong> — sign-off status + actions sit below the artist name. Looser vertical rhythm but every row is self-explanatory at a glance.</span>
+            </li>
+            <li>
+              <span class="mk">02</span>
+              <span class="b"><strong>Resend / Send buttons are full-width.</strong> Tap-friendly. The action attached to the status is the most important thing per row.</span>
+            </li>
+            <li>
+              <span class="mk">03</span>
+              <span class="b"><strong>Declined comment shows inline</strong> — Mariana doesn&rsquo;t have to tap to know what to fix.</span>
+            </li>
+            <li>
+              <span class="mk">04</span>
+              <span class="b"><strong>Settlement badge is dropped</strong> on phone to save space; it lives on the show detail. The dashboard&rsquo;s job on phone is pre-show triage.</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="takeaway">
+        <strong>Why this works.</strong> Action is attached to status. No hovering, no
+        guessing. <span class="kw">Resend</span>, <span class="kw">Send for sign-off</span>,
+        and <span class="kw">declined comment preview</span> all live next to the badge
+        that triggered them. Most actionable layout.
+        <strong>Why it might not.</strong> Rows are taller. Mariana&rsquo;s 25-show
+        scroll becomes a 50-row scroll. On weeks with lots of activity she may want
+        the inline-badge density of variation A.
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ VARIATION C · TRIAGE + FILTER ═══════════════ -->
+  <section id="vc">
+    <div class="sec-head">
+      <span class="num">C / 04</span>
+      <h2>Triage strip + filter chips</h2>
+      <div class="sub">
+        Most opinionated. The page starts with three triage cards
+        highlighting what needs attention, then filter chips with counts,
+        then the list. Problems first, then context.
+      </div>
+    </div>
+
+    <div class="specimen">
+      <div class="spec-meta">
+        <span>C &middot; Triage + filter &middot; desktop-primary</span>
+        <span class="tags">
+          <span class="tag">opinionated</span>
+          <span class="tag">filter-first</span>
+          <span class="tag">workflow-centric</span>
+        </span>
+      </div>
+
+      <div class="browser-frame">
+        <div class="b-bar">
+          <div class="traffic"><span></span><span></span><span></span></div>
+          <div class="addr">greenroom.app/<strong>shows</strong></div>
+        </div>
+        <div class="app-shell">
+          <aside class="sidebar">
+            <div class="logo">
+              <span class="gm"></span>
+              <div>
+                <div class="nm">Greenroom</div>
+                <div class="ver">v3.4 · The Crescent</div>
+              </div>
+            </div>
+            <nav>
+              <a class="on">
+                <svg class="ico ico-sm" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+                Shows
+              </a>
+              <a>
+                <svg class="ico ico-sm" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                Artists
+              </a>
+              <a>
+                <svg class="ico ico-sm" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 16V11M12 16V7M17 16v-3"/></svg>
+                Reports
+              </a>
+            </nav>
+            <div class="user">
+              <div class="av">MR</div>
+              <div>
+                <div class="nm">Mariana Reyes</div>
+                <div class="role">Lead Booker</div>
+              </div>
+            </div>
+          </aside>
+
+          <div class="main">
+            <h1 class="page-h">Shows</h1>
+            <div class="page-sub">
+              Three things need your attention today.
+            </div>
+
+            <!-- Triage strip -->
+            <div class="triage-strip">
+              <div class="triage-card urgent">
+                <div class="ico-wrap">
+                  <svg class="ico ico-sm" viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01M3.5 21h17a2 2 0 0 0 1.7-3l-8.5-15a2 2 0 0 0-3.4 0l-8.5 15a2 2 0 0 0 1.7 3z"/></svg>
+                </div>
+                <div class="body">
+                  <div class="h">1 unsigned within 48h</div>
+                  <div class="d"><strong>Wet Cement</strong> tomorrow — still no signature. Send or escalate.</div>
+                  <div class="actions">
+                    <button class="btn brand sm">
+                      <svg class="ico ico-xs" viewBox="0 0 24 24"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg>
+                      Send now
+                    </button>
+                    <button class="btn ghost sm">Open</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="triage-card attention">
+                <div class="ico-wrap">
+                  <svg class="ico ico-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>
+                </div>
+                <div class="body">
+                  <div class="h">1 declined this week</div>
+                  <div class="d"><strong>Red Letter</strong> — agent flagged the split. Comment is waiting.</div>
+                  <div class="actions">
+                    <button class="btn secondary sm">Read &amp; reply</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="triage-card routine">
+                <div class="ico-wrap">
+                  <svg class="ico ico-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+                </div>
+                <div class="body">
+                  <div class="h">3 pending, no opens</div>
+                  <div class="d">Sent &ge; 3 days ago, agent hasn&rsquo;t opened. Worth a nudge.</div>
+                  <div class="actions">
+                    <button class="btn ghost sm">View all 3</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Filter chips -->
+            <div class="filter-chips">
+              <span class="filter-chip on">
+                All
+                <span class="count">12</span>
+              </span>
+              <span class="filter-chip">
+                Signed
+                <span class="count">6</span>
+              </span>
+              <span class="filter-chip urgent">
+                Unsigned · ≤48h
+                <span class="count">1</span>
+              </span>
+              <span class="filter-chip">
+                Pending
+                <span class="count">3</span>
+              </span>
+              <span class="filter-chip">
+                Declined
+                <span class="count">1</span>
+              </span>
+              <span class="filter-chip">
+                Not sent
+                <span class="count">1</span>
+              </span>
+            </div>
+
+            <div class="month-head" style="margin-top: 4px;">
+              August 2026
+              <span class="count">5 upcoming</span>
+            </div>
+
+            <!-- Compact list -->
+            <div class="show-row vc upcoming signed">
+              <div class="date-col">
+                <div class="day">Sat, Aug 9</div>
+                <div class="rel">in 22 days</div>
+              </div>
+              <div class="artist-col">
+                <div class="nm">Coastal Spell</div>
+                <div class="meta">
+                  <span class="badge vs">Vs · 85/15</span>
+                </div>
+              </div>
+              <div>
+                <span class="so-badge signed"><span class="dot"></span>Signed · Daniel B.</span>
+              </div>
+              <div class="money-col">
+                <div class="amt">$9,500</div>
+                <div class="lbl">guarantee</div>
+              </div>
+            </div>
+
+            <div class="show-row vc upcoming pending">
+              <div class="date-col">
+                <div class="day">Thu, Aug 14</div>
+                <div class="rel">in 27 days</div>
+              </div>
+              <div class="artist-col">
+                <div class="nm">Lonesome West</div>
+                <div class="meta">
+                  <span class="badge vs">Vs · 80/20</span>
+                </div>
+              </div>
+              <div>
+                <span class="so-badge pending"><span class="dot"></span>Pending · 3d</span>
+              </div>
+              <div class="money-col">
+                <div class="amt">$4,200</div>
+                <div class="lbl">guarantee</div>
+              </div>
+            </div>
+
+            <div class="show-row vc upcoming declined">
+              <div class="date-col">
+                <div class="day">Sat, Aug 16</div>
+                <div class="rel">in 29 days</div>
+              </div>
+              <div class="artist-col">
+                <div class="nm">Red Letter</div>
+                <div class="meta">
+                  <span class="badge net">% of net · 85</span>
+                </div>
+              </div>
+              <div>
+                <span class="so-badge declined"><span class="dot"></span>Declined</span>
+              </div>
+              <div class="money-col">
+                <div class="amt">$3,000</div>
+                <div class="lbl">est.</div>
+              </div>
+            </div>
+
+            <div class="show-row vc upcoming not-sent">
+              <div class="date-col">
+                <div class="day">Wed, Aug 20</div>
+                <div class="rel">in 33 days</div>
+              </div>
+              <div class="artist-col">
+                <div class="nm">The Quiet Houses</div>
+                <div class="meta">
+                  <span class="badge net">% of net · 85</span>
+                </div>
+              </div>
+              <div>
+                <span class="so-badge not-sent"><span class="dot"></span>Not sent</span>
+              </div>
+              <div class="money-col">
+                <div class="amt">—</div>
+                <div class="lbl">draft</div>
+              </div>
+            </div>
+
+            <div class="show-row vc upcoming unsigned" style="background: rgba(254,242,242,0.4);">
+              <div class="date-col">
+                <div class="day">Fri, Jul 19</div>
+                <div class="rel" style="color: var(--rose-700); font-weight: 500;">tomorrow</div>
+              </div>
+              <div class="artist-col">
+                <div class="nm">Wet Cement</div>
+                <div class="meta">
+                  <span class="badge door">Door · 85/15</span>
+                </div>
+              </div>
+              <div>
+                <span class="so-badge unsigned"><span class="dot"></span>Unsigned · 24h</span>
+              </div>
+              <div class="money-col">
+                <div class="amt">$800</div>
+                <div class="lbl">est.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile rendering -->
+      <div class="mobile-adapt">
+        <div>
+          <div class="label">C · Mobile rendering</div>
+          <div class="phone">
+            <div class="screen">
+              <div class="notch"></div>
+              <div class="status-bar">
+                <span>9:41</span>
+              </div>
+              <div class="top-bar">
+                <h2>Shows</h2>
+                <div class="sub">Three things need attention today.</div>
+              </div>
+
+              <!-- Mobile triage strip — single column -->
+              <div class="triage-strip" style="grid-template-columns: 1fr; margin: 8px 10px 4px; gap: 6px;">
+                <div class="triage-card urgent">
+                  <div class="ico-wrap">
+                    <svg class="ico ico-sm" viewBox="0 0 24 24"><path d="M12 9v4M12 17h.01"/></svg>
+                  </div>
+                  <div class="body">
+                    <div class="h">1 unsigned within 48h</div>
+                    <div class="d"><strong>Wet Cement</strong> tomorrow</div>
+                    <div class="actions">
+                      <button class="btn brand sm">Send now</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="triage-card attention">
+                  <div class="ico-wrap">
+                    <svg class="ico ico-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/></svg>
+                  </div>
+                  <div class="body">
+                    <div class="h">1 declined this week</div>
+                    <div class="d"><strong>Red Letter</strong> — comment waiting.</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Mobile filter chips — horizontal scroll -->
+              <div class="filter-chips">
+                <span class="filter-chip on">All <span class="count">12</span></span>
+                <span class="filter-chip urgent">Unsigned <span class="count">1</span></span>
+                <span class="filter-chip">Pending <span class="count">3</span></span>
+                <span class="filter-chip">Declined <span class="count">1</span></span>
+                <span class="filter-chip">Signed <span class="count">6</span></span>
+              </div>
+
+              <div class="m-list" style="padding: 0 6px;">
+                <div class="m-row signed">
+                  <div class="r1"><span class="strong">Sat, Aug 9</span> · in 22d</div>
+                  <div class="nm">Coastal Spell</div>
+                  <div class="r2">
+                    <span class="l"><span class="so-badge signed"><span class="dot"></span>Signed</span></span>
+                    <span style="font-family: var(--font-mono); font-size: 12px;">$9.5K</span>
+                  </div>
+                </div>
+
+                <div class="m-row pending">
+                  <div class="r1"><span class="strong">Thu, Aug 14</span> · in 27d</div>
+                  <div class="nm">Lonesome West</div>
+                  <div class="r2">
+                    <span class="l"><span class="so-badge pending"><span class="dot"></span>Pending · 3d</span></span>
+                    <span style="font-family: var(--font-mono); font-size: 12px;">$4.2K</span>
+                  </div>
+                </div>
+
+                <div class="m-row declined">
+                  <div class="r1"><span class="strong">Sat, Aug 16</span> · in 29d</div>
+                  <div class="nm">Red Letter</div>
+                  <div class="r2">
+                    <span class="l"><span class="so-badge declined"><span class="dot"></span>Declined</span></span>
+                    <span style="font-family: var(--font-mono); font-size: 12px;">$3K</span>
+                  </div>
+                </div>
+              </div>
+              <div class="home-bar"></div>
+            </div>
+          </div>
+        </div>
+        <div class="notes">
+          <h5>What changes on the phone</h5>
+          <ul>
+            <li>
+              <span class="mk">01</span>
+              <span class="b"><strong>Triage cards stack vertically.</strong> Single-column shows the urgent + attention items above the fold. Routine pending is collapsed into the filter chips.</span>
+            </li>
+            <li>
+              <span class="mk">02</span>
+              <span class="b"><strong>Filter chips scroll horizontally</strong> — like Twitter / Threads tabs. Urgent chip is colored rose to draw the eye toward what&rsquo;s most actionable.</span>
+            </li>
+            <li>
+              <span class="mk">03</span>
+              <span class="b"><strong>List rows revert to the variation A pattern</strong> below the chips. The triage strip carries the cognitive load; the list is just secondary detail.</span>
+            </li>
+            <li>
+              <span class="mk">04</span>
+              <span class="b"><strong>Tapping a filter chip replaces the list</strong> with only matching shows. The triage strip stays at top regardless of filter.</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="takeaway">
+        <strong>Why this works.</strong> Most opinionated about Mariana&rsquo;s
+        workflow. Triage strip <span class="kw">surfaces problems first</span>;
+        filter chips let her drill in by state. The list becomes a result set, not
+        the primary navigation.
+        <strong>Why it might not.</strong> Heavy. On a slow week (zero unsigned, no
+        declines), the triage strip is empty or feels like overhead.
+        Mariana might prefer a quieter list when there&rsquo;s nothing to triage.
+        Needs a "0 issues" state that feels celebratory rather than null.
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ COMPARE ═══════════════ -->
+  <section>
+    <div class="sec-head">
+      <span class="num">04 / 04</span>
+      <h2>Compare</h2>
+      <div class="sub">Each variation makes a different bet about what Mariana scans for first.</div>
+    </div>
+
+    <div class="compare-grid">
+      <div class="compare-card">
+        <div class="ch">
+          <div class="ct">A &middot; Inline badge</div>
+          <div class="cd">Smallest visual change.</div>
+        </div>
+        <div class="cb">
+          <strong>Best for</strong> dense weeks &mdash; many shows, mostly normal states. Preserves the scan rhythm.<br/><br/>
+          <strong>Risk:</strong> color-only signal. The rose pulse on unsigned-within-48h is the one explicit alarm.
+        </div>
+      </div>
+      <div class="compare-card">
+        <div class="ch">
+          <div class="ct">B &middot; Dedicated column</div>
+          <div class="cd">Always-on actions.</div>
+        </div>
+        <div class="cb">
+          <strong>Best for</strong> the &ldquo;every row needs a verb&rdquo; phase &mdash; first 50 deals, before the muscle memory is in place.<br/><br/>
+          <strong>Risk:</strong> taller rows. 25 shows become a longer scroll.
+        </div>
+      </div>
+      <div class="compare-card">
+        <div class="ch">
+          <div class="ct">C &middot; Triage + filter</div>
+          <div class="cd">Problems first.</div>
+        </div>
+        <div class="cb">
+          <strong>Best for</strong> the &ldquo;Monday morning&rdquo; flow &mdash; what needs me before I dig into the list?<br/><br/>
+          <strong>Risk:</strong> overkill on quiet weeks. Needs a graceful zero-state.
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top: 36px; padding: 18px 22px; border-left: 3px solid var(--brand-700); background: rgba(167,243,208,0.12); border-radius: 0 10px 10px 0;">
+      <div class="eyebrow" style="margin-bottom: 6px;">Recommendation</div>
+      <div style="font-size: 14px; color: var(--ink-800); line-height: 1.6; max-width: 780px;">
+        Ship a <strong>hybrid of A and C</strong>: the inline badge from variation A as the row vocabulary
+        (always present on every row), with variation C&rsquo;s
+        <span style="font-family: var(--font-mono); font-size: 12.5px; color: var(--ink-900);">triage-strip</span>
+        appearing at the top of the page <em>only when there&rsquo;s something to triage</em> &mdash;
+        otherwise it&rsquo;s replaced by a quiet "all caught up" empty state. The filter chips from C
+        live behind a small <strong>Filter ↓</strong> button to keep the default surface uncluttered.
+        Variation B&rsquo;s dedicated column is a useful settings-toggle option for power users on
+        wider screens.
+        <br/><br/>
+        The five badge states (<span class="mono" style="font-size: 12.5px; color: var(--ink-900);">signed</span>,
+        <span class="mono" style="font-size: 12.5px; color: var(--ink-900);">pending</span>,
+        <span class="mono" style="font-size: 12.5px; color: var(--ink-900);">declined</span>,
+        <span class="mono" style="font-size: 12.5px; color: var(--ink-900);">unsigned</span>,
+        <span class="mono" style="font-size: 12.5px; color: var(--ink-900);">not-sent</span>)
+        and the <strong>≤48h rose pulse</strong> are the shared backbone.
+      </div>
+    </div>
+  </section>
+
+</main>
+
+</body>
+</html>

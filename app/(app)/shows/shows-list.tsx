@@ -4,6 +4,8 @@ import { useState, useMemo } from "react";
 import Link from "next/link";
 import { ArrowUpRight, Search, Calendar } from "lucide-react";
 import { DealTypeBadge, PlainBadge } from "@/components/ui/badge";
+import { SignoffBadge } from "@/components/ui/signoff-badge";
+import type { SignoffSnapshot } from "@/lib/dealLinks";
 
 type Status = "booked" | "advanced" | "day_of" | "settled" | "closed";
 
@@ -12,6 +14,7 @@ export type ShowRow = {
   artist: { name: string } | null;
   deal: { dealType: string; guaranteeFormatted: string | null } | null;
   settlement: { totalFormatted: string | null; status: string } | null;
+  signoff: SignoffSnapshot;
   dateFormatted: string;
   dateRelative: string;
   month: string;
@@ -164,7 +167,7 @@ function ShowListRow({ row }: { row: ShowRow }) {
           <div className="text-[14.5px] font-medium text-ink-900 truncate group-hover:text-brand-800 transition-colors">
             {artist?.name ?? "—"}
           </div>
-          <div className="flex items-center gap-2 mt-0.5">
+          <div className="flex items-center gap-2 mt-0.5 flex-wrap">
             {deal && <DealTypeBadge type={deal.dealType} />}
             {deal?.guaranteeFormatted && (
               <span className="font-mono tabular text-[11px] text-ink-500">
@@ -172,6 +175,7 @@ function ShowListRow({ row }: { row: ShowRow }) {
                 {deal.dealType === "vs" ? " min" : ""}
               </span>
             )}
+            {deal && <SignoffBadge snapshot={row.signoff} />}
           </div>
         </div>
 

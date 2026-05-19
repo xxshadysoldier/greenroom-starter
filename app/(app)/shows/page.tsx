@@ -22,7 +22,7 @@ export default async function ShowsPage() {
     0,
   );
 
-  const serialized: ShowRow[] = reversed.map(({ show, artist, deal, settlement }) => ({
+  const serialized: ShowRow[] = reversed.map(({ show, artist, deal, settlement, signoff }) => ({
     show: {
       id: show.id,
       status: show.status as
@@ -51,6 +51,7 @@ export default async function ShowsPage() {
           status: settlement.status,
         }
       : null,
+    signoff,
     dateFormatted: formatShowDate(show.date),
     dateRelative: relativeShowDate(show.date),
     month: formatShowMonth(show.date),

@@ -17,6 +17,11 @@ import {
   type Recoup,
 } from "@/db/schema";
 import { desc, asc, eq, sql, lte } from "drizzle-orm";
+import {
+  computeSignoffSnapshot,
+  getSignLinksByDealIds,
+  type SignoffSnapshot,
+} from "./dealLinks";
 
 function todayDateString(): string {
   const d = new Date();
@@ -25,7 +30,7 @@ function todayDateString(): string {
 }
 
 export async function getAllShows() {
-  return db
+  const rows = await db
     .select({
       show: shows,
       artist: artists,
@@ -40,7 +45,26 @@ export async function getAllShows() {
     .leftJoin(settlements, eq(settlements.showId, shows.id))
     .where(lte(shows.date, todayDateString()))
     .orderBy(asc(shows.date));
+
+  // Slice 06 — attach a sign-off snapshot to each row. One batched query
+  // for the sign-role links across all deals in the result.
+  const dealIds = rows
+    .map((r) => r.deal?.id)
+    .filter((id): id is string => !!id);
+  const linksByDealId = await getSignLinksByDealIds(dealIds);
+
+  return rows.map((row) => ({
+    ...row,
+    signoff: computeSignoffSnapshot({
+      links: row.deal ? (linksByDealId.get(row.deal.id) ?? []) : [],
+      showDate: row.show.date,
+      hasDeal: !!row.deal,
+    }),
+  }));
 }
+
+export type ShowsRow = Awaited<ReturnType<typeof getAllShows>>[number];
+export type { SignoffSnapshot };
 
 export async function getShowById(id: string) {
   const rows = await db
