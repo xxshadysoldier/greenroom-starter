@@ -68,6 +68,10 @@ export type LastSignoff = {
   outcome: "signed" | "declined";
   consumedAt: string; // ISO
   signedBy: string | null;
+  /** Decliner name (declined only) — typically the recipient on the link. */
+  declinerName: string | null;
+  /** Agent's decline reason (declined only) — surfaced verbatim on the form. */
+  declineComment: string | null;
   /** Whether the link has since been invalidated by a prior amendment. */
   invalidated: boolean;
 };
@@ -272,6 +276,44 @@ export function DealForm({
       <div className="px-12 pb-16 grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-7 items-start">
         {/* ─── LEFT: the form ─────────────────────────────────────── */}
         <div className="space-y-7 min-w-0">
+          {/* ─── Agent decline note — surfaces the comment from a declined
+                 link so Mariana sees the objection before editing. Hidden
+                 once a fresh link is in flight (rail takes over). ─── */}
+          {lastSignoff?.outcome === "declined" && !hasActiveSend && (
+            <section>
+              <div className="rounded-xl bg-amber-50 ring-1 ring-amber-200/80 overflow-hidden">
+                <div className="px-5 py-3 border-b border-amber-200/60 flex items-baseline justify-between gap-3">
+                  <div className="text-[10px] font-semibold uppercase tracking-[0.1em] text-amber-800 inline-flex items-center gap-1.5">
+                    <AlertCircle className="h-3 w-3" />
+                    Agent feedback &middot; declined
+                  </div>
+                  <div className="text-[11px] text-amber-700">
+                    {lastSignoff.declinerName
+                      ? `${lastSignoff.declinerName} · ${formatShortDate(lastSignoff.consumedAt)}`
+                      : formatShortDate(lastSignoff.consumedAt)}
+                  </div>
+                </div>
+                <div className="px-5 py-4">
+                  {lastSignoff.declineComment ? (
+                    <blockquote className="border-l-2 border-amber-300 pl-4 py-1 text-[13.5px] text-ink-800 italic leading-relaxed whitespace-pre-wrap">
+                      &ldquo;{lastSignoff.declineComment}&rdquo;
+                    </blockquote>
+                  ) : (
+                    <div className="text-[12.5px] text-ink-500 italic">
+                      Declined without a comment.
+                    </div>
+                  )}
+                  <p className="text-[12px] text-amber-800 mt-3 leading-relaxed">
+                    Edit the terms below to address this, then{" "}
+                    <strong className="font-medium text-ink-900">Generate the link</strong>{" "}
+                    in the rail. A fresh sign-off link will go out and this
+                    feedback will be archived on the deal&rsquo;s history.
+                  </p>
+                </div>
+              </div>
+            </section>
+          )}
+
           {/* SECTION: Deal structure */}
           <FormSection
             title="Deal structure"
@@ -824,27 +866,6 @@ export function DealForm({
                     </div>
                   </div>
                 )}
-                <div className="eyebrow text-[10px] text-ink-500 mb-2">Send to</div>
-                {agent ? (
-                  <div className="flex items-center gap-2.5 px-2.5 py-2 rounded-md bg-canvas-soft ring-1 ring-ink-200/70 mb-3">
-                    <div className="w-7 h-7 rounded-full bg-gradient-to-br from-brand-300 to-brand-700 text-white flex items-center justify-center text-[10.5px] font-semibold tracking-wide">
-                      {initials(agent.name)}
-                    </div>
-                    <div className="leading-tight min-w-0">
-                      <div className="text-[12.5px] font-medium text-ink-900 truncate">
-                        {agent.name}
-                      </div>
-                      <div className="font-mono text-[10.5px] text-ink-500 truncate">
-                        {agent.email}
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="text-[12px] text-ink-400 italic mb-3">
-                    No agent on file for this artist.
-                  </div>
-                )}
-
                 <button
                   type="button"
                   disabled={!canSend || isPending || !agent}
@@ -867,14 +888,12 @@ export function DealForm({
                   {(!canSend || !agent) && !isPending && <Lock className="h-3 w-3" />}
                   {canSend && agent && !isPending && <Send className="h-3.5 w-3.5" />}
                   {isPending && saveMode === "send"
-                    ? "Sending…"
+                    ? "Generating…"
                     : !agent
                       ? "No agent on file"
                       : !canSend
                         ? `${ready.missing.length} field${ready.missing.length === 1 ? "" : "s"} to go`
-                        : lastSignoff?.outcome === "signed"
-                          ? "Save & send amendment"
-                          : "Save & send for sign-off"}
+                        : "Generate the link"}
                 </button>
                 <div className="flex items-center justify-between text-[11px] mt-2.5">
                   <span

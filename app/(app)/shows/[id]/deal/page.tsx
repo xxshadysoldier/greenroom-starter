@@ -44,7 +44,8 @@ export default async function DealEntryPage({
 
     // If there's no live link but a previous one was signed (or declined),
     // surface that in the rail so the next Save & send reads as an amendment,
-    // not a first send.
+    // not a first send. For declines, also pass through the agent's comment
+    // so the form can render it prominently above Deal structure.
     if (!activeSend) {
       const last = await getLastConsumedLink(data.deal.id);
       if (last && last.outcome) {
@@ -52,6 +53,8 @@ export default async function DealEntryPage({
           outcome: last.outcome,
           consumedAt: last.consumedAt!.toISOString(),
           signedBy: last.printedName ?? last.recipientName ?? null,
+          declinerName: last.recipientName ?? last.printedName ?? null,
+          declineComment: last.declineComment ?? null,
           invalidated: !!last.invalidatedAt,
         };
       }
