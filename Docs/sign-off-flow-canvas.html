@@ -1,0 +1,1871 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Greenroom · Magic links + tour manager view — three variations</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Geist+Mono:wght@400;500&family=Geist:wght@400;450;500;600&display=swap"
+  rel="stylesheet"
+/>
+
+<style>
+  /* ───────── tokens — mirrored from app/globals.css ───────── */
+  :root {
+    --canvas:        #faf7f0;
+    --canvas-soft:   #fdfbf6;
+
+    --brand-50:  #ecfdf5;
+    --brand-100: #d1fae5;
+    --brand-200: #a7f3d0;
+    --brand-300: #6ee7b7;
+    --brand-500: #10b981;
+    --brand-600: #059669;
+    --brand-700: #047857;
+    --brand-800: #065f46;
+    --brand-900: #064e3b;
+
+    --ink-50:  #faf8f4;
+    --ink-100: #f3f0e9;
+    --ink-200: #e4dfd2;
+    --ink-300: #c9c2b1;
+    --ink-400: #94907f;
+    --ink-500: #6b6759;
+    --ink-600: #4f4c41;
+    --ink-700: #3a3830;
+    --ink-800: #26241e;
+    --ink-900: #1a1814;
+
+    --amber-50:  #fef7e6;
+    --amber-100: #fef0c7;
+    --amber-200: #fde68a;
+    --amber-700: #b45309;
+    --amber-800: #92400e;
+
+    --rose-50:  #fef2f2;
+    --rose-100: #ffe4e6;
+    --rose-200: #fecaca;
+    --rose-700: #be123c;
+    --rose-800: #9f1239;
+
+    --sky-50:  #eff6ff;
+    --sky-100: #dbeafe;
+    --sky-200: #bfdbfe;
+    --sky-700: #1d4ed8;
+    --sky-800: #1e40af;
+
+    --font-display: 'Fraunces', Georgia, serif;
+    --font-sans:    'Geist', ui-sans-serif, system-ui, sans-serif;
+    --font-mono:    'Geist Mono', ui-monospace, monospace;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: var(--font-sans);
+    color: var(--ink-900);
+    background: var(--canvas);
+    font-feature-settings: "cv11", "ss01", "ss03";
+    -webkit-font-smoothing: antialiased;
+    position: relative;
+    min-height: 100vh;
+  }
+
+  body::before {
+    content: ""; position: fixed; inset: 0;
+    pointer-events: none; z-index: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 50% 0%, rgba(16,185,129,0.05), transparent 60%),
+      radial-gradient(ellipse 50% 30% at 100% 100%, rgba(245,158,11,0.03), transparent 60%);
+  }
+  body::after {
+    content: ""; position: fixed; inset: 0;
+    pointer-events: none; z-index: 1;
+    opacity: 0.025;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 256px 256px;
+  }
+
+  .tabular { font-variant-numeric: tabular-nums; font-feature-settings: "tnum"; }
+  .mono    { font-family: var(--font-mono); }
+  .display { font-family: var(--font-display); font-weight: 500; letter-spacing: -0.025em; font-optical-sizing: auto; }
+  .eyebrow {
+    font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.12em;
+    color: var(--brand-700);
+  }
+
+  /* ───────── canvas chrome ───────── */
+  .canvas-page { position: relative; z-index: 2; max-width: 1320px; margin: 0 auto; padding: 80px 56px 160px; }
+
+  .cover { margin-bottom: 88px; }
+  .cover .meta-row {
+    display: flex; align-items: center; gap: 14px;
+    font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--ink-400);
+    margin-bottom: 28px;
+  }
+  .cover .meta-row .dot { width: 4px; height: 4px; border-radius: 50%; background: var(--ink-300); }
+  .cover h1 {
+    font-family: var(--font-display); font-weight: 500;
+    font-size: 88px; line-height: 0.98; letter-spacing: -0.035em;
+    margin: 0 0 22px;
+    color: var(--ink-900);
+    font-optical-sizing: auto;
+  }
+  .cover h1 em { font-style: italic; font-weight: 400; color: var(--brand-700); }
+  .cover .lede {
+    max-width: 660px;
+    font-size: 17px; line-height: 1.55;
+    color: var(--ink-600);
+  }
+  .cover .toc {
+    margin-top: 36px; display: flex; gap: 28px; flex-wrap: wrap;
+    border-top: 1px solid var(--ink-200);
+    padding-top: 18px;
+  }
+  .cover .toc a {
+    text-decoration: none; color: var(--ink-700);
+    font-size: 13px; display: flex; align-items: baseline; gap: 8px;
+  }
+  .cover .toc a:hover { color: var(--brand-700); }
+  .cover .toc a .n { font-family: var(--font-mono); font-size: 10.5px; color: var(--ink-400); letter-spacing: 0.04em; }
+
+  .sec-head {
+    margin-bottom: 32px; display: flex; align-items: baseline; gap: 24px;
+    border-bottom: 1px solid var(--ink-200); padding-bottom: 16px;
+  }
+  .sec-head .num {
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em;
+    color: var(--ink-400); flex-shrink: 0; padding-top: 8px;
+  }
+  .sec-head h2 {
+    font-family: var(--font-display); font-weight: 500;
+    font-size: 36px; letter-spacing: -0.02em; margin: 0;
+    color: var(--ink-900); flex: 1; font-optical-sizing: auto;
+  }
+  .sec-head .sub {
+    font-size: 13px; color: var(--ink-500); max-width: 360px;
+    line-height: 1.55; text-align: right;
+  }
+
+  .specimen {
+    background: var(--canvas-soft);
+    border: 1px solid rgba(228,223,210,0.7);
+    border-radius: 14px;
+    padding: 18px;
+    margin-bottom: 96px;
+    box-shadow: 0 1px 2px rgba(26,24,20,0.03);
+  }
+  .specimen .spec-meta {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 4px 10px 16px;
+    font-family: var(--font-mono); font-size: 10.5px;
+    letter-spacing: 0.06em; color: var(--ink-400);
+    text-transform: uppercase;
+  }
+  .specimen .spec-meta .tags { display: flex; gap: 8px; }
+  .specimen .spec-meta .tag {
+    background: white; padding: 3px 8px; border-radius: 6px;
+    box-shadow: inset 0 0 0 1px rgba(228,223,210,0.8);
+    color: var(--ink-600); letter-spacing: 0.05em;
+  }
+  .specimen .takeaway {
+    margin-top: 14px; padding: 14px 18px;
+    font-size: 12.5px; color: var(--ink-600);
+    line-height: 1.6; max-width: 980px;
+  }
+  .specimen .takeaway strong { color: var(--ink-900); font-weight: 600; }
+  .specimen .takeaway .kw { color: var(--brand-700); font-weight: 500; }
+
+  /* ───────── shared primitives ───────── */
+
+  .badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 10.5px; font-weight: 500;
+    box-shadow: inset 0 0 0 1px var(--ring, rgba(228,223,210,0.8));
+  }
+  .badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--dot, var(--ink-400)); }
+  .badge.default  { background: var(--ink-100); color: var(--ink-700); --ring: rgba(228,223,210,0.8); --dot: var(--ink-400); }
+  .badge.brand    { background: var(--brand-50); color: var(--brand-800); --ring: rgba(167,243,208,0.8); --dot: var(--brand-700); }
+  .badge.amber    { background: var(--amber-50); color: var(--amber-800); --ring: rgba(253,230,138,0.8); --dot: var(--amber-700); }
+  .badge.rose     { background: var(--rose-50);  color: var(--rose-800);  --ring: rgba(254,202,202,0.8); --dot: var(--rose-700); }
+  .badge.sky      { background: var(--sky-50);   color: var(--sky-800);   --ring: rgba(191,219,254,0.8); --dot: var(--sky-700); }
+  .badge.flat     { background: var(--ink-50);   color: var(--ink-700);   --ring: rgba(228,223,210,0.8); }
+  .badge.vs       { background: var(--brand-50); color: var(--brand-800); --ring: rgba(167,243,208,0.8); }
+
+  /* buttons */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    border-radius: 8px;
+    font-size: 13px; font-weight: 500;
+    font-family: var(--font-sans);
+    transition: all 150ms;
+    height: 36px; padding: 0 16px;
+    border: 0; cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+  }
+  .btn.sm { height: 28px; padding: 0 10px; font-size: 12px; }
+  .btn.lg { height: 40px; padding: 0 20px; }
+  .btn.icon { width: 36px; height: 36px; padding: 0; }
+  .btn.brand {
+    background: var(--brand-700); color: white;
+    box-shadow: 0 1px 2px rgba(4,120,87,0.15), inset 0 0 0 1px rgba(6,95,70,0.2);
+  }
+  .btn.brand:hover { background: var(--brand-800); }
+  .btn.default { background: var(--ink-900); color: white; }
+  .btn.secondary {
+    background: white; color: var(--ink-900);
+    box-shadow: 0 1px 2px rgba(26,24,20,0.04), inset 0 0 0 1px rgba(228,223,210,0.8);
+  }
+  .btn.outline {
+    background: rgba(255,255,255,0.8); color: var(--ink-800);
+    border: 1px solid rgba(201,194,177,0.8);
+  }
+  .btn.ghost   { background: transparent; color: var(--ink-600); }
+  .btn.ghost:hover { background: var(--ink-100); color: var(--ink-900); }
+  .btn:disabled, .btn[aria-disabled="true"] { opacity: 0.5; cursor: not-allowed; }
+
+  .card {
+    background: white;
+    border: 1px solid rgba(228,223,210,0.8);
+    border-radius: 10px;
+    box-shadow: 0 1px 2px rgba(26,24,20,0.03);
+    overflow: hidden;
+  }
+
+  .ico { width: 16px; height: 16px; stroke-width: 1.75; stroke: currentColor; fill: none; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+  .ico-sm { width: 14px; height: 14px; }
+  .ico-xs { width: 12px; height: 12px; }
+
+  /* ───────── §00 link lifecycle overview ───────── */
+  .lifecycle {
+    background: white;
+    border: 1px solid rgba(228,223,210,0.8);
+    border-radius: 12px;
+    padding: 28px 32px;
+    box-shadow: 0 1px 2px rgba(26,24,20,0.03);
+  }
+  .lifecycle .row {
+    display: grid; grid-template-columns: 1fr auto 1fr auto 1fr;
+    gap: 0 18px; align-items: stretch;
+  }
+  .lifecycle .actor {
+    display: flex; flex-direction: column; gap: 8px;
+    padding: 14px;
+    background: var(--canvas-soft);
+    border: 1px solid rgba(228,223,210,0.7);
+    border-radius: 10px;
+    min-height: 130px;
+  }
+  .lifecycle .actor .who {
+    font-family: var(--font-mono); font-size: 10.5px;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--brand-700); font-weight: 600;
+  }
+  .lifecycle .actor .where {
+    font-size: 11px; color: var(--ink-400);
+  }
+  .lifecycle .actor .says {
+    font-family: var(--font-display); font-weight: 500;
+    font-size: 17px; letter-spacing: -0.015em; line-height: 1.25;
+    color: var(--ink-900); font-optical-sizing: auto;
+    margin-top: 4px;
+  }
+  .lifecycle .actor .detail {
+    font-size: 12px; color: var(--ink-600); line-height: 1.55;
+    margin-top: auto;
+  }
+  .lifecycle .arrow {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 10px 4px;
+    color: var(--ink-300);
+    font-family: var(--font-mono); font-size: 10px; text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .lifecycle .arrow svg { width: 22px; height: 22px; stroke-width: 1.5; stroke: currentColor; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .lifecycle .arrow .verb { color: var(--brand-700); margin-top: 6px; max-width: 80px; text-align: center; line-height: 1.3; }
+
+  .lifecycle .mechanics {
+    margin-top: 24px; padding-top: 18px;
+    border-top: 1px solid var(--ink-100);
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px;
+  }
+  .lifecycle .mech .mh {
+    font-size: 10.5px; font-weight: 600; letter-spacing: 0.1em;
+    color: var(--brand-700); text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .lifecycle .mech .mt {
+    font-size: 12.5px; color: var(--ink-700); line-height: 1.55;
+  }
+  .lifecycle .mech .mt strong { color: var(--ink-900); font-weight: 500; }
+
+  /* ───────── triptych — 3-column showcase per variation ───────── */
+  .triptych {
+    display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr) 360px;
+    gap: 18px;
+    background: var(--canvas);
+    padding: 24px;
+    border-radius: 10px;
+    border: 1px solid rgba(228,223,210,0.6);
+  }
+  .triptych .col-head {
+    display: flex; align-items: baseline; gap: 8px; margin-bottom: 10px;
+  }
+  .triptych .col-head .n {
+    font-family: var(--font-mono); font-size: 10.5px;
+    color: var(--ink-400); letter-spacing: 0.08em;
+  }
+  .triptych .col-head h4 {
+    font-family: var(--font-display); font-weight: 500;
+    font-size: 18px; letter-spacing: -0.015em; margin: 0;
+    color: var(--ink-900); font-optical-sizing: auto;
+  }
+  .triptych .col-desc {
+    font-size: 11.5px; color: var(--ink-500); line-height: 1.55;
+    margin-bottom: 14px;
+  }
+
+  /* app-bar like the live app */
+  .app-bar {
+    display: flex; align-items: center; gap: 14px;
+    padding: 11px 18px;
+    border-bottom: 1px solid rgba(228,223,210,0.7);
+    background: rgba(255,255,255,0.65);
+    backdrop-filter: blur(6px);
+    font-size: 12px; color: var(--ink-500);
+  }
+  .app-bar .crumb { display: flex; align-items: center; gap: 6px; }
+  .app-bar .crumb a { color: var(--ink-400); text-decoration: none; }
+  .app-bar .crumb .sep { color: var(--ink-300); }
+  .app-bar .crumb .here { color: var(--ink-900); font-weight: 500; }
+  .app-bar .right { margin-left: auto; display: flex; align-items: center; gap: 12px; font-family: var(--font-mono); font-size: 11px; color: var(--ink-400); }
+
+  /* ───────── Mariana's rail mockup ───────── */
+  .rail-mock {
+    background: var(--canvas-soft);
+    border: 1px solid rgba(228,223,210,0.7);
+    border-radius: 10px;
+    padding: 16px;
+  }
+  .rail-card {
+    background: white;
+    border: 1px solid rgba(228,223,210,0.8);
+    border-radius: 10px;
+    box-shadow: 0 1px 2px rgba(26,24,20,0.03);
+    padding: 14px 16px;
+  }
+  .rail-card + .rail-card { margin-top: 10px; }
+  .rail-card .h {
+    font-size: 10.5px; font-weight: 600; letter-spacing: 0.1em;
+    color: var(--ink-500); text-transform: uppercase;
+    margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between;
+  }
+  .rail-card .agent-chip {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 10px;
+    background: var(--canvas-soft);
+    border: 1px solid rgba(228,223,210,0.8);
+    border-radius: 8px;
+  }
+  .agent-av {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--brand-300), var(--brand-700));
+    color: white; display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 600; letter-spacing: 0.04em;
+    flex-shrink: 0;
+  }
+  .agent-av.diego { background: linear-gradient(135deg, var(--sky-200), var(--sky-700)); }
+  .agent-av.sarah { background: linear-gradient(135deg, var(--amber-200), var(--amber-700)); }
+  .agent-info { line-height: 1.3; min-width: 0; }
+  .agent-info .nm { font-size: 12.5px; font-weight: 500; color: var(--ink-900); }
+  .agent-info .mail { font-family: var(--font-mono); font-size: 11px; color: var(--ink-500); }
+
+  .rail-stage-label {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: var(--font-mono); font-size: 9.5px;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 3px 7px; border-radius: 4px;
+    background: var(--canvas-soft);
+    color: var(--ink-500);
+    margin-bottom: 8px;
+  }
+
+  /* "scenes" — 3 mini frames stacked */
+  .scenes { display: flex; flex-direction: column; gap: 12px; }
+  .scene {
+    position: relative;
+    background: white;
+    border: 1px solid rgba(228,223,210,0.8);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .scene .scene-tag {
+    position: absolute; top: -8px; left: 12px;
+    background: var(--ink-900); color: white;
+    padding: 2px 8px; border-radius: 4px;
+    font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.08em;
+    text-transform: uppercase;
+    z-index: 2;
+  }
+  .scene.now .scene-tag    { background: var(--ink-900); }
+  .scene.then .scene-tag   { background: var(--brand-700); }
+  .scene.after .scene-tag  { background: var(--ink-500); }
+
+  /* full deal-page frame */
+  .deal-frame {
+    background: var(--canvas-soft);
+    border: 1px solid rgba(228,223,210,0.7);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .deal-frame .poster {
+    padding: 18px 22px 14px;
+    background: linear-gradient(to bottom, rgba(167,243,208,0.20), transparent);
+  }
+  .deal-frame .poster .crumb {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 11.5px; color: var(--ink-400); margin-bottom: 12px;
+  }
+  .deal-frame .poster .crumb a { color: var(--ink-400); text-decoration: none; }
+  .deal-frame .poster h3.show-title {
+    font-family: var(--font-display); font-weight: 500;
+    font-size: 28px; letter-spacing: -0.022em; line-height: 1.04;
+    margin: 4px 0 6px; color: var(--ink-900); font-optical-sizing: auto;
+  }
+  .deal-frame .poster .meta { font-size: 12px; color: var(--ink-500); }
+
+  .deal-frame .body {
+    padding: 16px 22px 22px;
+    display: grid; grid-template-columns: 1fr 240px; gap: 16px;
+  }
+  .deal-frame .body .form-stub {
+    background: white;
+    border: 1px solid rgba(228,223,210,0.8);
+    border-radius: 10px;
+    padding: 14px;
+    min-height: 220px;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .deal-frame .body .form-stub .stub-h {
+    font-family: var(--font-display); font-weight: 500;
+    font-size: 16px; letter-spacing: -0.014em; color: var(--ink-900);
+  }
+  .deal-frame .body .form-stub .stub-row {
+    display: flex; justify-content: space-between; padding: 4px 0;
+    font-size: 12px; border-bottom: 1px dashed var(--ink-200);
+  }
+  .deal-frame .body .form-stub .stub-row .k { color: var(--ink-500); }
+  .deal-frame .body .form-stub .stub-row .v { color: var(--ink-900); font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+  /* email card mockup */
+  .email-card {
+    background: white;
+    border: 1px solid rgba(228,223,210,0.8);
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(26,24,20,0.05);
+    overflow: hidden;
+  }
+  .email-card .email-app-bar {
+    background: #f6f5f3;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--ink-100);
+    display: flex; align-items: center; gap: 10px;
+    font-size: 11px; color: var(--ink-500);
+  }
+  .email-card .email-app-bar .traffic {
+    display: flex; gap: 6px;
+  }
+  .email-card .email-app-bar .traffic span {
+    width: 11px; height: 11px; border-radius: 50%;
+    background: var(--ink-200);
+  }
+  .email-card .email-app-bar .traffic span:nth-child(1) { background: #ff5f57; }
+  .email-card .email-app-bar .traffic span:nth-child(2) { background: #ffbd2e; }
+  .email-card .email-app-bar .traffic span:nth-child(3) { background: #28c840; }
+  .email-card .email-app-bar .app {
+    font-family: var(--font-mono); font-size: 10.5px;
+    color: var(--ink-400); letter-spacing: 0.04em;
+    margin-left: auto;
+  }
+  .email-card .email-head {
+    padding: 16px 20px 12px;
+    border-bottom: 1px solid var(--ink-100);
+  }
+  .email-card .email-head .from-row {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 10px;
+  }
+  .email-card .email-head .from-row .ava {
+    width: 38px; height: 38px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--brand-300), var(--brand-700));
+    color: white; display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 600;
+  }
+  .email-card .email-head .from-meta {
+    flex: 1; min-width: 0;
+  }
+  .email-card .email-head .from-meta .nm {
+    font-size: 13.5px; font-weight: 600; color: var(--ink-900);
+  }
+  .email-card .email-head .from-meta .to {
+    font-size: 11.5px; color: var(--ink-500);
+  }
+  .email-card .email-head .from-meta .to .lbl {
+    color: var(--ink-400); font-family: var(--font-mono); font-size: 10px;
+    margin-right: 4px;
+  }
+  .email-card .email-head .when {
+    font-size: 11px; color: var(--ink-400); font-family: var(--font-mono);
+  }
+  .email-card .email-head .subject {
+    font-family: var(--font-display); font-weight: 500;
+    font-size: 17px; letter-spacing: -0.015em;
+    color: var(--ink-900); margin-top: 4px;
+  }
+
+  .email-card .email-body {
+    padding: 16px 20px 20px;
+    font-size: 13px; color: var(--ink-800); line-height: 1.6;
+  }
+  .email-card .email-body p { margin: 0 0 12px; }
+  .email-card .email-body .signoff { color: var(--ink-600); }
+
+  .email-card .deal-preview {
+    background: var(--canvas-soft);
+    border: 1px solid rgba(228,223,210,0.8);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin: 12px 0;
+    font-size: 12px;
+  }
+  .email-card .deal-preview .dh {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px dashed var(--ink-200);
+  }
+  .email-card .deal-preview .dh .dt {
+    font-family: var(--font-display); font-weight: 500;
+    font-size: 14px; letter-spacing: -0.012em; color: var(--ink-900);
+  }
+  .email-card .deal-preview table { width: 100%; border-collapse: collapse; }
+  .email-card .deal-preview td { padding: 3px 0; font-size: 11.5px; }
+  .email-card .deal-preview td.k { color: var(--ink-500); }
+  .email-card .deal-preview td.v { color: var(--ink-900); font-family: var(--font-mono); text-align: right; font-variant-numeric: tabular-nums; }
+  .email-card .deal-preview td.v.txt { font-family: var(--font-sans); text-align: left; padding-left: 14px; }
+
+  .email-card .big-cta {
+    display: block; text-align: center;
+    background: var(--brand-700); color: white;
+    font-size: 14px; font-weight: 500;
+    padding: 12px 16px; border-radius: 8px;
+    margin: 14px 0 8px;
+    text-decoration: none;
+    box-shadow: 0 1px 2px rgba(4,120,87,0.15);
+  }
+  .email-card .alt-link {
+    display: block; text-align: center;
+    font-size: 12px; color: var(--ink-500);
+    padding: 4px; text-decoration: none;
+  }
+  .email-card .alt-link:hover { color: var(--ink-900); }
+
+  .email-card .email-foot {
+    padding: 12px 20px;
+    background: var(--canvas-soft);
+    border-top: 1px solid var(--ink-100);
+    font-size: 10.5px;
+    color: var(--ink-400);
+    line-height: 1.5;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .email-card .email-foot .disclosure {
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  /* ───────── tour manager phone mockup ───────── */
+  .phone {
+    background: var(--ink-900);
+    border-radius: 32px;
+    padding: 8px;
+    box-shadow: 0 8px 32px rgba(26,24,20,0.18);
+    width: 320px;
+    margin: 0 auto;
+  }
+  .phone .screen {
+    background: var(--canvas);
+    border-radius: 26px;
+    overflow: hidden;
+    position: relative;
+    padding-bottom: 12px;
+  }
+  .phone .status-bar {
+    height: 28px;
+    padding: 0 18px 0 22px;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 11px; font-weight: 600; color: var(--ink-900);
+    font-family: var(--font-mono);
+  }
+  .phone .status-bar .icons {
+    display: flex; gap: 4px; align-items: center;
+    color: var(--ink-700);
+  }
+  .phone .status-bar .icons svg { width: 12px; height: 12px; stroke-width: 2; stroke: currentColor; fill: none; }
+  .phone .notch {
+    position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+    width: 92px; height: 22px; background: var(--ink-900);
+    border-radius: 0 0 12px 12px;
+    pointer-events: none;
+  }
+  .phone .home-bar {
+    position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%);
+    width: 100px; height: 4px; background: var(--ink-700);
+    border-radius: 2px; opacity: 0.7;
+  }
+
+  .tm-banner {
+    background: linear-gradient(to right, var(--brand-700), var(--brand-800));
+    color: white;
+    padding: 10px 14px;
+    font-size: 11.5px;
+    line-height: 1.5;
+  }
+  .tm-banner .who {
+    font-family: var(--font-mono); font-size: 9.5px;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    opacity: 0.7; margin-bottom: 2px;
+  }
+  .tm-banner strong { font-weight: 600; }
+
+  .tm-header {
+    padding: 14px 18px 10px;
+    border-bottom: 1px solid var(--ink-100);
+  }
+  .tm-header .eyebrow-tm {
+    font-size: 9.5px; font-weight: 600; letter-spacing: 0.1em;
+    color: var(--brand-700); text-transform: uppercase;
+    margin-bottom: 2px;
+  }
+  .tm-header h5 {
+    font-family: var(--font-display); font-weight: 500;
+    font-size: 22px; letter-spacing: -0.02em; line-height: 1.04;
+    margin: 2px 0 4px;
+    color: var(--ink-900); font-optical-sizing: auto;
+  }
+  .tm-header .when {
+    font-size: 11.5px; color: var(--ink-500);
+  }
+
+  .tm-block {
+    padding: 12px 18px;
+    border-bottom: 1px solid var(--ink-100);
+  }
+  .tm-block:last-child { border-bottom: 0; }
+  .tm-block .bh {
+    font-size: 9.5px; font-weight: 600; letter-spacing: 0.1em;
+    color: var(--ink-500); text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .tm-block table { width: 100%; }
+  .tm-block table td { padding: 3px 0; font-size: 12px; }
+  .tm-block table td.k { color: var(--ink-500); }
+  .tm-block table td.v { color: var(--ink-900); font-family: var(--font-mono); text-align: right; font-variant-numeric: tabular-nums; }
+  .tm-block table td.v.txt { font-family: var(--font-sans); }
+
+  .tm-stamp {
+    padding: 10px 18px;
+    background: var(--canvas-soft);
+    border-top: 1px solid var(--ink-100);
+    font-size: 10.5px; color: var(--ink-500);
+    line-height: 1.45;
+    display: flex; gap: 8px; align-items: flex-start;
+  }
+  .tm-stamp .ico { color: var(--ink-400); }
+
+  /* settlement checklist */
+  .tm-checklist {
+    list-style: none; padding: 0; margin: 6px 0 0;
+  }
+  .tm-checklist li {
+    display: flex; gap: 8px; align-items: flex-start;
+    padding: 6px 0;
+    border-bottom: 1px dotted var(--ink-200);
+    font-size: 11.5px; color: var(--ink-700);
+    line-height: 1.45;
+  }
+  .tm-checklist li:last-child { border-bottom: 0; }
+  .tm-checklist li .chk {
+    width: 14px; height: 14px;
+    border: 1px solid var(--ink-300);
+    border-radius: 3px; flex-shrink: 0; margin-top: 1px;
+    background: white;
+  }
+  .tm-checklist li .lbl { flex: 1; }
+  .tm-checklist li .v {
+    font-family: var(--font-mono); font-size: 11px;
+    color: var(--ink-900); font-variant-numeric: tabular-nums;
+  }
+
+  /* venue card */
+  .tm-venue {
+    padding: 12px 18px;
+    background: var(--canvas-soft);
+    border-top: 1px solid var(--ink-100);
+  }
+  .tm-venue .bh {
+    font-size: 9.5px; font-weight: 600; letter-spacing: 0.1em;
+    color: var(--ink-500); text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .tm-venue .venue-name {
+    font-size: 12.5px; font-weight: 500; color: var(--ink-900);
+  }
+  .tm-venue .venue-addr {
+    font-size: 11px; color: var(--ink-500);
+    margin: 1px 0 8px;
+  }
+  .tm-venue .contacts {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+  }
+  .tm-venue .contact {
+    background: white;
+    border: 1px solid rgba(228,223,210,0.7);
+    border-radius: 6px;
+    padding: 6px 8px;
+    font-size: 11px; color: var(--ink-700);
+  }
+  .tm-venue .contact .role {
+    font-family: var(--font-mono); font-size: 9px;
+    color: var(--ink-400); letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  /* ───────── confirmation panel for variation B ───────── */
+  .confirm-panel {
+    background: white;
+    border: 1px solid rgba(228,223,210,0.8);
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(26,24,20,0.06);
+    padding: 18px;
+  }
+  .confirm-panel h4 {
+    font-family: var(--font-display); font-weight: 500;
+    font-size: 18px; letter-spacing: -0.015em; margin: 0 0 4px;
+    color: var(--ink-900); font-optical-sizing: auto;
+  }
+  .confirm-panel .sub {
+    font-size: 11.5px; color: var(--ink-500);
+    margin-bottom: 14px;
+    padding-bottom: 12px; border-bottom: 1px solid var(--ink-100);
+  }
+  .field-row { margin-bottom: 12px; }
+  .field-row .lbl {
+    font-size: 9.5px; font-weight: 600; letter-spacing: 0.1em;
+    color: var(--ink-500); text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .field-row .editable-email {
+    display: flex; align-items: center; gap: 6px;
+    padding: 7px 10px;
+    border: 1px solid rgba(201,194,177,0.8);
+    background: white; border-radius: 7px;
+    font-family: var(--font-mono); font-size: 12.5px;
+    color: var(--ink-900);
+  }
+  .field-row .editable-email svg { color: var(--ink-400); }
+  .toggle-line {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px;
+    background: var(--canvas-soft);
+    border-radius: 8px;
+    border: 1px solid rgba(228,223,210,0.8);
+    font-size: 12px; color: var(--ink-700);
+  }
+  .toggle {
+    width: 32px; height: 18px; border-radius: 9px;
+    background: var(--brand-700);
+    position: relative; flex-shrink: 0;
+  }
+  .toggle .knob {
+    width: 14px; height: 14px; border-radius: 50%;
+    background: white; position: absolute;
+    top: 2px; right: 2px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+  }
+  .toggle.off { background: var(--ink-200); }
+  .toggle.off .knob { right: auto; left: 2px; }
+
+  .disclosure-list {
+    list-style: none; padding: 0; margin: 14px 0 0;
+    font-size: 11px; color: var(--ink-500);
+  }
+  .disclosure-list li {
+    display: flex; gap: 8px; align-items: flex-start;
+    padding: 4px 0;
+    line-height: 1.5;
+  }
+  .disclosure-list li .ico { color: var(--ink-400); margin-top: 1px; }
+
+  .confirm-panel .actions {
+    display: flex; gap: 8px; justify-content: flex-end;
+    margin-top: 16px; padding-top: 14px;
+    border-top: 1px solid var(--ink-100);
+  }
+
+  /* ───────── multi-recipient composer for variation C ───────── */
+  .composer {
+    background: white;
+    border: 1px solid rgba(228,223,210,0.8);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(26,24,20,0.05);
+  }
+  .composer .comp-head {
+    padding: 14px 18px;
+    border-bottom: 1px solid rgba(228,223,210,0.8);
+    display: flex; justify-content: space-between; align-items: center;
+    background: var(--canvas-soft);
+  }
+  .composer .comp-head h4 {
+    font-family: var(--font-display); font-weight: 500;
+    font-size: 18px; letter-spacing: -0.015em; margin: 0;
+    color: var(--ink-900); font-optical-sizing: auto;
+  }
+  .composer .comp-head .crumb {
+    font-family: var(--font-mono); font-size: 10.5px;
+    color: var(--ink-400); letter-spacing: 0.06em;
+  }
+  .composer .comp-body {
+    display: grid; grid-template-columns: 1fr 1fr;
+    min-height: 380px;
+  }
+  .composer .comp-left {
+    padding: 16px;
+    border-right: 1px solid var(--ink-100);
+    background: var(--canvas-soft);
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .composer .comp-right {
+    padding: 16px;
+    overflow: auto;
+  }
+  .composer .comp-right .ph {
+    font-size: 10.5px; font-weight: 600; letter-spacing: 0.1em;
+    color: var(--brand-700); text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .recipient-card {
+    background: white;
+    border: 1px solid rgba(228,223,210,0.8);
+    border-radius: 10px;
+    padding: 12px;
+  }
+  .recipient-card.selected {
+    border-color: var(--ink-900);
+    box-shadow: 0 0 0 1px var(--ink-900) inset;
+  }
+  .recipient-card .rh {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 8px;
+  }
+  .recipient-card .rh .who {
+    flex: 1; min-width: 0;
+  }
+  .recipient-card .rh .who .nm {
+    font-size: 12.5px; font-weight: 500; color: var(--ink-900);
+  }
+  .recipient-card .rh .who .mail {
+    font-family: var(--font-mono); font-size: 10.5px; color: var(--ink-500);
+  }
+  .recipient-card .roles {
+    display: flex; gap: 4px;
+  }
+  .recipient-card .role-chip {
+    padding: 3px 8px; border-radius: 5px;
+    font-size: 10px; font-weight: 500;
+    border: 1px solid var(--ink-200);
+    color: var(--ink-500);
+    background: var(--canvas-soft);
+  }
+  .recipient-card .role-chip.on {
+    background: var(--ink-900); color: white; border-color: var(--ink-900);
+  }
+  .recipient-card .role-chip.on.sign {
+    background: var(--brand-700); border-color: var(--brand-700);
+  }
+  .recipient-card .role-chip.on.view {
+    background: var(--sky-700); border-color: var(--sky-700);
+  }
+  .recipient-card .role-chip.on.cc {
+    background: var(--amber-700); border-color: var(--amber-700);
+  }
+  .recipient-card .note {
+    font-size: 11px; color: var(--ink-500);
+    line-height: 1.45; margin-top: 6px;
+    padding-top: 6px; border-top: 1px dashed var(--ink-200);
+  }
+
+  .composer .add-recipient {
+    background: rgba(255,255,255,0.5);
+    border: 1px dashed var(--ink-300);
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center;
+    font-size: 12px; color: var(--ink-600);
+    cursor: pointer;
+  }
+  .composer .send-bar {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 18px;
+    border-top: 1px solid var(--ink-100);
+    background: var(--canvas-soft);
+  }
+  .composer .send-bar .summary {
+    font-size: 12px; color: var(--ink-600);
+  }
+  .composer .send-bar .summary strong { color: var(--ink-900); font-weight: 500; }
+
+  /* status-after-send section */
+  .send-status {
+    background: white;
+    border: 1px solid rgba(228,223,210,0.8);
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .send-status .head {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .send-status .head .lbl {
+    font-size: 10.5px; font-weight: 600; letter-spacing: 0.1em;
+    color: var(--brand-700); text-transform: uppercase;
+  }
+  .send-status .head .when {
+    font-family: var(--font-mono); font-size: 10.5px; color: var(--ink-400);
+  }
+  .send-status ul {
+    list-style: none; padding: 0; margin: 0;
+  }
+  .send-status li {
+    display: flex; gap: 8px; align-items: flex-start;
+    padding: 7px 0;
+    font-size: 12px; color: var(--ink-700);
+    border-bottom: 1px dashed var(--ink-200);
+  }
+  .send-status li:last-child { border-bottom: 0; }
+  .send-status li .stamp {
+    font-family: var(--font-mono); font-size: 10px;
+    color: var(--ink-400);
+    width: 56px; flex-shrink: 0;
+  }
+  .send-status li .body { flex: 1; }
+  .send-status li .body strong { color: var(--ink-900); font-weight: 500; }
+  .send-status li .icon-state {
+    width: 18px; flex-shrink: 0; color: var(--ink-400);
+  }
+  .send-status li.signed .icon-state { color: var(--brand-700); }
+  .send-status li.opened .icon-state { color: var(--sky-700); }
+  .send-status li.sent .icon-state { color: var(--ink-500); }
+
+  /* ───────── comparison ───────── */
+  .compare-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px;
+  }
+  .compare-card {
+    background: white;
+    border: 1px solid rgba(228,223,210,0.8);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(26,24,20,0.03);
+  }
+  .compare-card .ch {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--ink-100);
+    display: flex; justify-content: space-between; align-items: flex-start;
+  }
+  .compare-card .ch .ct {
+    font-size: 13px; font-weight: 600; color: var(--ink-900); letter-spacing: -0.005em;
+  }
+  .compare-card .ch .cd {
+    font-size: 12px; color: var(--ink-500); margin-top: 2px; line-height: 1.5;
+  }
+  .compare-card .cb {
+    padding: 14px 18px;
+    font-size: 12.5px; color: var(--ink-700);
+    line-height: 1.6;
+  }
+  .compare-card .cb strong { color: var(--ink-900); font-weight: 500; }
+
+  /* responsive */
+  @media (max-width: 1100px) {
+    .triptych { grid-template-columns: 1fr; }
+    .lifecycle .row { grid-template-columns: 1fr; gap: 18px; }
+    .lifecycle .arrow { transform: rotate(90deg); }
+    .lifecycle .mechanics { grid-template-columns: repeat(2, 1fr); }
+    .compare-grid { grid-template-columns: 1fr; }
+    .composer .comp-body { grid-template-columns: 1fr; }
+    .deal-frame .body { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 700px) {
+    .canvas-page { padding: 32px 16px 80px; }
+    .cover h1 { font-size: 52px; }
+    .sec-head { flex-direction: column; align-items: stretch; }
+    .sec-head .sub { text-align: left; max-width: none; }
+    .lifecycle .mechanics { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<main class="canvas-page">
+
+  <!-- ───────── COVER ───────── -->
+  <section class="cover">
+    <div class="meta-row">
+      <span>Greenroom</span><span class="dot"></span>
+      <span>Design canvas</span><span class="dot"></span>
+      <span>Slice 03 · Magic-link + TM view</span><span class="dot"></span>
+      <span>v0.1</span>
+    </div>
+    <h1>From <em>sent</em><br />to signed. Three takes<br />on the bridge.</h1>
+    <p class="lede">
+      Mariana hits send on a complete deal. Somewhere between her laptop and the agent&rsquo;s
+      phone there&rsquo;s a magic link, an email, and a tour manager who&rsquo;d like to read
+      it on the drive between load-out and the back office. This canvas explores three ways
+      to design that bridge &mdash; each preserving the slice 02 promise that <em>structure
+      is what got signed</em>.
+    </p>
+    <nav class="toc">
+      <a href="#lifecycle"><span class="n">00 /</span> The link lifecycle &middot; what happens between send and signed</a>
+      <a href="#va"><span class="n">A /</span> Inline &amp; immediate &middot; rail transformation, no modal</a>
+      <a href="#vb"><span class="n">B /</span> Pre-flight checklist &middot; confirm recipient + disclosure</a>
+      <a href="#vc"><span class="n">C /</span> Multi-recipient compose &middot; sign + view + cc in one go</a>
+    </nav>
+  </section>
+
+  <!-- ═══════════════ §00 · LINK LIFECYCLE ═══════════════ -->
+  <section id="lifecycle">
+    <div class="sec-head">
+      <span class="num">00 / 04</span>
+      <h2>The lifecycle</h2>
+      <div class="sub">
+        What &ldquo;a magic link&rdquo; actually is &mdash; from the moment Mariana
+        clicks Send to the moment Daniel&rsquo;s signature is affixed. The
+        mechanics are the same across all three variations.
+      </div>
+    </div>
+
+    <div class="lifecycle">
+      <div class="row">
+        <div class="actor">
+          <span class="who">01 &middot; Mariana</span>
+          <span class="where">Greenroom &middot; deal entry</span>
+          <div class="says">Clicks <em style="font-style: italic;">Save &amp; re-send</em>.</div>
+          <div class="detail">Form is complete; rail says all required fields filled. Action upserts the deal and creates a token.</div>
+        </div>
+
+        <div class="arrow">
+          <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          <span class="verb">token + email</span>
+        </div>
+
+        <div class="actor">
+          <span class="who">02 &middot; Inbox</span>
+          <span class="where">Daniel &middot; WME</span>
+          <div class="says">Email arrives within seconds.</div>
+          <div class="detail">Subject names the artist + date. One big <em>Review and sign</em> button. The structured deal is rendered inline as a preview, so opening the email doesn&rsquo;t require a click.</div>
+        </div>
+
+        <div class="arrow">
+          <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          <span class="verb">click &rarr; landing</span>
+        </div>
+
+        <div class="actor">
+          <span class="who">03 &middot; Magic link</span>
+          <span class="where">/sign/&hellip; no login</span>
+          <div class="says">Daniel sees the structured recap.</div>
+          <div class="detail">Lands on a clean branded page. Opening the link doesn&rsquo;t count as signing &mdash; only the explicit button click does. <strong style="color: var(--ink-900);">Sign &middot; Decline &middot; Ignore.</strong></div>
+        </div>
+      </div>
+
+      <div class="mechanics">
+        <div class="mech">
+          <div class="mh">Token</div>
+          <div class="mt">32-char URL-safe string. Stored with role (<strong>sign</strong> or <strong>view</strong>), recipient email, deal version, expiry timestamp.</div>
+        </div>
+        <div class="mech">
+          <div class="mh">Expiry</div>
+          <div class="mt"><strong>14 days</strong> by default. After that the link returns a friendly &ldquo;ask Mariana to re-send&rdquo; page.</div>
+        </div>
+        <div class="mech">
+          <div class="mh">Use</div>
+          <div class="mt">Sign links are <strong>single-use</strong> for sign/decline actions. View links are unlimited reads. Either can be visited many times without committing.</div>
+        </div>
+        <div class="mech">
+          <div class="mh">Amendments</div>
+          <div class="mt">If the deal is edited after signing, the old link is <strong>invalidated</strong> and a fresh one goes out. The agent always reviews the latest version.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ VARIATION A · INLINE & IMMEDIATE ═══════════════ -->
+  <section id="va" style="margin-top: 96px;">
+    <div class="sec-head">
+      <span class="num">A / 04</span>
+      <h2>Inline &amp; immediate</h2>
+      <div class="sub">
+        No modal, no confirmation gate. Click <em>Save &amp; re-send</em>;
+        the rail itself transforms into a confirmation, then a status panel.
+        Best for Mariana&rsquo;s 8&ndash;15-deals-a-week reality.
+      </div>
+    </div>
+
+    <div class="specimen">
+      <div class="spec-meta">
+        <span>A &middot; Inline &amp; immediate &middot; desktop-primary</span>
+        <span class="tags">
+          <span class="tag">single-recipient</span>
+          <span class="tag">no-modal</span>
+          <span class="tag">low-friction</span>
+        </span>
+      </div>
+
+      <div class="triptych">
+        <!-- COL 1: Mariana's send moment — 3 stacked scenes -->
+        <div>
+          <div class="col-head">
+            <span class="n">A.1</span>
+            <h4>Mariana&rsquo;s send moment</h4>
+          </div>
+          <div class="col-desc">Three states of the right rail, stacked. Same surface, no modal — the rail just rewrites itself.</div>
+
+          <div class="scenes">
+            <div class="scene now">
+              <span class="scene-tag">T &minus; 0s</span>
+              <div class="rail-mock" style="padding: 12px;">
+                <div class="rail-card">
+                  <div class="h"><span>Send to</span></div>
+                  <div class="agent-chip">
+                    <div class="agent-av">DB</div>
+                    <div class="agent-info">
+                      <div class="nm">Daniel Brooks</div>
+                      <div class="mail">daniel.brooks@wme.com</div>
+                    </div>
+                  </div>
+                  <button class="btn brand lg" style="width: 100%; margin-top: 10px;">
+                    <svg class="ico ico-sm" viewBox="0 0 24 24"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg>
+                    Save &amp; re-send
+                  </button>
+                  <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--brand-700); font-weight: 500; margin-top: 8px;">
+                    <span>All required fields complete</span>
+                    <a href="#" style="color: var(--ink-500); text-decoration: none;">Save draft &rarr;</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="scene then">
+              <span class="scene-tag">T + 1s &middot; the moment</span>
+              <div class="rail-mock" style="padding: 12px;">
+                <div class="rail-card" style="background: var(--brand-50); border-color: rgba(167,243,208,0.7);">
+                  <div style="display: flex; align-items: center; gap: 10px; padding: 8px 4px;">
+                    <svg class="ico" viewBox="0 0 24 24" style="color: var(--brand-700);"><path d="m22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/></svg>
+                    <div>
+                      <div style="font-size: 13px; font-weight: 500; color: var(--brand-800);">Link sent to Daniel</div>
+                      <div style="font-size: 11.5px; color: var(--brand-700); margin-top: 2px;">Magic link delivered &middot; valid 14 days &middot; one-use sign</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="scene after">
+              <span class="scene-tag">T + 20s onward</span>
+              <div class="rail-mock" style="padding: 12px;">
+                <div class="rail-card send-status" style="padding: 12px 14px;">
+                  <div class="head">
+                    <span class="lbl">Sign-off status</span>
+                    <span class="when">v1 &middot; sent 23s ago</span>
+                  </div>
+                  <ul>
+                    <li class="sent">
+                      <svg class="ico ico-sm icon-state" viewBox="0 0 24 24"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg>
+                      <span class="stamp">14:32</span>
+                      <span class="body">Sent to <strong>Daniel</strong></span>
+                    </li>
+                    <li>
+                      <svg class="ico ico-sm icon-state" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+                      <span class="stamp">&hellip;</span>
+                      <span class="body" style="color: var(--ink-400);">Awaiting open</span>
+                    </li>
+                  </ul>
+                  <div style="display: flex; gap: 6px; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--ink-100);">
+                    <button class="btn outline sm" style="flex: 1;">Resend</button>
+                    <button class="btn ghost sm">Copy link</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- COL 2: the email -->
+        <div>
+          <div class="col-head">
+            <span class="n">A.2</span>
+            <h4>The email Daniel gets</h4>
+          </div>
+          <div class="col-desc">Phone-friendly. Structured deal renders inline so a glance from the bus is enough.</div>
+
+          <div class="email-card">
+            <div class="email-app-bar">
+              <div class="traffic"><span></span><span></span><span></span></div>
+              <span class="app">Mail &middot; Daniel&rsquo;s iPhone</span>
+            </div>
+            <div class="email-head">
+              <div class="from-row">
+                <div class="ava">MR</div>
+                <div class="from-meta">
+                  <div class="nm">Mariana Reyes</div>
+                  <div class="to"><span class="lbl">to</span>daniel.brooks@wme.com</div>
+                </div>
+                <span class="when">14:32</span>
+              </div>
+              <div class="subject">Coastal Spell &middot; Aug 9 &mdash; please sign the deal</div>
+            </div>
+            <div class="email-body">
+              <p>Daniel,</p>
+              <p>Sending the structured deal for the Aug 9 show. Tap below to review and sign &mdash; no login.</p>
+
+              <div class="deal-preview">
+                <div class="dh">
+                  <span class="dt">Coastal Spell &middot; The Crescent</span>
+                  <span class="badge brand">Vs &middot; 85/15</span>
+                </div>
+                <table>
+                  <tr><td class="k">Guarantee</td><td class="v">$9,500.00</td></tr>
+                  <tr><td class="k">Percentage</td><td class="v">85% of net</td></tr>
+                  <tr><td class="k">Expense cap</td><td class="v">$6,500.00</td></tr>
+                  <tr><td class="k">Recoups</td><td class="v">2 entries</td></tr>
+                  <tr><td class="k">Sellout bonus</td><td class="v">+$1,500.00</td></tr>
+                </table>
+              </div>
+
+              <a class="big-cta">Review &amp; sign &rarr;</a>
+              <a class="alt-link" href="#">or decline with a comment</a>
+
+              <p style="margin-top: 12px;">Thanks,<br/><span class="signoff">Mariana &middot; The Crescent</span></p>
+            </div>
+            <div class="email-foot">
+              <div class="disclosure">
+                <svg class="ico ico-xs" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+                One-click sign &middot; link valid for 14 days &middot; opening doesn&rsquo;t commit you to anything.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- COL 3: TM view -->
+        <div>
+          <div class="col-head">
+            <span class="n">A.3</span>
+            <h4>Tour manager view</h4>
+          </div>
+          <div class="col-desc">Phone-first read-only recap. Sent separately to Diego — Mariana toggles &ldquo;TM too&rdquo; once on the artist record.</div>
+
+          <div class="phone">
+            <div class="screen">
+              <div class="notch"></div>
+              <div class="status-bar">
+                <span>9:41</span>
+                <span class="icons">
+                  <svg viewBox="0 0 24 24"><path d="M2 12c5-3 15-3 20 0"/><path d="M5 16c3-2 11-2 14 0"/><circle cx="12" cy="20" r="1.5" fill="currentColor"/></svg>
+                  <svg viewBox="0 0 24 24"><rect x="2" y="9" width="16" height="8" rx="2"/><rect x="20" y="11" width="2" height="4" rx="0.5" fill="currentColor"/></svg>
+                </span>
+              </div>
+              <div class="tm-banner">
+                <div class="who">For Diego &middot; tour manager</div>
+                <strong>This is the deal Daniel signed.</strong> Show to the venue at settlement if anything looks off.
+              </div>
+              <div class="tm-header">
+                <div class="eyebrow-tm">Read-only deal</div>
+                <h5>Coastal Spell</h5>
+                <div class="when">Sat, Aug 9 &middot; The Crescent &middot; Nashville</div>
+              </div>
+              <div class="tm-block">
+                <div class="bh">Structure</div>
+                <table>
+                  <tr><td class="k">Type</td><td class="v txt">Vs &middot; 85/15</td></tr>
+                  <tr><td class="k">Guarantee</td><td class="v">$9,500.00</td></tr>
+                  <tr><td class="k">% basis</td><td class="v txt">Net &middot; after expenses</td></tr>
+                  <tr><td class="k">Expense cap</td><td class="v">$6,500.00</td></tr>
+                </table>
+              </div>
+              <div class="tm-block">
+                <div class="bh">Recoups</div>
+                <table>
+                  <tr><td class="k">WNXP radio</td><td class="v">$850.00</td></tr>
+                  <tr><td class="k">Bus deposit</td><td class="v">$500.00</td></tr>
+                </table>
+              </div>
+              <div class="tm-stamp">
+                <svg class="ico ico-sm" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                <span>Read-only. Mariana shared this on Aug 1.</span>
+              </div>
+              <div class="home-bar"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="takeaway">
+        <strong>Why this works.</strong> Zero ceremony. The rail does all three jobs without
+        ever leaving the deal page &mdash; <span class="kw">compose &rarr; send &rarr; track</span>.
+        The TM link is a separate magic URL piggy-backing on the same action.
+        <strong>Why it might not.</strong> No moment to confirm the recipient&rsquo;s email
+        before it sails. A typo in Daniel&rsquo;s address means the link goes to the wrong inbox
+        and Mariana doesn&rsquo;t know for hours.
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ VARIATION B · PRE-FLIGHT CHECKLIST ═══════════════ -->
+  <section id="vb">
+    <div class="sec-head">
+      <span class="num">B / 04</span>
+      <h2>Pre-flight checklist</h2>
+      <div class="sub">
+        One more confirmation step before the link leaves the building.
+        Recipient is shown, editable, and accompanied by the expiry +
+        single-use disclosure. Safer for the first 50 deals.
+      </div>
+    </div>
+
+    <div class="specimen">
+      <div class="spec-meta">
+        <span>B &middot; Pre-flight checklist &middot; desktop &amp; tablet</span>
+        <span class="tags">
+          <span class="tag">confirm-recipient</span>
+          <span class="tag">TM-toggle</span>
+          <span class="tag">explicit</span>
+        </span>
+      </div>
+
+      <div class="triptych">
+        <!-- COL 1: confirmation panel -->
+        <div>
+          <div class="col-head">
+            <span class="n">B.1</span>
+            <h4>The confirm-and-send panel</h4>
+          </div>
+          <div class="col-desc">Replaces the right rail when Mariana clicks Save &amp; re-send. Three sections: recipient, recipient&rsquo;s view, disclosure.</div>
+
+          <div class="confirm-panel">
+            <h4>Before you send</h4>
+            <div class="sub">One last look before the magic link leaves the building.</div>
+
+            <div class="field-row">
+              <div class="lbl">Sign-off link goes to</div>
+              <div class="editable-email">
+                <svg class="ico ico-sm" viewBox="0 0 24 24"><path d="M4 4h16c1 0 2 1 2 2v12c0 1-1 2-2 2H4c-1 0-2-1-2-2V6c0-1 1-2 2-2z"/><path d="m22 6-10 7L2 6"/></svg>
+                <span style="flex: 1;">daniel.brooks@wme.com</span>
+                <button class="btn ghost sm" style="padding: 0 4px; height: 22px;">Edit</button>
+              </div>
+              <div style="font-size: 11px; color: var(--ink-500); margin-top: 4px;">Pulled from <strong style="color: var(--ink-700); font-weight: 500;">Daniel Brooks &middot; WME</strong> on the artist record.</div>
+            </div>
+
+            <div class="field-row">
+              <div class="lbl">Email subject Daniel sees</div>
+              <div style="font-size: 12.5px; color: var(--ink-800); padding: 7px 10px; background: var(--canvas-soft); border-radius: 7px; border: 1px solid rgba(228,223,210,0.7);">
+                Coastal Spell &middot; Aug 9 &mdash; please sign the deal
+              </div>
+            </div>
+
+            <div class="toggle-line">
+              <span class="toggle"><span class="knob"></span></span>
+              <div>
+                <div style="color: var(--ink-900); font-weight: 500;">Also send a read-only link to Diego</div>
+                <div style="font-size: 11px; color: var(--ink-500); margin-top: 1px;">Tour manager &middot; diego@coastalspell.tour</div>
+              </div>
+            </div>
+
+            <ul class="disclosure-list">
+              <li>
+                <svg class="ico ico-xs" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+                Sign-off link is <strong style="color: var(--ink-700); font-weight: 500;">single-use</strong> and expires in <strong style="color: var(--ink-700); font-weight: 500;">14 days</strong>.
+              </li>
+              <li>
+                <svg class="ico ico-xs" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                Daniel can sign without a login. Opening the link doesn&rsquo;t commit anything.
+              </li>
+              <li>
+                <svg class="ico ico-xs" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+                If you edit the deal later, this link is invalidated and a fresh one goes out.
+              </li>
+            </ul>
+
+            <div class="actions">
+              <button class="btn ghost">Back to form</button>
+              <button class="btn brand">
+                <svg class="ico ico-sm" viewBox="0 0 24 24"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg>
+                Send sign-off link
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- COL 2: the email (slightly more structured) -->
+        <div>
+          <div class="col-head">
+            <span class="n">B.2</span>
+            <h4>The email Daniel gets</h4>
+          </div>
+          <div class="col-desc">Same as variation A &mdash; the email itself doesn&rsquo;t change between flows. The difference is on Mariana&rsquo;s side.</div>
+
+          <div class="email-card">
+            <div class="email-app-bar">
+              <div class="traffic"><span></span><span></span><span></span></div>
+              <span class="app">Mail &middot; Daniel&rsquo;s iPhone</span>
+            </div>
+            <div class="email-head">
+              <div class="from-row">
+                <div class="ava">MR</div>
+                <div class="from-meta">
+                  <div class="nm">Mariana Reyes</div>
+                  <div class="to"><span class="lbl">to</span>daniel.brooks@wme.com &middot; <span style="font-family: var(--font-sans); color: var(--brand-700); font-weight: 500;">cc</span> diego@coastalspell.tour</div>
+                </div>
+                <span class="when">14:32</span>
+              </div>
+              <div class="subject">Coastal Spell &middot; Aug 9 &mdash; please sign the deal</div>
+            </div>
+            <div class="email-body">
+              <p>Daniel,</p>
+              <p>Sending the structured deal for the Aug 9 show. Tap below to review and sign &mdash; no login. Diego is cc&rsquo;d on a read-only link so he can pre-read on show day.</p>
+
+              <div class="deal-preview">
+                <div class="dh">
+                  <span class="dt">Coastal Spell &middot; The Crescent</span>
+                  <span class="badge brand">Vs &middot; 85/15</span>
+                </div>
+                <table>
+                  <tr><td class="k">Guarantee</td><td class="v">$9,500.00</td></tr>
+                  <tr><td class="k">Percentage</td><td class="v">85% of net</td></tr>
+                  <tr><td class="k">Expense cap</td><td class="v">$6,500.00</td></tr>
+                  <tr><td class="k">Recoups</td><td class="v">2 entries</td></tr>
+                  <tr><td class="k">Sellout bonus</td><td class="v">+$1,500.00</td></tr>
+                </table>
+              </div>
+
+              <a class="big-cta">Review &amp; sign &rarr;</a>
+              <a class="alt-link" href="#">or decline with a comment</a>
+
+              <p style="margin-top: 12px;">Thanks,<br/><span class="signoff">Mariana &middot; The Crescent</span></p>
+            </div>
+            <div class="email-foot">
+              <div class="disclosure">
+                <svg class="ico ico-xs" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+                One-click sign &middot; link valid for 14 days &middot; opening doesn&rsquo;t commit you to anything.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- COL 3: TM view with settlement checklist -->
+        <div>
+          <div class="col-head">
+            <span class="n">B.3</span>
+            <h4>Tour manager view</h4>
+          </div>
+          <div class="col-desc">Same recap shell as A, plus an opt-in <em>settlement-night checklist</em> to prep the 2am conversation.</div>
+
+          <div class="phone">
+            <div class="screen">
+              <div class="notch"></div>
+              <div class="status-bar">
+                <span>9:41</span>
+                <span class="icons">
+                  <svg viewBox="0 0 24 24"><path d="M2 12c5-3 15-3 20 0"/><path d="M5 16c3-2 11-2 14 0"/><circle cx="12" cy="20" r="1.5" fill="currentColor"/></svg>
+                  <svg viewBox="0 0 24 24"><rect x="2" y="9" width="16" height="8" rx="2"/><rect x="20" y="11" width="2" height="4" rx="0.5" fill="currentColor"/></svg>
+                </span>
+              </div>
+              <div class="tm-banner">
+                <div class="who">For Diego &middot; tour manager</div>
+                <strong>This is the deal Daniel signed.</strong> Use the checklist below at the back office.
+              </div>
+              <div class="tm-header">
+                <div class="eyebrow-tm">Pre-read &middot; settlement night</div>
+                <h5>Coastal Spell</h5>
+                <div class="when">Sat, Aug 9 &middot; doors 19:00 &middot; set 20:30</div>
+              </div>
+              <div class="tm-block">
+                <div class="bh">Deal at a glance</div>
+                <table>
+                  <tr><td class="k">Type</td><td class="v txt">Vs &middot; 85/15</td></tr>
+                  <tr><td class="k">Guarantee floor</td><td class="v">$9,500</td></tr>
+                  <tr><td class="k">Expense cap</td><td class="v">$6,500</td></tr>
+                </table>
+              </div>
+              <div class="tm-block">
+                <div class="bh">At settlement, verify</div>
+                <ul class="tm-checklist">
+                  <li>
+                    <span class="chk"></span>
+                    <span class="lbl">Gross box office matches ticketing report</span>
+                  </li>
+                  <li>
+                    <span class="chk"></span>
+                    <span class="lbl">Expenses do not exceed cap</span>
+                    <span class="v">$6,500</span>
+                  </li>
+                  <li>
+                    <span class="chk"></span>
+                    <span class="lbl">Off-top recoups listed are agreed</span>
+                  </li>
+                  <li>
+                    <span class="chk"></span>
+                    <span class="lbl">Press / sponsor comps counted toward gross</span>
+                  </li>
+                </ul>
+              </div>
+              <div class="tm-stamp">
+                <svg class="ico ico-sm" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                <span>Checklist is local to your device. Nothing is sent back.</span>
+              </div>
+              <div class="home-bar"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="takeaway">
+        <strong>Why this works.</strong> Catches typos before they cost a day. The disclosure
+        list answers the &ldquo;wait, what happens if I edit the deal later?&rdquo; question
+        without making Mariana hunt for it. <span class="kw">TM checklist</span> on the phone
+        gives Diego a concrete reason to open the link, not just a deal recap.
+        <strong>Why it might not.</strong> Two clicks instead of one. After the 30th deal of
+        the month the panel starts to feel like a tax form &mdash; needs a &ldquo;don&rsquo;t
+        ask me next time&rdquo; checkbox to be sustainable.
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ VARIATION C · MULTI-RECIPIENT COMPOSE ═══════════════ -->
+  <section id="vc">
+    <div class="sec-head">
+      <span class="num">C / 04</span>
+      <h2>Multi-recipient compose</h2>
+      <div class="sub">
+        A full composer step. Pick everyone who needs to see the deal,
+        assign each a role &mdash; sign / view / cc &mdash; and they each
+        get a role-specific magic link. Heavy for solo deals, powerful
+        when more than one party is involved.
+      </div>
+    </div>
+
+    <div class="specimen">
+      <div class="spec-meta">
+        <span>C &middot; Multi-recipient compose &middot; desktop-only</span>
+        <span class="tags">
+          <span class="tag">role-based</span>
+          <span class="tag">live-preview</span>
+          <span class="tag">future-proof</span>
+        </span>
+      </div>
+
+      <div class="triptych">
+        <!-- COL 1: composer (spans 2 cols visually via the panel sizing) -->
+        <div style="grid-column: span 2;">
+          <div class="col-head">
+            <span class="n">C.1</span>
+            <h4>The composer</h4>
+          </div>
+          <div class="col-desc">Full surface replaces the deal page on send. Recipients on the left, what the selected one sees on the right.</div>
+
+          <div class="composer">
+            <div class="comp-head">
+              <h4>Compose sign-off</h4>
+              <span class="crumb">DEAL &middot; COASTAL SPELL &middot; AUG 9</span>
+            </div>
+
+            <div class="comp-body">
+              <div class="comp-left">
+                <div style="font-size: 10.5px; font-weight: 600; letter-spacing: 0.1em; color: var(--ink-500); text-transform: uppercase; margin-bottom: 4px;">
+                  Recipients &middot; 3
+                </div>
+
+                <div class="recipient-card selected">
+                  <div class="rh">
+                    <div class="agent-av" style="width: 26px; height: 26px;">DB</div>
+                    <div class="who">
+                      <div class="nm">Daniel Brooks</div>
+                      <div class="mail">daniel.brooks@wme.com</div>
+                    </div>
+                    <div class="roles">
+                      <span class="role-chip on sign">Sign</span>
+                      <span class="role-chip">View</span>
+                      <span class="role-chip">CC</span>
+                    </div>
+                  </div>
+                  <div class="note">
+                    <strong style="color: var(--ink-800);">Note:</strong> Quick one for Aug 9 — same shape as last time, sellout bonus bumped.
+                  </div>
+                </div>
+
+                <div class="recipient-card">
+                  <div class="rh">
+                    <div class="agent-av diego" style="width: 26px; height: 26px;">DO</div>
+                    <div class="who">
+                      <div class="nm">Diego Ortiz</div>
+                      <div class="mail">diego@coastalspell.tour</div>
+                    </div>
+                    <div class="roles">
+                      <span class="role-chip">Sign</span>
+                      <span class="role-chip on view">View</span>
+                      <span class="role-chip">CC</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="recipient-card">
+                  <div class="rh">
+                    <div class="agent-av sarah" style="width: 26px; height: 26px;">SK</div>
+                    <div class="who">
+                      <div class="nm">Sarah Kim</div>
+                      <div class="mail">sarah.kim@dawn-rec.com</div>
+                    </div>
+                    <div class="roles">
+                      <span class="role-chip">Sign</span>
+                      <span class="role-chip">View</span>
+                      <span class="role-chip on cc">CC</span>
+                    </div>
+                  </div>
+                </div>
+
+                <button class="add-recipient">
+                  <svg class="ico ico-xs" viewBox="0 0 24 24" style="display: inline-block; vertical-align: -1px; margin-right: 4px;"><path d="M12 5v14M5 12h14"/></svg>
+                  Add another recipient
+                </button>
+              </div>
+
+              <div class="comp-right">
+                <div class="ph">Live preview &middot; Daniel&rsquo;s email</div>
+                <div class="email-card" style="box-shadow: none; border-color: rgba(228,223,210,0.6);">
+                  <div class="email-head" style="padding: 12px 14px 8px;">
+                    <div class="from-row" style="margin-bottom: 4px;">
+                      <div class="ava" style="width: 28px; height: 28px; font-size: 11px;">MR</div>
+                      <div class="from-meta">
+                        <div class="nm" style="font-size: 12.5px;">Mariana Reyes</div>
+                        <div class="to" style="font-size: 11px;"><span class="lbl">to</span>daniel.brooks@wme.com</div>
+                      </div>
+                    </div>
+                    <div class="subject" style="font-size: 14px;">Coastal Spell &middot; Aug 9 &mdash; please sign the deal</div>
+                  </div>
+                  <div class="email-body" style="padding: 12px 14px 14px; font-size: 12px;">
+                    <p style="margin-bottom: 8px;">Daniel,</p>
+                    <p style="margin-bottom: 8px;">Quick one for Aug 9 &mdash; same shape as last time, sellout bonus bumped.</p>
+                    <div class="deal-preview" style="margin: 8px 0;">
+                      <div class="dh">
+                        <span class="dt" style="font-size: 13px;">Coastal Spell</span>
+                        <span class="badge brand">Vs &middot; 85/15</span>
+                      </div>
+                      <table>
+                        <tr><td class="k">Guarantee</td><td class="v">$9,500</td></tr>
+                        <tr><td class="k">Percentage</td><td class="v">85% net</td></tr>
+                        <tr><td class="k">Recoups</td><td class="v">2</td></tr>
+                      </table>
+                    </div>
+                    <a class="big-cta" style="font-size: 12.5px; padding: 9px 12px;">Review &amp; sign &rarr;</a>
+                  </div>
+                </div>
+                <div style="font-size: 10.5px; color: var(--ink-400); margin-top: 8px; text-align: center;">
+                  Select another recipient on the left to see <em>their</em> email.
+                </div>
+              </div>
+            </div>
+
+            <div class="send-bar">
+              <div class="summary">
+                <strong>3 links</strong> &middot; 1 sign &middot; 1 view &middot; 1 cc-only
+              </div>
+              <div style="display: flex; gap: 8px;">
+                <button class="btn ghost">Cancel</button>
+                <button class="btn brand">
+                  <svg class="ico ico-sm" viewBox="0 0 24 24"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg>
+                  Send all 3 links
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- COL 3: TM view (richer venue context) -->
+        <div>
+          <div class="col-head">
+            <span class="n">C.2</span>
+            <h4>Tour manager view</h4>
+          </div>
+          <div class="col-desc">Same recap, plus venue contact card and tour context. The view link is built for the road.</div>
+
+          <div class="phone">
+            <div class="screen">
+              <div class="notch"></div>
+              <div class="status-bar">
+                <span>9:41</span>
+                <span class="icons">
+                  <svg viewBox="0 0 24 24"><path d="M2 12c5-3 15-3 20 0"/><path d="M5 16c3-2 11-2 14 0"/><circle cx="12" cy="20" r="1.5" fill="currentColor"/></svg>
+                  <svg viewBox="0 0 24 24"><rect x="2" y="9" width="16" height="8" rx="2"/><rect x="20" y="11" width="2" height="4" rx="0.5" fill="currentColor"/></svg>
+                </span>
+              </div>
+              <div class="tm-banner">
+                <div class="who">For Diego &middot; tour manager</div>
+                <strong>Tonight: Coastal Spell at The Crescent.</strong>
+              </div>
+              <div class="tm-header">
+                <div class="eyebrow-tm">On the road</div>
+                <h5>Coastal Spell</h5>
+                <div class="when">Sat, Aug 9 &middot; doors 19:00</div>
+              </div>
+              <div class="tm-block">
+                <div class="bh">Signed deal</div>
+                <table>
+                  <tr><td class="k">Vs &middot; 85/15</td><td class="v">$9,500 floor</td></tr>
+                  <tr><td class="k">Expense cap</td><td class="v">$6,500</td></tr>
+                  <tr><td class="k">Sellout bonus</td><td class="v">+$1,500</td></tr>
+                </table>
+              </div>
+              <div class="tm-venue">
+                <div class="bh">Venue</div>
+                <div class="venue-name">The Crescent</div>
+                <div class="venue-addr">847 Henderson Ave &middot; Nashville, TN</div>
+                <div class="contacts">
+                  <div class="contact">
+                    <div class="role">Advance</div>
+                    Mariana<br/>+1 615 555 0142
+                  </div>
+                  <div class="contact">
+                    <div class="role">Production</div>
+                    Jay<br/>+1 615 555 0128
+                  </div>
+                </div>
+              </div>
+              <div class="tm-stamp">
+                <svg class="ico ico-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+                <span>Next on tour: <strong style="color: var(--ink-700);">Atlanta &middot; in 2 days</strong>.</span>
+              </div>
+              <div class="home-bar"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="takeaway">
+        <strong>Why this works.</strong> Captures every real-world stakeholder &mdash; the
+        signing agent, the road-side TM, the cc&rsquo;d label rep &mdash; with role-aware
+        magic links. Pre-empts every &ldquo;can you loop in&hellip;&rdquo; reply
+        before it happens. Sets up a future where <span class="kw">roles compose</span>
+        across slices (settlements, advances, etc.).
+        <strong>Why it might not.</strong> For 80% of deals it&rsquo;s overbuilt. Mariana
+        will end up clicking through the composer with the same single recipient every time,
+        which is slower than variation A&rsquo;s one click.
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ COMPARE ═══════════════ -->
+  <section>
+    <div class="sec-head">
+      <span class="num">04 / 04</span>
+      <h2>Compare</h2>
+      <div class="sub">Where each variation earns its keep.</div>
+    </div>
+
+    <div class="compare-grid">
+      <div class="compare-card">
+        <div class="ch">
+          <div>
+            <div class="ct">A &middot; Inline &amp; immediate</div>
+            <div class="cd">Rail rewrites itself.</div>
+          </div>
+          <span class="badge brand">single-recipient</span>
+        </div>
+        <div class="cb">
+          <strong>Best for</strong> the steady-state &mdash; Mariana&rsquo;s 8&ndash;15 deals a week.
+          One click sends, the rail switches to status, and she keeps moving.<br/><br/>
+          <strong>Risk:</strong> typo in the agent&rsquo;s email goes silently. Needs a
+          read-receipt and a clear &ldquo;bounce&rdquo; surface to be safe.
+        </div>
+      </div>
+
+      <div class="compare-card">
+        <div class="ch">
+          <div>
+            <div class="ct">B &middot; Pre-flight checklist</div>
+            <div class="cd">One step of confirmation.</div>
+          </div>
+          <span class="badge sky">explicit</span>
+        </div>
+        <div class="cb">
+          <strong>Best for</strong> the first 50 deals &mdash; the &ldquo;watch Mariana enter
+          50 real deals manually&rdquo; phase from the spec. Guardrails are visible and the
+          TM checklist gives Diego a real artifact to use at the back office.<br/><br/>
+          <strong>Risk:</strong> two-click sends accumulate friction. Needs an opt-out once
+          Mariana has muscle memory.
+        </div>
+      </div>
+
+      <div class="compare-card">
+        <div class="ch">
+          <div>
+            <div class="ct">C &middot; Multi-recipient compose</div>
+            <div class="cd">Roles for everyone.</div>
+          </div>
+          <span class="badge amber">future-proof</span>
+        </div>
+        <div class="cb">
+          <strong>Best for</strong> deals where more than one party needs visibility &mdash;
+          agent + TM + label, opener-agent + co-headliner agent, manager + lawyer. Sets up
+          the role primitive for later slices (settlement, advancing).<br/><br/>
+          <strong>Risk:</strong> overkill for solo deals. Needs a &ldquo;skip composer&rdquo;
+          shortcut so the 80% case stays fast.
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top: 36px; padding: 18px 22px; border-left: 3px solid var(--brand-700); background: rgba(167,243,208,0.12); border-radius: 0 10px 10px 0;">
+      <div class="eyebrow" style="margin-bottom: 6px;">Recommendation</div>
+      <div style="font-size: 14px; color: var(--ink-800); line-height: 1.6; max-width: 780px;">
+        Ship <strong>A &middot; Inline &amp; immediate</strong> as the default flow &mdash;
+        it&rsquo;s the lightest path from a finished deal to a sent link, and the
+        <span style="font-family: var(--font-mono); font-size: 12.5px; color: var(--ink-900);">data-send-button</span>
+        from slice 02 is already gated, so the &ldquo;am I ready?&rdquo; question is already
+        answered before send. Borrow <strong>B&rsquo;s disclosure list</strong> as a one-time
+        onboarding tooltip the very first time a venue sends, so the
+        <em>14-day &middot; single-use &middot; amendments invalidate</em> rules are visible
+        once and remembered. Keep <strong>C&rsquo;s composer</strong> behind a small
+        <em>+ more recipients</em> link that quietly upgrades the inline flow when needed
+        &mdash; the role primitive is too useful to drop, but doesn&rsquo;t need to be the
+        default.
+        <br/><br/>
+        The tour manager view is the same across all three &mdash; differences are in
+        what extras live below the recap (settlement checklist in B, venue contacts in C).
+        Start with the recap alone; add the rest after watching tour managers actually open
+        the link.
+      </div>
+    </div>
+  </section>
+
+</main>
+
+</body>
+</html>

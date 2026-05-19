@@ -1,16 +1,21 @@
 import type { Metadata, Viewport } from "next";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
-import { Fraunces } from "next/font/google";
+import { Fraunces, Caveat } from "next/font/google";
 import "./globals.css";
-import { Sidebar } from "@/components/layout/sidebar";
-import { CommandPaletteData } from "@/components/command-palette/command-data";
 
 const fraunces = Fraunces({
   subsets: ["latin"],
   variable: "--font-fraunces",
   display: "swap",
   axes: ["opsz"],
+});
+
+const caveat = Caveat({
+  subsets: ["latin"],
+  variable: "--font-caveat",
+  display: "swap",
+  weight: ["500", "600"],
 });
 
 export const metadata: Metadata = {
@@ -40,8 +45,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Greenroom",
-    description:
-      "Operating system for independent music venues.",
+    description: "Operating system for independent music venues.",
   },
   robots: {
     index: false,
@@ -58,6 +62,12 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
+/**
+ * Root layout — only the html/body chrome. Internal routes (Mariana's
+ * surfaces) get the sidebar from app/(app)/layout.tsx. Public magic-link
+ * routes (/view/[token], /sign/[token]) render straight into body so
+ * external recipients don't see internal navigation.
+ */
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -66,13 +76,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${GeistSans.variable} ${GeistMono.variable} ${fraunces.variable} h-full antialiased`}
+      className={`${GeistSans.variable} ${GeistMono.variable} ${fraunces.variable} ${caveat.variable} antialiased`}
     >
-      <body className="h-full flex font-sans">
-        <Sidebar />
-        <main className="flex-1 overflow-auto relative">{children}</main>
-        <CommandPaletteData />
-      </body>
+      <body className="font-sans bg-canvas text-ink-900">{children}</body>
     </html>
   );
 }

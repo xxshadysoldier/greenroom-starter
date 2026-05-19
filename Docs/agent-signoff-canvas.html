@@ -1,0 +1,2449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Greenroom · Agent sign-off — four variations</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Geist+Mono:wght@400;500&family=Geist:wght@400;450;500;600&family=Caveat:wght@400;500;600&family=Dancing+Script:wght@500&display=swap"
+  rel="stylesheet"
+/>
+
+<style>
+  /* ───────── tokens — mirrored from app/globals.css ───────── */
+  :root {
+    --canvas:        #faf7f0;
+    --canvas-soft:   #fdfbf6;
+
+    --brand-50:  #ecfdf5;
+    --brand-100: #d1fae5;
+    --brand-200: #a7f3d0;
+    --brand-300: #6ee7b7;
+    --brand-500: #10b981;
+    --brand-600: #059669;
+    --brand-700: #047857;
+    --brand-800: #065f46;
+    --brand-900: #064e3b;
+
+    --ink-50:  #faf8f4;
+    --ink-100: #f3f0e9;
+    --ink-200: #e4dfd2;
+    --ink-300: #c9c2b1;
+    --ink-400: #94907f;
+    --ink-500: #6b6759;
+    --ink-600: #4f4c41;
+    --ink-700: #3a3830;
+    --ink-800: #26241e;
+    --ink-900: #1a1814;
+
+    --amber-50:  #fef7e6;
+    --amber-100: #fef0c7;
+    --amber-200: #fde68a;
+    --amber-700: #b45309;
+    --amber-800: #92400e;
+
+    --rose-50:  #fef2f2;
+    --rose-100: #ffe4e6;
+    --rose-200: #fecaca;
+    --rose-700: #be123c;
+    --rose-800: #9f1239;
+
+    --sky-50:  #eff6ff;
+    --sky-100: #dbeafe;
+    --sky-200: #bfdbfe;
+    --sky-700: #1d4ed8;
+    --sky-800: #1e40af;
+
+    --font-display: 'Fraunces', Georgia, serif;
+    --font-sans:    'Geist', ui-sans-serif, system-ui, sans-serif;
+    --font-mono:    'Geist Mono', ui-monospace, monospace;
+    --font-sig:     'Caveat', 'Dancing Script', cursive;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: var(--font-sans);
+    color: var(--ink-900);
+    background: var(--canvas);
+    font-feature-settings: "cv11", "ss01", "ss03";
+    -webkit-font-smoothing: antialiased;
+    position: relative;
+    min-height: 100vh;
+  }
+
+  body::before {
+    content: ""; position: fixed; inset: 0;
+    pointer-events: none; z-index: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 50% 0%, rgba(16,185,129,0.05), transparent 60%),
+      radial-gradient(ellipse 50% 30% at 100% 100%, rgba(245,158,11,0.03), transparent 60%);
+  }
+  body::after {
+    content: ""; position: fixed; inset: 0;
+    pointer-events: none; z-index: 1;
+    opacity: 0.025;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 256px 256px;
+  }
+
+  .tabular { font-variant-numeric: tabular-nums; font-feature-settings: "tnum"; }
+  .mono    { font-family: var(--font-mono); }
+  .display { font-family: var(--font-display); font-weight: 500; letter-spacing: -0.025em; font-optical-sizing: auto; }
+  .eyebrow {
+    font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.12em;
+    color: var(--brand-700);
+  }
+
+  /* ───────── canvas chrome ───────── */
+  .canvas-page { position: relative; z-index: 2; max-width: 1320px; margin: 0 auto; padding: 80px 56px 160px; }
+
+  .cover { margin-bottom: 88px; }
+  .cover .meta-row {
+    display: flex; align-items: center; gap: 14px;
+    font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--ink-400);
+    margin-bottom: 28px;
+  }
+  .cover .meta-row .dot { width: 4px; height: 4px; border-radius: 50%; background: var(--ink-300); }
+  .cover h1 {
+    font-family: var(--font-display); font-weight: 500;
+    font-size: 84px; line-height: 0.98; letter-spacing: -0.035em;
+    margin: 0 0 22px;
+    color: var(--ink-900);
+    font-optical-sizing: auto;
+  }
+  .cover h1 em { font-style: italic; font-weight: 400; color: var(--brand-700); }
+  .cover .lede {
+    max-width: 700px;
+    font-size: 17px; line-height: 1.55;
+    color: var(--ink-600);
+  }
+  .cover .toc {
+    margin-top: 36px; display: flex; gap: 28px; flex-wrap: wrap;
+    border-top: 1px solid var(--ink-200);
+    padding-top: 18px;
+  }
+  .cover .toc a {
+    text-decoration: none; color: var(--ink-700);
+    font-size: 13px; display: flex; align-items: baseline; gap: 8px;
+  }
+  .cover .toc a:hover { color: var(--brand-700); }
+  .cover .toc a .n { font-family: var(--font-mono); font-size: 10.5px; color: var(--ink-400); letter-spacing: 0.04em; }
+
+  .sec-head {
+    margin-bottom: 32px; display: flex; align-items: baseline; gap: 24px;
+    border-bottom: 1px solid var(--ink-200); padding-bottom: 16px;
+  }
+  .sec-head .num {
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em;
+    color: var(--ink-400); flex-shrink: 0; padding-top: 8px;
+  }
+  .sec-head h2 {
+    font-family: var(--font-display); font-weight: 500;
+    font-size: 36px; letter-spacing: -0.02em; margin: 0;
+    color: var(--ink-900); flex: 1; font-optical-sizing: auto;
+  }
+  .sec-head .sub {
+    font-size: 13px; color: var(--ink-500); max-width: 380px;
+    line-height: 1.55; text-align: right;
+  }
+
+  .specimen {
+    background: var(--canvas-soft);
+    border: 1px solid rgba(228,223,210,0.7);
+    border-radius: 14px;
+    padding: 18px;
+    margin-bottom: 96px;
+    box-shadow: 0 1px 2px rgba(26,24,20,0.03);
+  }
+  .specimen .spec-meta {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 4px 10px 16px;
+    font-family: var(--font-mono); font-size: 10.5px;
+    letter-spacing: 0.06em; color: var(--ink-400);
+    text-transform: uppercase;
+  }
+  .specimen .spec-meta .tags { display: flex; gap: 8px; }
+  .specimen .spec-meta .tag {
+    background: white; padding: 3px 8px; border-radius: 6px;
+    box-shadow: inset 0 0 0 1px rgba(228,223,210,0.8);
+    color: var(--ink-600); letter-spacing: 0.05em;
+  }
+  .specimen .takeaway {
+    margin-top: 14px; padding: 14px 18px;
+    font-size: 12.5px; color: var(--ink-600);
+    line-height: 1.6; max-width: 980px;
+  }
+  .specimen .takeaway strong { color: var(--ink-900); font-weight: 600; }
+  .specimen .takeaway .kw { color: var(--brand-700); font-weight: 500; }
+
+  /* ───────── shared primitives ───────── */
+
+  .badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 10.5px; font-weight: 500;
+    box-shadow: inset 0 0 0 1px var(--ring, rgba(228,223,210,0.8));
+  }
+  .badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--dot, var(--ink-400)); }
+  .badge.default  { background: var(--ink-100); color: var(--ink-700); --ring: rgba(228,223,210,0.8); --dot: var(--ink-400); }
+  .badge.brand    { background: var(--brand-50); color: var(--brand-800); --ring: rgba(167,243,208,0.8); --dot: var(--brand-700); }
+  .badge.amber    { background: var(--amber-50); color: var(--amber-800); --ring: rgba(253,230,138,0.8); --dot: var(--amber-700); }
+  .badge.rose     { background: var(--rose-50);  color: var(--rose-800);  --ring: rgba(254,202,202,0.8); --dot: var(--rose-700); }
+  .badge.sky      { background: var(--sky-50);   color: var(--sky-800);   --ring: rgba(191,219,254,0.8); --dot: var(--sky-700); }
+  .badge.flat     { background: var(--ink-50);   color: var(--ink-700);   --ring: rgba(228,223,210,0.8); }
+  .badge.vs       { background: var(--brand-50); color: var(--brand-800); --ring: rgba(167,243,208,0.8); }
+
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    border-radius: 8px;
+    font-size: 13px; font-weight: 500;
+    font-family: var(--font-sans);
+    transition: all 150ms;
+    height: 36px; padding: 0 16px;
+    border: 0; cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+  }
+  .btn.sm { height: 28px; padding: 0 10px; font-size: 12px; }
+  .btn.lg { height: 44px; padding: 0 22px; font-size: 14px; }
+  .btn.brand {
+    background: var(--brand-700); color: white;
+    box-shadow: 0 1px 2px rgba(4,120,87,0.15), inset 0 0 0 1px rgba(6,95,70,0.2);
+  }
+  .btn.brand:hover { background: var(--brand-800); }
+  .btn.default { background: var(--ink-900); color: white; }
+  .btn.secondary {
+    background: white; color: var(--ink-900);
+    box-shadow: 0 1px 2px rgba(26,24,20,0.04), inset 0 0 0 1px rgba(228,223,210,0.8);
+  }
+  .btn.outline {
+    background: rgba(255,255,255,0.8); color: var(--ink-800);
+    border: 1px solid rgba(201,194,177,0.8);
+  }
+  .btn.ghost   { background: transparent; color: var(--ink-600); }
+  .btn.ghost:hover { background: var(--ink-100); color: var(--ink-900); }
+  .btn.danger {
+    background: var(--rose-700); color: white;
+  }
+  .btn:disabled, .btn[aria-disabled="true"] { opacity: 0.5; cursor: not-allowed; }
+
+  .ico { width: 16px; height: 16px; stroke-width: 1.75; stroke: currentColor; fill: none; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+  .ico-sm { width: 14px; height: 14px; }
+  .ico-xs { width: 12px; height: 12px; }
+
+  .card {
+    background: white;
+    border: 1px solid rgba(228,223,210,0.8);
+    border-radius: 10px;
+    box-shadow: 0 1px 2px rgba(26,24,20,0.03);
+    overflow: hidden;
+  }
+
+  /* ───────── §00 · anatomy overview ───────── */
+  .anatomy {
+    background: white;
+    border: 1px solid rgba(228,223,210,0.8);
+    border-radius: 12px;
+    padding: 26px 32px 30px;
+    box-shadow: 0 1px 2px rgba(26,24,20,0.03);
+  }
+  .anatomy .grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;
+  }
+  .anatomy .piece {
+    border: 1px dashed var(--ink-200);
+    border-radius: 10px;
+    padding: 14px 16px;
+    background: var(--canvas-soft);
+    position: relative;
+  }
+  .anatomy .piece .ph {
+    font-size: 10.5px; font-weight: 600; letter-spacing: 0.1em;
+    color: var(--brand-700); text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .anatomy .piece .pn {
+    font-family: var(--font-display); font-weight: 500;
+    font-size: 17px; letter-spacing: -0.012em;
+    color: var(--ink-900); margin: 0 0 6px; font-optical-sizing: auto;
+  }
+  .anatomy .piece .pd {
+    font-size: 11.5px; color: var(--ink-600); line-height: 1.5;
+  }
+  .anatomy .piece .pd strong { color: var(--ink-800); font-weight: 500; }
+  .anatomy .piece .num {
+    position: absolute; top: 8px; right: 10px;
+    font-family: var(--font-mono); font-size: 9.5px;
+    color: var(--ink-300); letter-spacing: 0.06em;
+  }
+  .anatomy .principle {
+    margin-top: 22px; padding: 14px 18px;
+    background: rgba(167,243,208,0.15); border-radius: 8px;
+    border-left: 3px solid var(--brand-700);
+    font-size: 12.5px; color: var(--ink-700); line-height: 1.55;
+  }
+  .anatomy .principle strong { color: var(--ink-900); font-weight: 500; }
+  .anatomy .principle .kw { color: var(--brand-700); font-weight: 500; }
+
+  /* ───────── triptych — 3-frame per-variation layout ───────── */
+  .triptych {
+    display: grid; grid-template-columns: minmax(0, 360px) minmax(0, 1fr) minmax(0, 1fr);
+    gap: 22px;
+    background: var(--canvas);
+    padding: 24px;
+    border-radius: 10px;
+    border: 1px solid rgba(228,223,210,0.6);
+  }
+  .triptych .col-head {
+    display: flex; align-items: baseline; gap: 8px; margin-bottom: 8px;
+  }
+  .triptych .col-head .n {
+    font-family: var(--font-mono); font-size: 10.5px;
+    color: var(--ink-400); letter-spacing: 0.08em;
+  }
+  .triptych .col-head h4 {
+    font-family: var(--font-display); font-weight: 500;
+    font-size: 18px; letter-spacing: -0.015em; margin: 0;
+    color: var(--ink-900); font-optical-sizing: auto;
+  }
+  .triptych .col-desc {
+    font-size: 11.5px; color: var(--ink-500); line-height: 1.55;
+    margin-bottom: 14px; min-height: 36px;
+  }
+
+  /* ───────── PHONE FRAME ───────── */
+  .phone {
+    background: var(--ink-900);
+    border-radius: 32px;
+    padding: 8px;
+    box-shadow: 0 8px 32px rgba(26,24,20,0.18);
+    width: 340px;
+    margin: 0 auto;
+  }
+  .phone.tall { width: 320px; }
+  .phone .screen {
+    background: var(--canvas);
+    border-radius: 26px;
+    overflow: hidden;
+    position: relative;
+    padding-bottom: 12px;
+  }
+  .phone .status-bar {
+    height: 28px;
+    padding: 0 18px 0 22px;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 11px; font-weight: 600; color: var(--ink-900);
+    font-family: var(--font-mono);
+  }
+  .phone .status-bar .icons {
+    display: flex; gap: 4px; align-items: center;
+    color: var(--ink-700);
+  }
+  .phone .status-bar .icons svg { width: 12px; height: 12px; stroke-width: 2; stroke: currentColor; fill: none; }
+  .phone .notch {
+    position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+    width: 92px; height: 22px; background: var(--ink-900);
+    border-radius: 0 0 12px 12px; pointer-events: none;
+  }
+  .phone .home-bar {
+    position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%);
+    width: 100px; height: 4px; background: var(--ink-700);
+    border-radius: 2px; opacity: 0.7;
+  }
+
+  /* ───────── shared sign-off pieces (used inside multiple variations) ───────── */
+
+  /* Show header — branded prompt */
+  .show-head {
+    padding: 14px 18px 12px;
+    background: linear-gradient(to bottom, rgba(167,243,208,0.20), transparent);
+    border-bottom: 1px solid rgba(228,223,210,0.6);
+  }
+  .show-head .greenroom-mark {
+    display: flex; align-items: center; gap: 6px;
+    font-family: var(--font-mono); font-size: 9.5px;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--brand-700); font-weight: 600;
+    margin-bottom: 10px;
+  }
+  .show-head .greenroom-mark .gm {
+    width: 14px; height: 14px; border-radius: 4px;
+    background: linear-gradient(135deg, var(--brand-500), var(--brand-700));
+  }
+  .show-head h5 {
+    font-family: var(--font-display); font-weight: 500;
+    font-size: 24px; letter-spacing: -0.022em; line-height: 1.04;
+    margin: 2px 0 4px;
+    color: var(--ink-900); font-optical-sizing: auto;
+  }
+  .show-head .when {
+    font-size: 12px; color: var(--ink-500);
+  }
+  .show-head .prompt {
+    margin-top: 10px;
+    padding: 8px 10px;
+    background: white;
+    border: 1px solid rgba(228,223,210,0.7);
+    border-radius: 8px;
+    font-size: 12px; color: var(--ink-700);
+    line-height: 1.5;
+  }
+  .show-head .prompt strong { color: var(--ink-900); font-weight: 500; }
+
+  /* Deal recap block — readable table */
+  .recap-block {
+    padding: 12px 18px;
+    border-bottom: 1px solid var(--ink-100);
+  }
+  .recap-block:last-of-type { border-bottom: 0; }
+  .recap-block .bh {
+    font-size: 9.5px; font-weight: 600; letter-spacing: 0.1em;
+    color: var(--ink-500); text-transform: uppercase;
+    margin-bottom: 6px;
+    display: flex; justify-content: space-between; align-items: baseline;
+  }
+  .recap-block table { width: 100%; }
+  .recap-block table td { padding: 3px 0; font-size: 12px; vertical-align: top; }
+  .recap-block table td.k { color: var(--ink-500); width: 45%; }
+  .recap-block table td.v { color: var(--ink-900); font-family: var(--font-mono); text-align: right; font-variant-numeric: tabular-nums; }
+  .recap-block table td.v.txt { font-family: var(--font-sans); text-align: left; padding-left: 14px; }
+
+  .recoup-line {
+    display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: baseline;
+    padding: 5px 0; border-bottom: 1px dotted var(--ink-200);
+    font-size: 12px;
+  }
+  .recoup-line:last-child { border-bottom: 0; }
+  .recoup-line .lbl { color: var(--ink-900); }
+  .recoup-line .lbl .sub { color: var(--ink-500); font-size: 10.5px; display: block; margin-top: 1px; }
+  .recoup-line .amt { font-family: var(--font-mono); color: var(--ink-900); font-variant-numeric: tabular-nums; }
+
+  /* Source email — collapsed */
+  .source-collapse {
+    padding: 12px 18px;
+    background: var(--canvas-soft);
+    border-top: 1px solid var(--ink-100);
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 11.5px; color: var(--ink-500);
+    cursor: pointer;
+  }
+  .source-collapse:hover { color: var(--ink-700); }
+  .source-collapse .left { display: flex; align-items: center; gap: 8px; }
+
+  /* Signature panel — Draw / Type tabs */
+  .sig-panel {
+    padding: 14px 18px 16px;
+    background: var(--canvas-soft);
+    border-top: 1px solid var(--ink-100);
+  }
+  .sig-panel.boxed {
+    background: white;
+    border: 1px solid rgba(228,223,210,0.8);
+    border-radius: 10px;
+    box-shadow: 0 1px 2px rgba(26,24,20,0.03);
+  }
+  .sig-panel .ph {
+    font-size: 9.5px; font-weight: 600; letter-spacing: 0.1em;
+    color: var(--brand-700); text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .sig-panel .tabs {
+    display: inline-flex; gap: 4px; padding: 3px;
+    background: white; border: 1px solid rgba(228,223,210,0.8); border-radius: 8px;
+    margin-bottom: 10px;
+  }
+  .sig-panel .tabs button {
+    background: transparent; border: 0; cursor: pointer;
+    padding: 5px 12px; border-radius: 6px;
+    font-family: inherit; font-size: 11.5px; font-weight: 500;
+    color: var(--ink-500);
+  }
+  .sig-panel .tabs button.on {
+    background: var(--ink-900); color: white;
+  }
+
+  .sig-canvas {
+    background: white;
+    border: 1px dashed var(--ink-300);
+    border-radius: 8px;
+    height: 110px;
+    position: relative;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+  .sig-canvas .stroke {
+    font-family: var(--font-sig);
+    font-size: 38px;
+    color: var(--ink-900);
+    line-height: 1;
+    transform: rotate(-4deg);
+  }
+  .sig-canvas .empty {
+    font-size: 11.5px; color: var(--ink-300);
+  }
+  .sig-canvas .baseline {
+    position: absolute; left: 16px; right: 16px; bottom: 18px;
+    border-top: 1px solid var(--ink-200);
+  }
+  .sig-canvas .x-mark {
+    position: absolute; left: 16px; bottom: 22px;
+    font-size: 12px; color: var(--ink-300);
+    font-family: var(--font-mono);
+  }
+  .sig-canvas .clear {
+    position: absolute; top: 8px; right: 10px;
+    font-size: 10.5px; color: var(--ink-400);
+    cursor: pointer;
+  }
+
+  .sig-text-preview {
+    background: white;
+    border: 1px solid rgba(228,223,210,0.8);
+    border-radius: 8px;
+    height: 90px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .sig-text-preview .stroke {
+    font-family: var(--font-sig);
+    font-size: 36px;
+    color: var(--ink-900);
+    line-height: 1;
+  }
+
+  .sig-field {
+    display: block; margin-top: 12px;
+  }
+  .sig-field .lbl {
+    font-size: 9.5px; font-weight: 600; letter-spacing: 0.1em;
+    color: var(--ink-500); text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .sig-field input {
+    width: 100%;
+    border: 1px solid rgba(201,194,177,0.7);
+    background: white;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-family: inherit; font-size: 13px; color: var(--ink-900);
+  }
+
+  .sig-checkbox {
+    display: flex; align-items: flex-start; gap: 10px;
+    margin-top: 12px;
+    font-size: 11.5px; color: var(--ink-700);
+    line-height: 1.5;
+  }
+  .sig-checkbox .box {
+    width: 16px; height: 16px; flex-shrink: 0; margin-top: 1px;
+    border: 1px solid var(--ink-300); border-radius: 4px;
+    background: white; position: relative;
+  }
+  .sig-checkbox.on .box {
+    background: var(--brand-700); border-color: var(--brand-700);
+  }
+  .sig-checkbox.on .box::after {
+    content: ""; position: absolute;
+    left: 4px; top: 1px;
+    width: 5px; height: 9px;
+    border: solid white; border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+  .sig-checkbox strong { color: var(--ink-900); font-weight: 500; }
+
+  .sig-actions {
+    display: flex; gap: 8px; margin-top: 14px;
+  }
+  .sig-actions .btn { flex: 1; }
+
+  .decline-link {
+    margin-top: 12px;
+    text-align: center;
+    font-size: 11.5px;
+    color: var(--ink-500);
+  }
+  .decline-link a { color: var(--ink-500); text-decoration: none; }
+  .decline-link a:hover { color: var(--rose-700); text-decoration: underline; }
+
+  .escape-link {
+    padding: 12px 18px;
+    background: var(--canvas-soft);
+    border-top: 1px solid var(--ink-100);
+    font-size: 10.5px; color: var(--ink-500);
+    text-align: center; line-height: 1.5;
+  }
+  .escape-link a { color: var(--ink-700); text-decoration: underline; text-underline-offset: 2px; }
+
+  /* ───────── document-style frame (variation B) ───────── */
+  .doc-frame {
+    background: white;
+    border: 1px solid rgba(228,223,210,0.8);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(26,24,20,0.03);
+  }
+  .doc-toolbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 18px;
+    background: var(--ink-900); color: var(--ink-50);
+    font-size: 11.5px;
+  }
+  .doc-toolbar .left { display: flex; align-items: center; gap: 12px; }
+  .doc-toolbar .progress {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: var(--font-mono);
+  }
+  .doc-toolbar .progress .dots {
+    display: flex; gap: 3px;
+  }
+  .doc-toolbar .progress .dots span {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--ink-700);
+  }
+  .doc-toolbar .progress .dots span.on { background: var(--brand-300); }
+  .doc-toolbar .right { display: flex; gap: 6px; align-items: center; }
+  .doc-toolbar .right .btn.sm { font-size: 11px; }
+
+  .doc-page {
+    padding: 32px 44px;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  .doc-page .doc-h {
+    font-family: var(--font-display); font-weight: 500;
+    font-size: 28px; letter-spacing: -0.022em; line-height: 1.04;
+    color: var(--ink-900); margin: 0 0 6px;
+  }
+  .doc-page .doc-sub {
+    font-size: 13px; color: var(--ink-500);
+    border-bottom: 1px solid var(--ink-200);
+    padding-bottom: 18px; margin-bottom: 22px;
+  }
+  .doc-section {
+    margin-bottom: 22px;
+    padding: 14px 18px;
+    border-left: 2px solid var(--ink-100);
+  }
+  .doc-section.reviewed {
+    border-left-color: var(--brand-500);
+    background: rgba(236, 253, 245, 0.4);
+  }
+  .doc-section .dh {
+    font-size: 10px; font-weight: 600; letter-spacing: 0.12em;
+    color: var(--ink-500); text-transform: uppercase;
+    margin-bottom: 6px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .doc-section.reviewed .dh { color: var(--brand-700); }
+  .doc-section .reviewed-mark {
+    font-family: var(--font-mono); font-size: 9.5px;
+    color: var(--brand-700);
+    display: inline-flex; align-items: center; gap: 4px;
+  }
+
+  .doc-sig-panel {
+    margin-top: 28px;
+    padding: 22px 26px;
+    background: var(--canvas-soft);
+    border: 1px solid rgba(228,223,210,0.8);
+    border-radius: 10px;
+  }
+
+  /* ───────── split pane (variation C) ───────── */
+  .split-frame {
+    background: white;
+    border: 1px solid rgba(228,223,210,0.8);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(26,24,20,0.03);
+  }
+  .split-bar {
+    padding: 10px 18px;
+    background: var(--canvas-soft);
+    border-bottom: 1px solid rgba(228,223,210,0.7);
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 11.5px; color: var(--ink-500);
+  }
+  .split-bar .left { display: flex; align-items: center; gap: 10px; }
+  .split-bar .left .gm {
+    width: 16px; height: 16px; border-radius: 4px;
+    background: linear-gradient(135deg, var(--brand-500), var(--brand-700));
+  }
+  .split-body {
+    display: grid; grid-template-columns: 1fr 380px;
+  }
+  .split-recap {
+    padding: 24px;
+    background: white;
+    max-height: 600px; overflow: auto;
+  }
+  .split-recap h5 {
+    font-family: var(--font-display); font-weight: 500;
+    font-size: 24px; letter-spacing: -0.022em; line-height: 1.04;
+    margin: 0 0 4px;
+    color: var(--ink-900); font-optical-sizing: auto;
+  }
+  .split-recap .when {
+    font-size: 12px; color: var(--ink-500);
+    border-bottom: 1px dashed var(--ink-200);
+    padding-bottom: 16px; margin-bottom: 18px;
+  }
+  .split-sig {
+    background: var(--canvas-soft);
+    border-left: 1px solid rgba(228,223,210,0.8);
+    padding: 22px;
+    position: relative;
+  }
+  .split-sig .sticky-inner { position: sticky; top: 22px; }
+  .split-sig .ph {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.12em;
+    color: var(--brand-700); text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .split-sig .h {
+    font-family: var(--font-display); font-weight: 500;
+    font-size: 22px; letter-spacing: -0.018em;
+    color: var(--ink-900); margin: 0 0 14px;
+  }
+
+  /* ───────── conversational / letter (variation D) ───────── */
+  .letter-frame {
+    background: white;
+    border: 1px solid rgba(228,223,210,0.8);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(26,24,20,0.03);
+    max-width: 620px;
+    margin: 0 auto;
+  }
+  .letter-head {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 22px;
+    border-bottom: 1px solid var(--ink-100);
+  }
+  .letter-head .ava {
+    width: 38px; height: 38px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--brand-300), var(--brand-700));
+    color: white; display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 600;
+    flex-shrink: 0;
+  }
+  .letter-head .who {
+    flex: 1; min-width: 0;
+  }
+  .letter-head .who .nm {
+    font-size: 13.5px; font-weight: 600; color: var(--ink-900);
+  }
+  .letter-head .who .to {
+    font-size: 11.5px; color: var(--ink-500);
+    display: flex; align-items: baseline; gap: 6px;
+  }
+  .letter-head .who .to .lbl { color: var(--ink-400); font-family: var(--font-mono); font-size: 10px; }
+  .letter-head .when {
+    font-size: 11px; color: var(--ink-400); font-family: var(--font-mono);
+  }
+  .letter-body {
+    padding: 20px 26px 4px;
+    font-size: 14px; color: var(--ink-800);
+    line-height: 1.65;
+  }
+  .letter-body p { margin: 0 0 14px; }
+  .letter-body .signoff { color: var(--ink-600); }
+
+  .inline-card {
+    margin: 10px 0 14px;
+    padding: 12px 14px;
+    border: 1px solid rgba(228,223,210,0.8);
+    background: var(--canvas-soft);
+    border-radius: 8px;
+  }
+  .inline-card .ph {
+    font-size: 10px; font-weight: 600; letter-spacing: 0.1em;
+    color: var(--brand-700); text-transform: uppercase;
+    margin-bottom: 6px;
+    display: flex; justify-content: space-between; align-items: baseline;
+  }
+  .inline-card table { width: 100%; }
+  .inline-card table td { padding: 2px 0; font-size: 12px; }
+  .inline-card table td.k { color: var(--ink-500); }
+  .inline-card table td.v { color: var(--ink-900); font-family: var(--font-mono); text-align: right; font-variant-numeric: tabular-nums; }
+
+  .letter-sig {
+    margin: 18px 26px 22px;
+    padding: 18px 20px 16px;
+    background: var(--canvas-soft);
+    border: 1px solid rgba(228,223,210,0.8);
+    border-radius: 8px;
+  }
+
+  /* ───────── confirmation states ───────── */
+  .confirmation {
+    background: white;
+    border: 1px solid rgba(228,223,210,0.8);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .confirmation .head {
+    padding: 18px 22px;
+    background: linear-gradient(to bottom, rgba(167,243,208,0.30), rgba(167,243,208,0.08));
+    border-bottom: 1px solid rgba(228,223,210,0.7);
+  }
+  .confirmation .head .stamp {
+    font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--brand-700); font-weight: 600;
+    display: inline-flex; align-items: center; gap: 6px;
+    margin-bottom: 6px;
+  }
+  .confirmation .head h6 {
+    font-family: var(--font-display); font-weight: 500;
+    font-size: 22px; letter-spacing: -0.018em;
+    margin: 0; color: var(--ink-900);
+  }
+  .confirmation .body {
+    padding: 16px 22px;
+    font-size: 12.5px; color: var(--ink-700);
+    line-height: 1.6;
+  }
+  .confirmation .body .sig-receipt {
+    margin: 12px 0;
+    padding: 14px;
+    background: var(--canvas-soft);
+    border: 1px dashed var(--ink-200);
+    border-radius: 8px;
+    text-align: center;
+  }
+  .confirmation .body .sig-receipt .stroke {
+    font-family: var(--font-sig);
+    font-size: 32px;
+    color: var(--ink-900);
+    line-height: 1;
+  }
+  .confirmation .body .sig-receipt .meta {
+    font-family: var(--font-mono); font-size: 10.5px;
+    color: var(--ink-500); margin-top: 8px;
+  }
+
+  /* decline state */
+  .decline-state {
+    background: white;
+    border: 1px solid rgba(254,202,202,0.8);
+    border-radius: 10px;
+    padding: 16px 20px;
+  }
+  .decline-state .ph {
+    font-size: 10.5px; font-weight: 600; letter-spacing: 0.1em;
+    color: var(--rose-700); text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .decline-state h6 {
+    font-family: var(--font-display); font-weight: 500;
+    font-size: 18px; letter-spacing: -0.015em;
+    margin: 0 0 8px; color: var(--ink-900);
+  }
+  .decline-state .sub {
+    font-size: 12px; color: var(--ink-500); line-height: 1.55;
+    margin-bottom: 10px;
+  }
+  .decline-state textarea {
+    width: 100%; min-height: 80px;
+    border: 1px solid rgba(201,194,177,0.7);
+    background: white;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-family: inherit; font-size: 12.5px; color: var(--ink-900);
+    line-height: 1.55;
+    resize: vertical;
+  }
+  .decline-state .acts {
+    display: flex; gap: 8px; justify-content: flex-end;
+    margin-top: 10px;
+  }
+
+  /* ───────── compare ───────── */
+  .compare-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px;
+  }
+  .compare-card {
+    background: white;
+    border: 1px solid rgba(228,223,210,0.8);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(26,24,20,0.03);
+  }
+  .compare-card .ch {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--ink-100);
+  }
+  .compare-card .ch .ct { font-size: 13px; font-weight: 600; color: var(--ink-900); }
+  .compare-card .ch .cd { font-size: 11.5px; color: var(--ink-500); margin-top: 2px; line-height: 1.5; }
+  .compare-card .cb {
+    padding: 14px 16px;
+    font-size: 12px; color: var(--ink-700); line-height: 1.6;
+  }
+  .compare-card .cb strong { color: var(--ink-900); font-weight: 500; }
+
+  /* ───────── mobile-adapt: phone mockup + notes ───────── */
+  .mobile-adapt {
+    margin-top: 22px;
+    padding-top: 22px;
+    border-top: 1px dashed var(--ink-200);
+    display: grid;
+    grid-template-columns: 340px minmax(0, 1fr);
+    gap: 28px;
+    align-items: start;
+  }
+  .mobile-adapt .label {
+    font-family: var(--font-mono);
+    font-size: 10.5px; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--ink-400);
+    margin-bottom: 8px; text-align: center;
+  }
+  .mobile-adapt .notes {
+    padding-top: 22px;
+    font-size: 12.5px; color: var(--ink-700); line-height: 1.65;
+  }
+  .mobile-adapt .notes h5 {
+    font-family: var(--font-display); font-weight: 500;
+    font-size: 20px; letter-spacing: -0.018em;
+    margin: 0 0 12px; color: var(--ink-900);
+    font-optical-sizing: auto;
+  }
+  .mobile-adapt .notes ul {
+    list-style: none; padding: 0; margin: 0;
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .mobile-adapt .notes li {
+    display: flex; gap: 10px; align-items: flex-start;
+  }
+  .mobile-adapt .notes li .mk {
+    width: 18px; flex-shrink: 0;
+    font-family: var(--font-mono); font-size: 10px;
+    color: var(--brand-700); letter-spacing: 0.06em;
+    padding-top: 2px;
+  }
+  .mobile-adapt .notes li .b {
+    flex: 1;
+  }
+  .mobile-adapt .notes li .b strong { color: var(--ink-900); font-weight: 500; }
+
+  /* mobile doc sections — tighter padding */
+  .phone .doc-section-m {
+    margin: 0 14px 8px;
+    padding: 10px 12px;
+    border-left: 2px solid var(--ink-100);
+    background: white;
+    border-radius: 0 6px 6px 0;
+  }
+  .phone .doc-section-m.reviewed {
+    border-left-color: var(--brand-500);
+    background: rgba(236, 253, 245, 0.4);
+  }
+  .phone .doc-section-m .dh {
+    font-size: 9px; font-weight: 600; letter-spacing: 0.1em;
+    color: var(--ink-500); text-transform: uppercase;
+    margin-bottom: 4px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .phone .doc-section-m.reviewed .dh { color: var(--brand-700); }
+  .phone .doc-section-m .dh .ck {
+    display: inline-flex; align-items: center; gap: 3px;
+    font-family: var(--font-mono);
+  }
+  .phone .doc-section-m table { width: 100%; }
+  .phone .doc-section-m table td { padding: 2px 0; font-size: 11.5px; vertical-align: top; }
+  .phone .doc-section-m table td.k { color: var(--ink-500); width: 50%; }
+  .phone .doc-section-m table td.v { color: var(--ink-900); font-family: var(--font-mono); text-align: right; font-variant-numeric: tabular-nums; }
+  .phone .doc-section-m table td.v.txt { font-family: var(--font-sans); text-align: left; padding-left: 10px; }
+  .phone .doc-section-m .recoup-mini {
+    padding: 4px 0; font-size: 11.5px;
+    display: flex; justify-content: space-between; align-items: baseline;
+    border-bottom: 1px dotted var(--ink-200);
+  }
+  .phone .doc-section-m .recoup-mini:last-child { border-bottom: 0; }
+  .phone .doc-section-m .recoup-mini .lbl { color: var(--ink-800); }
+  .phone .doc-section-m .recoup-mini .lbl .sub { color: var(--ink-500); font-size: 10px; display: block; margin-top: 1px; }
+  .phone .doc-section-m .recoup-mini .amt { font-family: var(--font-mono); color: var(--ink-900); font-variant-numeric: tabular-nums; }
+
+  /* mobile doc top toolbar */
+  .doc-toolbar-m {
+    background: var(--ink-900); color: var(--ink-50);
+    padding: 8px 14px;
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 11px;
+  }
+  .doc-toolbar-m .left {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: var(--font-mono); letter-spacing: 0.04em;
+  }
+  .doc-toolbar-m .dots {
+    display: inline-flex; gap: 3px;
+  }
+  .doc-toolbar-m .dots span {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: var(--ink-700);
+  }
+  .doc-toolbar-m .dots span.on { background: var(--brand-300); }
+
+  /* mobile tabs (for variation C) */
+  .phone-tabs {
+    display: flex; gap: 0;
+    border-bottom: 1px solid var(--ink-200);
+    margin: 10px 14px 0;
+  }
+  .phone-tabs .t {
+    flex: 1; padding: 9px 4px;
+    text-align: center;
+    font-size: 12px; font-weight: 500;
+    color: var(--ink-500);
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .phone-tabs .t .num {
+    font-family: var(--font-mono); font-size: 10px;
+    color: var(--ink-400);
+    padding: 1px 5px; border-radius: 4px;
+    background: var(--ink-100);
+  }
+  .phone-tabs .t.on {
+    color: var(--ink-900);
+    border-bottom-color: var(--ink-900);
+  }
+  .phone-tabs .t.on .num {
+    color: white; background: var(--brand-700);
+  }
+
+  /* mobile mail-app shell (variation D) */
+  .mail-shell {
+    background: var(--canvas);
+    padding: 0;
+  }
+  .mail-app-bar {
+    padding: 8px 14px;
+    background: rgba(255,255,255,0.85);
+    border-bottom: 1px solid var(--ink-100);
+    display: flex; align-items: center; gap: 10px;
+    font-size: 11px; color: var(--ink-500);
+  }
+  .mail-app-bar .back {
+    color: var(--ink-600);
+  }
+  .mail-app-bar .thread-name {
+    flex: 1; min-width: 0;
+    font-size: 11px; color: var(--ink-700);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .mail-app-bar .actions {
+    display: flex; gap: 8px;
+    color: var(--ink-400);
+  }
+
+  /* mobile letter-body inside a phone */
+  .phone .letter-body-m {
+    padding: 14px 16px 6px;
+    font-size: 13px; color: var(--ink-800); line-height: 1.6;
+  }
+  .phone .letter-body-m p { margin: 0 0 10px; }
+  .phone .letter-body-m .inline-card {
+    margin: 8px 0 10px;
+    padding: 10px 12px;
+  }
+  .phone .letter-body-m .inline-card .ph { font-size: 9px; }
+  .phone .letter-body-m .inline-card table td { font-size: 11.5px; padding: 1px 0; }
+
+  /* mobile sig-panel — slightly tighter */
+  .phone .sig-panel-m {
+    padding: 14px 16px;
+    background: var(--canvas-soft);
+    border-top: 1px solid var(--ink-100);
+  }
+  .phone .sig-panel-m .ph {
+    font-size: 9.5px; font-weight: 600; letter-spacing: 0.1em;
+    color: var(--brand-700); text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .phone .sig-panel-m .tabs-m {
+    display: inline-flex; gap: 4px; padding: 3px;
+    background: white; border: 1px solid rgba(228,223,210,0.8); border-radius: 8px;
+    margin-bottom: 10px;
+  }
+  .phone .sig-panel-m .tabs-m button {
+    background: transparent; border: 0; cursor: pointer;
+    padding: 4px 10px; border-radius: 6px;
+    font-family: inherit; font-size: 11px; font-weight: 500;
+    color: var(--ink-500);
+  }
+  .phone .sig-panel-m .tabs-m button.on {
+    background: var(--ink-900); color: white;
+  }
+  .phone .sig-panel-m .sig-actions-m {
+    display: flex; flex-direction: column; gap: 8px; margin-top: 12px;
+  }
+  .phone .sig-panel-m .sig-actions-m .btn { width: 100%; }
+
+  /* responsive */
+  @media (max-width: 1100px) {
+    .anatomy .grid { grid-template-columns: repeat(2, 1fr); }
+    .triptych { grid-template-columns: 1fr; }
+    .split-body { grid-template-columns: 1fr; }
+    .compare-grid { grid-template-columns: 1fr 1fr; }
+    .mobile-adapt { grid-template-columns: 1fr; }
+    .mobile-adapt .notes { padding-top: 8px; }
+  }
+  @media (max-width: 700px) {
+    .canvas-page { padding: 32px 16px 80px; }
+    .cover h1 { font-size: 52px; }
+    .sec-head { flex-direction: column; align-items: stretch; }
+    .sec-head .sub { text-align: left; max-width: none; }
+    .anatomy .grid { grid-template-columns: 1fr; }
+    .compare-grid { grid-template-columns: 1fr; }
+    .doc-page { padding: 22px 24px; }
+  }
+</style>
+</head>
+<body>
+
+<main class="canvas-page">
+
+  <!-- ───────── COVER ───────── -->
+  <section class="cover">
+    <div class="meta-row">
+      <span>Greenroom</span><span class="dot"></span>
+      <span>Design canvas</span><span class="dot"></span>
+      <span>Slice 04 · Agent sign-off</span><span class="dot"></span>
+      <span>v0.1</span>
+    </div>
+    <h1>The page where<br/>Daniel turns a draft<br/>into <em>signed</em>.</h1>
+    <p class="lede">
+      Daniel-at-WME taps the magic link between meetings, on his phone, in
+      a hallway. He has thirty seconds to confirm the deal Mariana sent, sign,
+      and move on. Four different design philosophies applied to the same anatomy
+      &mdash; phone-native quick-sign, full-document ceremony, split review-and-sign,
+      and a conversational letter that reads like a reply to Mariana&rsquo;s thread.
+    </p>
+    <nav class="toc">
+      <a href="#anatomy"><span class="n">00 /</span> The anatomy &middot; what every variation has to include</a>
+      <a href="#va"><span class="n">A /</span> Phone-first quick-sign &middot; minimum ceremony, thumb-friendly</a>
+      <a href="#vb"><span class="n">B /</span> Document ceremony &middot; legal-doc feel, "I reviewed this" markers</a>
+      <a href="#vc"><span class="n">C /</span> Split review-and-sign &middot; recap left, sign sticky right</a>
+      <a href="#vd"><span class="n">D /</span> Conversational letter &middot; reads like a reply to Mariana</a>
+    </nav>
+  </section>
+
+  <!-- ═══════════════ §00 · ANATOMY ═══════════════ -->
+  <section id="anatomy">
+    <div class="sec-head">
+      <span class="num">00 / 05</span>
+      <h2>The anatomy</h2>
+      <div class="sub">
+        Eight pieces from the productspec. Every variation includes all eight;
+        they differ in how they&rsquo;re arranged, weighted, and framed.
+      </div>
+    </div>
+
+    <div class="anatomy">
+      <div class="grid">
+        <div class="piece">
+          <span class="num">01</span>
+          <div class="ph">Header</div>
+          <h3 class="pn">Show name + date</h3>
+          <p class="pd">Branded prompt: <strong>&ldquo;Please review and sign the deal below.&rdquo;</strong> Subhead names the artist and venue.</p>
+        </div>
+        <div class="piece">
+          <span class="num">02</span>
+          <div class="ph">Recap</div>
+          <h3 class="pn">Structured deal</h3>
+          <p class="pd">Every term rendered explicitly &mdash; including <strong>bucket</strong> and <strong>applies-at</strong> on each recoup, and the full <strong>deduction order</strong>.</p>
+        </div>
+        <div class="piece">
+          <span class="num">03</span>
+          <div class="ph">Source</div>
+          <h3 class="pn">Original email</h3>
+          <p class="pd">Collapsed by default. Visible if the agent wants to compare against the original message that started the negotiation.</p>
+        </div>
+        <div class="piece">
+          <span class="num">04</span>
+          <div class="ph">Signature</div>
+          <h3 class="pn">Draw + Type tabs</h3>
+          <p class="pd"><strong>Draw</strong> canvas (touch on phone). <strong>Type</strong> field renders the typed name in a script preview. Small "clear" link.</p>
+        </div>
+        <div class="piece">
+          <span class="num">05</span>
+          <div class="ph">Printed name</div>
+          <h3 class="pn">Required text field</h3>
+          <p class="pd">A second proof of identity alongside the captured signature. Auto-fills from the recipient on the magic link, but editable.</p>
+        </div>
+        <div class="piece">
+          <span class="num">06</span>
+          <div class="ph">Agreement</div>
+          <h3 class="pn">"I agree" checkbox</h3>
+          <p class="pd">Single sentence: <em>this constitutes my electronic signature and I have authority to bind the artist to these terms</em>. Required.</p>
+        </div>
+        <div class="piece">
+          <span class="num">07</span>
+          <div class="ph">Sign / Decline</div>
+          <h3 class="pn">Two paths</h3>
+          <p class="pd"><strong>Sign and confirm</strong> &mdash; gated on signature + name + checkbox. <strong>Decline with comment</strong> &mdash; lighter, no signature.</p>
+        </div>
+        <div class="piece">
+          <span class="num">08</span>
+          <div class="ph">Escape hatch</div>
+          <h3 class="pn">Reply to Mariana</h3>
+          <p class="pd">Small link near the bottom: <em>&ldquo;Need to talk? Reply to the original email.&rdquo;</em> A safety valve for &ldquo;I don&rsquo;t want to commit either way yet.&rdquo;</p>
+        </div>
+      </div>
+
+      <div class="principle">
+        <strong>The four variations differ in framing, not in field set.</strong>
+        Every one of the eight pieces above is present in all four designs. What changes is
+        <span class="kw">how the agent feels</span> on arrival &mdash; in a rush, in a ceremony,
+        with the recap always in view, or like they&rsquo;re replying to a friend.
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ VARIATION A · PHONE-FIRST QUICK-SIGN ═══════════════ -->
+  <section id="va" style="margin-top: 96px;">
+    <div class="sec-head">
+      <span class="num">A / 05</span>
+      <h2>Phone-first quick-sign</h2>
+      <div class="sub">
+        Designed for Daniel between meetings. Vertical scroll, thumb-sized
+        signature canvas, minimum ceremony. The 80% case &mdash; agents read
+        most email on their phone.
+      </div>
+    </div>
+
+    <div class="specimen">
+      <div class="spec-meta">
+        <span>A &middot; Phone-first quick-sign &middot; mobile-primary</span>
+        <span class="tags">
+          <span class="tag">thumb-friendly</span>
+          <span class="tag">single-column</span>
+          <span class="tag">low-friction</span>
+        </span>
+      </div>
+
+      <div class="triptych">
+        <!-- COL 1: the sign view -->
+        <div>
+          <div class="col-head">
+            <span class="n">A.1</span>
+            <h4>The sign view</h4>
+          </div>
+          <div class="col-desc">Top-to-bottom: branded header, structured recap, source collapsed, signature, sign.</div>
+
+          <div class="phone">
+            <div class="screen">
+              <div class="notch"></div>
+              <div class="status-bar">
+                <span>9:41</span>
+                <span class="icons">
+                  <svg viewBox="0 0 24 24"><path d="M2 12c5-3 15-3 20 0"/><path d="M5 16c3-2 11-2 14 0"/><circle cx="12" cy="20" r="1.5" fill="currentColor"/></svg>
+                  <svg viewBox="0 0 24 24"><rect x="2" y="9" width="16" height="8" rx="2"/><rect x="20" y="11" width="2" height="4" rx="0.5" fill="currentColor"/></svg>
+                </span>
+              </div>
+
+              <div class="show-head">
+                <div class="greenroom-mark">
+                  <span class="gm"></span> Greenroom &middot; sign deal
+                </div>
+                <h5>Coastal Spell</h5>
+                <div class="when">Sat, Aug 9 &middot; The Crescent &middot; Nashville</div>
+                <div class="prompt">
+                  <strong>Hi Daniel.</strong> Mariana sent this deal for your sign-off.
+                  Tap <strong>Sign and confirm</strong> when you&rsquo;re happy with it.
+                </div>
+              </div>
+
+              <div class="recap-block">
+                <div class="bh">Structure <span class="badge vs">Vs · 85/15</span></div>
+                <table>
+                  <tr><td class="k">Guarantee</td><td class="v">$9,500.00</td></tr>
+                  <tr><td class="k">Percentage</td><td class="v txt">85% of net</td></tr>
+                  <tr><td class="k">Expense cap</td><td class="v">$6,500.00</td></tr>
+                  <tr><td class="k">Hospo cap</td><td class="v">$1,200.00</td></tr>
+                </table>
+              </div>
+
+              <div class="recap-block">
+                <div class="bh">Recoups</div>
+                <div class="recoup-line">
+                  <div class="lbl">WNXP radio<span class="sub">Inside cap &middot; before split</span></div>
+                  <div class="amt">$850</div>
+                </div>
+                <div class="recoup-line">
+                  <div class="lbl">Bus deposit<span class="sub">Off-top &middot; before split</span></div>
+                  <div class="amt">$500</div>
+                </div>
+              </div>
+
+              <div class="source-collapse">
+                <span class="left">
+                  <svg class="ico ico-xs" viewBox="0 0 24 24"><path d="M4 4h16c1 0 2 1 2 2v12c0 1-1 2-2 2H4c-1 0-2-1-2-2V6c0-1 1-2 2-2z"/><path d="m22 6-10 7L2 6"/></svg>
+                  Original email
+                </span>
+                <span>&rsaquo;</span>
+              </div>
+
+              <div class="sig-panel">
+                <div class="ph">Your signature</div>
+                <div class="tabs">
+                  <button class="on">Draw</button>
+                  <button>Type</button>
+                </div>
+                <div class="sig-canvas">
+                  <div class="stroke">Daniel B.</div>
+                  <div class="baseline"></div>
+                  <div class="x-mark">×</div>
+                  <span class="clear">Clear</span>
+                </div>
+
+                <div class="sig-field">
+                  <div class="lbl">Printed name</div>
+                  <input value="Daniel Brooks" />
+                </div>
+
+                <label class="sig-checkbox on">
+                  <span class="box"></span>
+                  <span>I agree this constitutes my electronic signature and that I have the authority to bind the artist to these terms.</span>
+                </label>
+
+                <div class="sig-actions">
+                  <button class="btn brand lg" style="flex: 2;">
+                    <svg class="ico ico-sm" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>
+                    Sign and confirm
+                  </button>
+                </div>
+                <div class="decline-link">
+                  <a href="#">Decline with a comment →</a>
+                </div>
+              </div>
+
+              <div class="escape-link">
+                Need to talk to Mariana? <a href="#">Reply to the original email.</a>
+              </div>
+
+              <div class="home-bar"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- COL 2: post-sign confirmation -->
+        <div>
+          <div class="col-head">
+            <span class="n">A.2</span>
+            <h4>After signing</h4>
+          </div>
+          <div class="col-desc">A confirmation card replaces the sign view, with the signature image and timestamp.</div>
+
+          <div class="confirmation">
+            <div class="head">
+              <div class="stamp">
+                <svg class="ico ico-xs" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/></svg>
+                Signed &middot; Aug 1, 14:42 CT
+              </div>
+              <h6>Coastal Spell &middot; deal is signed</h6>
+            </div>
+            <div class="body">
+              <p style="margin: 0 0 8px;">
+                You agreed to a <strong>Vs deal</strong> at 85/15 with a $9,500 guarantee.
+                Mariana&rsquo;s been notified.
+              </p>
+              <div class="sig-receipt">
+                <div class="stroke">Daniel B.</div>
+                <div class="meta">Daniel Brooks &middot; Aug 1, 2026 &middot; 14:42 CT</div>
+              </div>
+              <p style="margin: 8px 0 0; font-size: 11.5px; color: var(--ink-500);">
+                A PDF of the signed deal is on the way to your inbox. If anything looks
+                wrong, reply to Mariana&rsquo;s email &mdash; she can amend and re-send.
+              </p>
+            </div>
+          </div>
+
+          <div class="decline-state" style="margin-top: 14px;">
+            <div class="ph">Decline &middot; tap-here state</div>
+            <h6>Decline this deal</h6>
+            <div class="sub">Leave a quick comment for Mariana. No signature needed.</div>
+            <textarea>The 85/15 split looks off — we agreed 87/13 on the call. Can you check and re-send?</textarea>
+            <div class="acts">
+              <button class="btn ghost sm">Cancel</button>
+              <button class="btn danger sm">Send decline</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- COL 3: notes -->
+        <div>
+          <div class="col-head">
+            <span class="n">A.3</span>
+            <h4>Why this shape</h4>
+          </div>
+          <div class="col-desc">Notes on the design choices that make this variation phone-native.</div>
+
+          <div class="card" style="padding: 18px;">
+            <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 14px; font-size: 12.5px; color: var(--ink-700); line-height: 1.55;">
+              <li>
+                <div style="font-family: var(--font-mono); font-size: 10px; color: var(--brand-700); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 2px;">Thumb zone</div>
+                <strong style="color: var(--ink-900); font-weight: 500;">Sign button bottom-aligned</strong> within natural thumb reach. The signature canvas sits above it &mdash; you draw then immediately sign without scrolling.
+              </li>
+              <li>
+                <div style="font-family: var(--font-mono); font-size: 10px; color: var(--brand-700); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 2px;">Draw default</div>
+                <strong style="color: var(--ink-900); font-weight: 500;">Draw tab is selected by default</strong> on touch devices. Type falls back to a script-style preview for desktop / fingers not behaving.
+              </li>
+              <li>
+                <div style="font-family: var(--font-mono); font-size: 10px; color: var(--brand-700); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 2px;">Source collapsed</div>
+                <strong style="color: var(--ink-900); font-weight: 500;">Original email is one tap away</strong>, not in your face. Most agents trust the structured recap they sent the terms from.
+              </li>
+              <li>
+                <div style="font-family: var(--font-mono); font-size: 10px; color: var(--brand-700); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 2px;">Decline isn&rsquo;t scary</div>
+                <strong style="color: var(--ink-900); font-weight: 500;">Decline link is a single line below Sign</strong>. Lighter weight, but always visible. No signature required to decline.
+              </li>
+              <li>
+                <div style="font-family: var(--font-mono); font-size: 10px; color: var(--brand-700); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 2px;">Reply escape hatch</div>
+                <strong style="color: var(--ink-900); font-weight: 500;">"Reply to the original email"</strong> for the agents who want to negotiate inline. Always reachable.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="takeaway">
+        <strong>Why this works.</strong> Matches the dominant reality &mdash; agents read on phones,
+        between meetings. The vertical scroll fits the medium; the
+        <span class="kw">touch-canvas signature</span> is the input agents most want when signing from
+        a phone. <strong>Why it might not.</strong> Less ceremony might feel
+        <em>too</em> casual for higher-value deals. The agent might sign without really
+        reading. Pair with mandatory scroll-to-bottom or a small "you&rsquo;ve seen the
+        recoups" inline marker for the deals where it matters.
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ VARIATION B · DOCUMENT CEREMONY ═══════════════ -->
+  <section id="vb">
+    <div class="sec-head">
+      <span class="num">B / 05</span>
+      <h2>Document ceremony</h2>
+      <div class="sub">
+        Legal-doc feel. Each section gets a &ldquo;reviewed&rdquo; marker as the
+        agent scrolls past. Higher friction, more deliberate &mdash; for the
+        deals that warrant it.
+      </div>
+    </div>
+
+    <div class="specimen">
+      <div class="spec-meta">
+        <span>B &middot; Document ceremony &middot; desktop &amp; tablet</span>
+        <span class="tags">
+          <span class="tag">section-markers</span>
+          <span class="tag">progress-toolbar</span>
+          <span class="tag">high-ceremony</span>
+        </span>
+      </div>
+
+      <div class="doc-frame">
+        <div class="doc-toolbar">
+          <div class="left">
+            <span style="display: inline-flex; align-items: center; gap: 6px;">
+              <span style="width: 14px; height: 14px; border-radius: 3px; background: linear-gradient(135deg, var(--brand-500), var(--brand-700));"></span>
+              <span style="font-weight: 500;">Greenroom &middot; sign deal</span>
+            </span>
+            <span style="opacity: 0.4;">|</span>
+            <span class="progress">
+              <span>Reviewed</span>
+              <span class="dots">
+                <span class="on"></span><span class="on"></span><span class="on"></span><span></span><span></span>
+              </span>
+              <span>3 of 5</span>
+            </span>
+          </div>
+          <div class="right">
+            <button class="btn ghost sm" style="color: var(--ink-50);">
+              <svg class="ico ico-xs" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>
+              Original email
+            </button>
+            <button class="btn ghost sm" style="color: var(--ink-50);">
+              <svg class="ico ico-xs" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/></svg>
+              Help
+            </button>
+          </div>
+        </div>
+
+        <div class="doc-page">
+          <div class="doc-h">Coastal Spell</div>
+          <div class="doc-sub">
+            Deal for the Sat, Aug 9, 2026 show at The Crescent &middot; Nashville &middot;
+            sent by Mariana Reyes on Aug 1, 14:32 CT.
+          </div>
+
+          <div class="doc-section reviewed">
+            <div class="dh">
+              01 &middot; Deal structure
+              <span class="reviewed-mark">
+                <svg class="ico ico-xs" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>
+                Reviewed
+              </span>
+            </div>
+            <table style="width: 100%; font-size: 12.5px;">
+              <tr><td style="color: var(--ink-500); padding: 4px 0;">Deal type</td><td style="text-align: right; padding: 4px 0;">Vs &middot; 85/15</td></tr>
+              <tr><td style="color: var(--ink-500); padding: 4px 0;">Guarantee</td><td style="text-align: right; padding: 4px 0; font-family: var(--font-mono);">$9,500.00</td></tr>
+              <tr><td style="color: var(--ink-500); padding: 4px 0;">Percentage basis</td><td style="text-align: right; padding: 4px 0;">Net &middot; after expenses (locked)</td></tr>
+              <tr><td style="color: var(--ink-500); padding: 4px 0;">Expense cap</td><td style="text-align: right; padding: 4px 0; font-family: var(--font-mono);">$6,500.00</td></tr>
+              <tr><td style="color: var(--ink-500); padding: 4px 0;">Hospitality cap</td><td style="text-align: right; padding: 4px 0; font-family: var(--font-mono);">$1,200.00 &middot; inside cap</td></tr>
+            </table>
+          </div>
+
+          <div class="doc-section reviewed">
+            <div class="dh">
+              02 &middot; Recoups (2)
+              <span class="reviewed-mark">
+                <svg class="ico ico-xs" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>
+                Reviewed
+              </span>
+            </div>
+            <div style="font-size: 12.5px; color: var(--ink-700);">
+              <div style="padding: 6px 0; border-bottom: 1px dotted var(--ink-200); display: flex; justify-content: space-between;">
+                <div>
+                  <div>WNXP radio buy</div>
+                  <div style="font-size: 10.5px; color: var(--ink-500);">Marketing &middot; <strong style="color: var(--sky-800); font-weight: 500;">inside cap</strong> &middot; before split</div>
+                </div>
+                <div style="font-family: var(--font-mono); font-variant-numeric: tabular-nums;">$850.00</div>
+              </div>
+              <div style="padding: 6px 0; display: flex; justify-content: space-between;">
+                <div>
+                  <div>Tour bus damage deposit return</div>
+                  <div style="font-size: 10.5px; color: var(--ink-500);">Damages &middot; <strong style="color: var(--rose-800); font-weight: 500;">off the top</strong> &middot; before split</div>
+                </div>
+                <div style="font-family: var(--font-mono); font-variant-numeric: tabular-nums;">$500.00</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="doc-section reviewed">
+            <div class="dh">
+              03 &middot; Deduction order
+              <span class="reviewed-mark">
+                <svg class="ico ico-xs" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>
+                Reviewed
+              </span>
+            </div>
+            <ol style="margin: 0; padding-left: 22px; font-size: 12.5px; color: var(--ink-700);">
+              <li>Ticketing fees</li>
+              <li>Off-top recoups</li>
+              <li>Show expenses (inside cap)</li>
+              <li>In-cap recoups</li>
+              <li>Artist split &middot; 85%</li>
+            </ol>
+          </div>
+
+          <div class="doc-section">
+            <div class="dh">
+              04 &middot; Comps + bonuses
+            </div>
+            <div style="font-size: 12.5px; color: var(--ink-700); line-height: 1.55;">
+              <div><strong style="color: var(--amber-800); font-weight: 500;">Counting:</strong> press, sponsor</div>
+              <div style="color: var(--ink-500);">Not counting: artist GL, label, venue staff, promo, other</div>
+              <div style="margin-top: 8px;"><strong style="color: var(--brand-700); font-weight: 500;">Sellout bonus:</strong> +$1,500 at 650 tix</div>
+              <div><strong style="color: var(--brand-700); font-weight: 500;">Gross &gt; $25k:</strong> +$1,000</div>
+            </div>
+          </div>
+
+          <div class="doc-section">
+            <div class="dh">
+              05 &middot; Original email <span class="badge default">collapsed</span>
+            </div>
+            <div style="font-size: 11.5px; color: var(--ink-500); padding: 4px 0;">
+              <em>From: Daniel Brooks &lt;daniel.brooks@wme.com&gt;</em> &middot; click to expand
+            </div>
+          </div>
+
+          <div class="doc-sig-panel">
+            <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.12em; color: var(--brand-700); text-transform: uppercase; margin-bottom: 4px;">
+              Signature of authorized agent
+            </div>
+            <p style="font-size: 12px; color: var(--ink-500); margin: 0 0 14px; line-height: 1.55;">
+              By signing below you confirm you&rsquo;ve reviewed all five sections above and have authority to bind the artist to these terms.
+            </p>
+
+            <div style="display: grid; grid-template-columns: 1.4fr 1fr; gap: 18px; align-items: start;">
+              <div>
+                <div class="tabs" style="display: inline-flex; gap: 4px; padding: 3px; background: white; border: 1px solid rgba(228,223,210,0.8); border-radius: 8px; margin-bottom: 10px;">
+                  <button class="btn ghost sm" style="background: var(--ink-900); color: white;">Draw</button>
+                  <button class="btn ghost sm">Type</button>
+                </div>
+                <div class="sig-canvas" style="height: 130px;">
+                  <div class="stroke">Daniel Brooks</div>
+                  <div class="baseline"></div>
+                  <div class="x-mark">×</div>
+                  <span class="clear">Clear</span>
+                </div>
+              </div>
+              <div>
+                <div class="sig-field" style="margin-top: 0;">
+                  <div class="lbl">Printed name</div>
+                  <input value="Daniel Brooks" />
+                </div>
+                <div class="sig-field">
+                  <div class="lbl">Date</div>
+                  <input value="August 1, 2026" />
+                </div>
+              </div>
+            </div>
+
+            <label class="sig-checkbox on" style="margin-top: 16px;">
+              <span class="box"></span>
+              <span>
+                <strong>I agree this constitutes my electronic signature</strong> and that I have the authority to bind the artist to these terms.
+              </span>
+            </label>
+
+            <div class="sig-actions" style="justify-content: space-between;">
+              <button class="btn outline">
+                <svg class="ico ico-sm" viewBox="0 0 24 24"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+                Decline with comment
+              </button>
+              <button class="btn brand lg">
+                <svg class="ico ico-sm" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>
+                Sign and confirm
+              </button>
+            </div>
+
+            <div style="text-align: center; font-size: 11px; color: var(--ink-400); margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--ink-200);">
+              Need to talk to Mariana? <a href="#" style="color: var(--ink-700);">Reply to the original email.</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ───── Mobile rendering ───── -->
+      <div class="mobile-adapt">
+        <div>
+          <div class="label">B · Mobile rendering</div>
+          <div class="phone">
+            <div class="screen">
+              <div class="notch"></div>
+              <div class="status-bar">
+                <span>9:41</span>
+                <span class="icons">
+                  <svg viewBox="0 0 24 24"><path d="M2 12c5-3 15-3 20 0"/><path d="M5 16c3-2 11-2 14 0"/><circle cx="12" cy="20" r="1.5" fill="currentColor"/></svg>
+                  <svg viewBox="0 0 24 24"><rect x="2" y="9" width="16" height="8" rx="2"/><rect x="20" y="11" width="2" height="4" rx="0.5" fill="currentColor"/></svg>
+                </span>
+              </div>
+
+              <div class="doc-toolbar-m">
+                <div class="left">
+                  <span style="display: inline-flex; align-items: center; gap: 5px;">
+                    <span style="width: 11px; height: 11px; border-radius: 3px; background: linear-gradient(135deg, var(--brand-500), var(--brand-700));"></span>
+                    Reviewed
+                  </span>
+                  <span class="dots">
+                    <span class="on"></span><span class="on"></span><span class="on"></span><span></span><span></span>
+                  </span>
+                  <span>3 / 5</span>
+                </div>
+                <span style="opacity: 0.7;">⋮</span>
+              </div>
+
+              <div class="show-head" style="padding: 12px 14px 10px;">
+                <h5 style="font-size: 20px;">Coastal Spell</h5>
+                <div class="when" style="font-size: 11px;">Sat, Aug 9 &middot; The Crescent</div>
+              </div>
+
+              <div style="padding: 10px 0 4px;">
+                <div class="doc-section-m reviewed">
+                  <div class="dh">
+                    01 &middot; Structure
+                    <span class="ck">
+                      <svg class="ico" style="width: 10px; height: 10px;" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>
+                      Reviewed
+                    </span>
+                  </div>
+                  <table>
+                    <tr><td class="k">Vs · 85/15</td><td class="v">$9,500</td></tr>
+                    <tr><td class="k">Expense cap</td><td class="v">$6,500</td></tr>
+                  </table>
+                </div>
+
+                <div class="doc-section-m reviewed">
+                  <div class="dh">
+                    02 &middot; Recoups (2)
+                    <span class="ck">
+                      <svg class="ico" style="width: 10px; height: 10px;" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>
+                      Reviewed
+                    </span>
+                  </div>
+                  <div class="recoup-mini">
+                    <div class="lbl">WNXP radio<span class="sub">Inside cap &middot; before split</span></div>
+                    <div class="amt">$850</div>
+                  </div>
+                  <div class="recoup-mini">
+                    <div class="lbl">Bus deposit<span class="sub">Off-top &middot; before split</span></div>
+                    <div class="amt">$500</div>
+                  </div>
+                </div>
+
+                <div class="doc-section-m reviewed">
+                  <div class="dh">
+                    03 &middot; Order
+                    <span class="ck">
+                      <svg class="ico" style="width: 10px; height: 10px;" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>
+                      Reviewed
+                    </span>
+                  </div>
+                  <table>
+                    <tr><td class="k">1.</td><td class="v txt">Fees · off-top · expenses</td></tr>
+                    <tr><td class="k">2.</td><td class="v txt">In-cap recoups · split</td></tr>
+                  </table>
+                </div>
+
+                <div class="doc-section-m">
+                  <div class="dh">04 &middot; Comps + bonuses</div>
+                  <div style="font-size: 11px; color: var(--ink-600); line-height: 1.5;">
+                    <strong style="color: var(--amber-800);">Counting:</strong> press, sponsor &middot;
+                    <strong style="color: var(--brand-700);">Sellout +$1,500</strong> &middot;
+                    <strong style="color: var(--brand-700);">Gross&nbsp;&gt;&nbsp;25k +$1,000</strong>
+                  </div>
+                </div>
+
+                <div class="doc-section-m">
+                  <div class="dh">05 &middot; Original email <span class="badge default" style="font-size: 9px;">tap to expand</span></div>
+                </div>
+              </div>
+
+              <div class="sig-panel-m">
+                <div class="ph">Signature of authorized agent</div>
+                <div class="tabs-m">
+                  <button class="on">Draw</button>
+                  <button>Type</button>
+                </div>
+                <div class="sig-canvas" style="height: 92px;">
+                  <div class="stroke">Daniel B.</div>
+                  <div class="baseline"></div>
+                  <div class="x-mark">×</div>
+                  <span class="clear">Clear</span>
+                </div>
+                <div class="sig-field">
+                  <div class="lbl">Printed name</div>
+                  <input value="Daniel Brooks" />
+                </div>
+                <label class="sig-checkbox on">
+                  <span class="box"></span>
+                  <span><strong>I agree</strong> this constitutes my electronic signature and that I have authority to bind the artist to these terms.</span>
+                </label>
+                <div class="sig-actions-m">
+                  <button class="btn brand lg">
+                    <svg class="ico ico-sm" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>
+                    Sign and confirm
+                  </button>
+                  <button class="btn outline">
+                    Decline with comment
+                  </button>
+                </div>
+              </div>
+
+              <div class="escape-link">
+                Need to talk? <a href="#">Reply to Mariana</a>
+              </div>
+              <div class="home-bar"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="notes">
+          <h5>What changes on the phone</h5>
+          <ul>
+            <li>
+              <span class="mk">01</span>
+              <span class="b"><strong>Toolbar collapses to a slim band</strong> &mdash; progress dots + "3 / 5" only; the secondary actions (Original email, Help) move into a <code style="font-family: var(--font-mono); font-size: 11px;">⋮</code> menu.</span>
+            </li>
+            <li>
+              <span class="mk">02</span>
+              <span class="b"><strong>Section padding tightens</strong>, fonts step down one notch, but the green-bordered "Reviewed" marker stays &mdash; it&rsquo;s the soul of the ceremony.</span>
+            </li>
+            <li>
+              <span class="mk">03</span>
+              <span class="b"><strong>Signature panel goes single-column</strong>: Draw canvas → printed name → checkbox → action buttons. No more side-by-side name/date.</span>
+            </li>
+            <li>
+              <span class="mk">04</span>
+              <span class="b"><strong>Sign / Decline stack vertically</strong> instead of side-by-side. Sign is the primary thumb target; Decline sits directly below as an outline button (still equal-weight in semantics, just space-efficient).</span>
+            </li>
+            <li>
+              <span class="mk">05</span>
+              <span class="b"><strong>Original email collapses</strong> into a tappable section row instead of an expandable card &mdash; one less thing to scroll past.</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="takeaway">
+        <strong>Why this works.</strong> The progress toolbar plus
+        <span class="kw">section-by-section &ldquo;reviewed&rdquo; markers</span>
+        give the agent a sense of doing-due-diligence without forcing it. Decline
+        and Sign sit side-by-side &mdash; equal weight, no hidden friction.
+        <strong>Why it might not.</strong> Heavy. Daniel-on-phone-between-meetings
+        will scroll past most of it. Works better when the deal is high-stakes or
+        when the artist&rsquo;s legal team is going to look at it anyway.
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ VARIATION C · SPLIT REVIEW + SIGN ═══════════════ -->
+  <section id="vc">
+    <div class="sec-head">
+      <span class="num">C / 05</span>
+      <h2>Split review-and-sign</h2>
+      <div class="sub">
+        Two columns: recap on the left, sign panel sticky on the right.
+        Agent can see every term while signing. Best for desktop (Marcus
+        from his couch).
+      </div>
+    </div>
+
+    <div class="specimen">
+      <div class="spec-meta">
+        <span>C &middot; Split review-and-sign &middot; desktop, collapses on phone</span>
+        <span class="tags">
+          <span class="tag">sticky-sign</span>
+          <span class="tag">always-on-recap</span>
+          <span class="tag">desktop-primary</span>
+        </span>
+      </div>
+
+      <div class="split-frame">
+        <div class="split-bar">
+          <div class="left">
+            <span class="gm"></span>
+            <strong style="color: var(--ink-700); font-weight: 500;">Greenroom</strong>
+            <span style="color: var(--ink-300);">·</span>
+            sign deal
+          </div>
+          <div style="display: flex; gap: 12px; font-size: 11px; color: var(--ink-400);">
+            <span><svg class="ico ico-xs" viewBox="0 0 24 24" style="display: inline-block; vertical-align: -2px;"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Secure magic link &middot; valid 14 days</span>
+          </div>
+        </div>
+
+        <div class="split-body">
+          <div class="split-recap">
+            <div style="display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 9.5px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--brand-700); font-weight: 600; margin-bottom: 6px;">
+              Read &amp; review
+            </div>
+            <h5>Coastal Spell</h5>
+            <div class="when">Sat, Aug 9, 2026 &middot; The Crescent &middot; Nashville &middot; sent by Mariana Reyes</div>
+
+            <div class="recap-block" style="padding: 0 0 14px;">
+              <div class="bh">Structure <span class="badge vs">Vs · 85/15</span></div>
+              <table>
+                <tr><td class="k">Guarantee</td><td class="v">$9,500.00</td></tr>
+                <tr><td class="k">Percentage</td><td class="v txt">85% of net</td></tr>
+                <tr><td class="k">Percentage basis</td><td class="v txt">Net &middot; after expenses</td></tr>
+                <tr><td class="k">Expense cap</td><td class="v">$6,500.00</td></tr>
+                <tr><td class="k">Hospitality cap</td><td class="v txt">$1,200 inside cap</td></tr>
+              </table>
+            </div>
+
+            <div class="recap-block" style="padding: 14px 0; border-top: 1px solid var(--ink-100);">
+              <div class="bh">Recoups (2)</div>
+              <div class="recoup-line">
+                <div class="lbl">Local radio buy &middot; WNXP<span class="sub">Marketing &middot; inside cap &middot; before split</span></div>
+                <div class="amt">$850.00</div>
+              </div>
+              <div class="recoup-line">
+                <div class="lbl">Tour bus damage deposit return<span class="sub">Damages &middot; off the top &middot; before split</span></div>
+                <div class="amt">$500.00</div>
+              </div>
+            </div>
+
+            <div class="recap-block" style="padding: 14px 0; border-top: 1px solid var(--ink-100);">
+              <div class="bh">Deduction order</div>
+              <table>
+                <tr><td class="k">1.</td><td class="v txt">Ticketing fees</td></tr>
+                <tr><td class="k">2.</td><td class="v txt">Off-top recoups</td></tr>
+                <tr><td class="k">3.</td><td class="v txt">Show expenses (in cap)</td></tr>
+                <tr><td class="k">4.</td><td class="v txt">In-cap recoups</td></tr>
+                <tr><td class="k">5.</td><td class="v txt">Artist split (85%)</td></tr>
+              </table>
+            </div>
+
+            <div class="recap-block" style="padding: 14px 0; border-top: 1px solid var(--ink-100);">
+              <div class="bh">Bonuses (2)</div>
+              <table>
+                <tr><td class="k">Sellout (≥ 650 tix)</td><td class="v">+$1,500</td></tr>
+                <tr><td class="k">Gross &gt; $25,000</td><td class="v">+$1,000</td></tr>
+              </table>
+            </div>
+
+            <div class="recap-block" style="padding: 14px 0; border-top: 1px solid var(--ink-100);">
+              <div class="bh">Comp rules</div>
+              <div style="font-size: 12px; color: var(--ink-700); line-height: 1.55;">
+                <strong style="color: var(--amber-800);">Press, sponsor</strong> count toward gross.<br/>
+                <span style="color: var(--ink-500);">Artist GL, label, venue staff, promo, other &mdash; do not count.</span>
+              </div>
+            </div>
+
+            <div class="recap-block" style="padding: 14px 0 0; border-top: 1px solid var(--ink-100);">
+              <div class="bh">Source · agent email</div>
+              <div style="font-size: 11.5px; color: var(--ink-500); padding: 4px 8px; background: var(--canvas-soft); border-radius: 6px;">
+                <em>From: Daniel Brooks &middot;</em> click to expand
+              </div>
+            </div>
+          </div>
+
+          <div class="split-sig">
+            <div class="sticky-inner">
+              <div class="ph">Sign &amp; confirm</div>
+              <h3 class="h">Your signature</h3>
+
+              <div class="tabs" style="display: inline-flex; gap: 4px; padding: 3px; background: white; border: 1px solid rgba(228,223,210,0.8); border-radius: 8px; margin-bottom: 10px;">
+                <button class="btn ghost sm" style="background: var(--ink-900); color: white;">Draw</button>
+                <button class="btn ghost sm">Type</button>
+              </div>
+              <div class="sig-canvas" style="height: 110px;">
+                <div class="stroke">Daniel B.</div>
+                <div class="baseline"></div>
+                <div class="x-mark">×</div>
+                <span class="clear">Clear</span>
+              </div>
+
+              <div class="sig-field">
+                <div class="lbl">Printed name</div>
+                <input value="Daniel Brooks" />
+              </div>
+
+              <label class="sig-checkbox on">
+                <span class="box"></span>
+                <span>I agree this constitutes my electronic signature and that I have the authority to bind the artist to these terms.</span>
+              </label>
+
+              <div class="sig-actions">
+                <button class="btn brand lg" style="flex: 1;">
+                  <svg class="ico ico-sm" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>
+                  Sign and confirm
+                </button>
+              </div>
+              <div class="decline-link">
+                <a href="#">Decline with a comment →</a>
+              </div>
+
+              <div style="margin-top: 16px; padding-top: 12px; border-top: 1px dashed var(--ink-200); font-size: 10.5px; color: var(--ink-400); text-align: center;">
+                Need to talk? <a href="#" style="color: var(--ink-600);">Reply to the original email.</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ───── Mobile rendering ───── -->
+      <div class="mobile-adapt">
+        <div>
+          <div class="label">C · Mobile rendering · Sign tab active</div>
+          <div class="phone">
+            <div class="screen">
+              <div class="notch"></div>
+              <div class="status-bar">
+                <span>9:41</span>
+                <span class="icons">
+                  <svg viewBox="0 0 24 24"><path d="M2 12c5-3 15-3 20 0"/><path d="M5 16c3-2 11-2 14 0"/><circle cx="12" cy="20" r="1.5" fill="currentColor"/></svg>
+                  <svg viewBox="0 0 24 24"><rect x="2" y="9" width="16" height="8" rx="2"/><rect x="20" y="11" width="2" height="4" rx="0.5" fill="currentColor"/></svg>
+                </span>
+              </div>
+
+              <div class="show-head" style="padding: 12px 14px 10px;">
+                <div class="greenroom-mark">
+                  <span class="gm"></span> Greenroom &middot; sign deal
+                </div>
+                <h5 style="font-size: 20px;">Coastal Spell</h5>
+                <div class="when" style="font-size: 11px;">Sat, Aug 9 &middot; The Crescent</div>
+              </div>
+
+              <div class="phone-tabs">
+                <div class="t">
+                  <span>Review</span>
+                  <span class="num">6</span>
+                </div>
+                <div class="t on">
+                  <span>Sign</span>
+                  <span class="num">✓</span>
+                </div>
+              </div>
+
+              <!-- Compact recap summary at top (always visible) -->
+              <div style="padding: 10px 14px; margin: 10px 14px 0; background: var(--canvas-soft); border: 1px solid rgba(228,223,210,0.7); border-radius: 8px;">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px;">
+                  <span class="badge vs" style="font-size: 9.5px;">Vs · 85/15</span>
+                  <span style="font-family: var(--font-mono); font-size: 10px; color: var(--ink-400); letter-spacing: 0.06em;">SIGNING</span>
+                </div>
+                <table style="width: 100%;">
+                  <tr><td style="font-size: 11px; color: var(--ink-500); padding: 2px 0;">Guarantee</td><td style="font-size: 11px; color: var(--ink-900); font-family: var(--font-mono); text-align: right;">$9,500</td></tr>
+                  <tr><td style="font-size: 11px; color: var(--ink-500); padding: 2px 0;">% of net</td><td style="font-size: 11px; color: var(--ink-900); font-family: var(--font-mono); text-align: right;">85</td></tr>
+                  <tr><td style="font-size: 11px; color: var(--ink-500); padding: 2px 0;">Recoups</td><td style="font-size: 11px; color: var(--ink-900); font-family: var(--font-mono); text-align: right;">2 entries</td></tr>
+                </table>
+                <a href="#" style="font-size: 10.5px; color: var(--brand-700); text-decoration: none; display: inline-block; margin-top: 6px;">
+                  ← Back to full review
+                </a>
+              </div>
+
+              <div class="sig-panel-m" style="margin-top: 12px; border-top: 0;">
+                <div class="ph">Your signature</div>
+                <div class="tabs-m">
+                  <button class="on">Draw</button>
+                  <button>Type</button>
+                </div>
+                <div class="sig-canvas" style="height: 92px;">
+                  <div class="stroke">Daniel B.</div>
+                  <div class="baseline"></div>
+                  <div class="x-mark">×</div>
+                  <span class="clear">Clear</span>
+                </div>
+                <div class="sig-field">
+                  <div class="lbl">Printed name</div>
+                  <input value="Daniel Brooks" />
+                </div>
+                <label class="sig-checkbox on">
+                  <span class="box"></span>
+                  <span>I agree this constitutes my electronic signature and that I have the authority to bind the artist to these terms.</span>
+                </label>
+                <div class="sig-actions-m">
+                  <button class="btn brand lg">
+                    <svg class="ico ico-sm" viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg>
+                    Sign and confirm
+                  </button>
+                </div>
+                <div class="decline-link">
+                  <a href="#">Decline with a comment →</a>
+                </div>
+              </div>
+
+              <div class="escape-link">
+                Need to talk? <a href="#">Reply to the original email</a>
+              </div>
+              <div class="home-bar"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="notes">
+          <h5>What changes on the phone</h5>
+          <ul>
+            <li>
+              <span class="mk">01</span>
+              <span class="b"><strong>Two columns become two tabs</strong> &mdash; <code style="font-family: var(--font-mono); font-size: 11px;">Review</code> and <code style="font-family: var(--font-mono); font-size: 11px;">Sign</code> &mdash; with the recap section count and a ✓ indicator. The split layout&rsquo;s "always-visible" promise becomes "always-one-tap-away".</span>
+            </li>
+            <li>
+              <span class="mk">02</span>
+              <span class="b"><strong>A compact recap card at the top of the Sign tab</strong> keeps the headline numbers in view while signing. The full recap stays one tap away under Review.</span>
+            </li>
+            <li>
+              <span class="mk">03</span>
+              <span class="b"><strong>"← Back to full review" link</strong> right above the signature panel &mdash; the equivalent of glancing left on desktop.</span>
+            </li>
+            <li>
+              <span class="mk">04</span>
+              <span class="b"><strong>Sign panel takes the rest of the screen.</strong> Single-column Draw / Type, name, checkbox, big thumb-zone Sign button. Decline is a lighter link below.</span>
+            </li>
+            <li>
+              <span class="mk">05</span>
+              <span class="b"><strong>The Review tab</strong> (not shown) is functionally identical to the variation A scroll &mdash; recap blocks stacked, no signature panel. A floating "Sign now ✓" pill anchors back to this tab.</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="takeaway">
+        <strong>Why this works.</strong> The
+        <span class="kw">always-visible recap</span> means the agent can verify
+        anything mid-signing without losing the sign panel. Sticky behavior makes
+        the long-scroll recap feel safe. <strong>Why it might not.</strong> On
+        phones the layout&rsquo;s "two columns" advantage turns into a tab toggle,
+        which is functionally similar to variation A&rsquo;s pure scroll. The
+        choice between A and C is essentially: <em>do you want an explicit
+        Review-vs-Sign mental model, or a single scroll?</em>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ VARIATION D · CONVERSATIONAL LETTER ═══════════════ -->
+  <section id="vd">
+    <div class="sec-head">
+      <span class="num">D / 05</span>
+      <h2>Conversational letter</h2>
+      <div class="sub">
+        Reads like a reply to Mariana&rsquo;s email thread. Deal terms appear
+        inline as cards. Soft, relationship-first &mdash; the kind of design
+        that earns trust when the venue / agent relationship is new.
+      </div>
+    </div>
+
+    <div class="specimen">
+      <div class="spec-meta">
+        <span>D &middot; Conversational letter &middot; mobile + desktop</span>
+        <span class="tags">
+          <span class="tag">letter-format</span>
+          <span class="tag">relational</span>
+          <span class="tag">soft-CTA</span>
+        </span>
+      </div>
+
+      <div class="letter-frame">
+        <div class="letter-head">
+          <div class="ava">MR</div>
+          <div class="who">
+            <div class="nm">Mariana Reyes</div>
+            <div class="to">
+              <span class="lbl">to</span> Daniel Brooks &middot; WME
+            </div>
+          </div>
+          <div class="when">Aug 1, 14:32</div>
+        </div>
+
+        <div class="letter-body">
+          <p style="font-family: var(--font-display); font-size: 22px; font-weight: 500; letter-spacing: -0.02em; color: var(--ink-900); margin-bottom: 14px; line-height: 1.15;">
+            Hi Daniel &mdash;<br/>
+            here&rsquo;s the Coastal Spell deal for Aug 9.
+          </p>
+
+          <p>
+            Quick one. Same shape as last time &mdash; <strong>Vs at 85/15</strong>, with a $9,500 floor.
+            Two recoups: the radio buy and the bus deposit. Sellout bonus is bumped to $1,500. I&rsquo;ve
+            structured it below so you can sign without opening anything else.
+          </p>
+
+          <div class="inline-card">
+            <div class="ph">Structure <span class="badge vs">Vs · 85/15</span></div>
+            <table>
+              <tr><td class="k">Guarantee</td><td class="v">$9,500.00</td></tr>
+              <tr><td class="k">Percentage</td><td class="v">85% of net</td></tr>
+              <tr><td class="k">Expense cap</td><td class="v">$6,500.00</td></tr>
+              <tr><td class="k">Hospo cap</td><td class="v">$1,200.00 · in cap</td></tr>
+            </table>
+          </div>
+
+          <p>
+            Recoups are unchanged from last year &mdash; the radio buy is inside the cap,
+            the bus deposit is off-top:
+          </p>
+
+          <div class="inline-card">
+            <div class="ph">Recoups</div>
+            <div class="recoup-line">
+              <div class="lbl">WNXP radio<span class="sub">Inside cap &middot; before split</span></div>
+              <div class="amt">$850</div>
+            </div>
+            <div class="recoup-line">
+              <div class="lbl">Bus deposit<span class="sub">Off-top &middot; before split</span></div>
+              <div class="amt">$500</div>
+            </div>
+          </div>
+
+          <p>
+            Bonuses: sellout = +$1,500 (650 tix), and over $25k gross = another $1,000.
+            Press and sponsor comps count toward gross like last time. Everything else doesn&rsquo;t.
+          </p>
+
+          <p>
+            If anything looks off &mdash; especially the split or that bus deposit &mdash;
+            decline below with a quick note and I&rsquo;ll fix and re-send. Otherwise tap
+            <em>Sign and confirm</em> and we&rsquo;re good.
+          </p>
+
+          <p class="signoff" style="margin-bottom: 8px;">
+            Thanks,<br/>
+            <strong style="color: var(--ink-900); font-weight: 500;">Mariana</strong>
+          </p>
+          <p style="font-size: 11.5px; color: var(--ink-400); margin-bottom: 4px;">
+            The Crescent &middot; Nashville
+          </p>
+        </div>
+
+        <div class="letter-sig">
+          <div style="font-size: 11px; font-weight: 600; letter-spacing: 0.12em; color: var(--brand-700); text-transform: uppercase; margin-bottom: 12px;">
+            Your reply
+          </div>
+
+          <div class="tabs" style="display: inline-flex; gap: 4px; padding: 3px; background: white; border: 1px solid rgba(228,223,210,0.8); border-radius: 8px; margin-bottom: 10px;">
+            <button class="btn ghost sm" style="background: var(--ink-900); color: white;">Sign &amp; agree</button>
+            <button class="btn ghost sm">Reply with note</button>
+          </div>
+
+          <div class="sig-canvas" style="height: 100px;">
+            <div class="stroke">Daniel B.</div>
+            <div class="baseline"></div>
+            <div class="x-mark">×</div>
+            <span class="clear">Clear</span>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;">
+            <div class="sig-field" style="margin-top: 0;">
+              <div class="lbl">Printed name</div>
+              <input value="Daniel Brooks" />
+            </div>
+            <div class="sig-field" style="margin-top: 0;">
+              <div class="lbl">Date</div>
+              <input value="Aug 1, 2026" />
+            </div>
+          </div>
+
+          <label class="sig-checkbox on">
+            <span class="box"></span>
+            <span>I agree this is my electronic signature and I&rsquo;m authorized to bind the artist to these terms.</span>
+          </label>
+
+          <div class="sig-actions">
+            <button class="btn brand lg" style="flex: 1;">
+              <svg class="ico ico-sm" viewBox="0 0 24 24"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg>
+              Send signed reply
+            </button>
+          </div>
+        </div>
+
+        <div class="escape-link" style="border-top: 1px solid var(--ink-100);">
+          Want to keep this conversational? <a href="#">Reply to Mariana&rsquo;s email</a> instead.
+        </div>
+      </div>
+
+      <!-- ───── Mobile rendering ───── -->
+      <div class="mobile-adapt">
+        <div>
+          <div class="label">D · Mobile rendering · Mail app shell</div>
+          <div class="phone">
+            <div class="screen">
+              <div class="notch"></div>
+              <div class="status-bar">
+                <span>9:41</span>
+                <span class="icons">
+                  <svg viewBox="0 0 24 24"><path d="M2 12c5-3 15-3 20 0"/><path d="M5 16c3-2 11-2 14 0"/><circle cx="12" cy="20" r="1.5" fill="currentColor"/></svg>
+                  <svg viewBox="0 0 24 24"><rect x="2" y="9" width="16" height="8" rx="2"/><rect x="20" y="11" width="2" height="4" rx="0.5" fill="currentColor"/></svg>
+                </span>
+              </div>
+
+              <div class="mail-app-bar">
+                <span class="back">
+                  <svg class="ico ico-sm" viewBox="0 0 24 24" style="stroke-width: 2;"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+                </span>
+                <span class="thread-name">Coastal Spell &middot; Aug 9 — please sign…</span>
+                <span class="actions">
+                  <svg class="ico ico-sm" viewBox="0 0 24 24"><circle cx="12" cy="5" r="1" fill="currentColor"/><circle cx="12" cy="12" r="1" fill="currentColor"/><circle cx="12" cy="19" r="1" fill="currentColor"/></svg>
+                </span>
+              </div>
+
+              <div style="padding: 12px 16px 6px; border-bottom: 1px solid var(--ink-100); display: flex; align-items: center; gap: 10px;">
+                <div class="agent-av" style="width: 32px; height: 32px; background: linear-gradient(135deg, var(--brand-300), var(--brand-700)); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600;">
+                  MR
+                </div>
+                <div style="flex: 1; min-width: 0; line-height: 1.3;">
+                  <div style="font-size: 12.5px; font-weight: 600; color: var(--ink-900);">Mariana Reyes</div>
+                  <div style="font-size: 10.5px; color: var(--ink-500);">to Daniel · Aug 1, 14:32</div>
+                </div>
+              </div>
+
+              <div class="letter-body-m">
+                <p style="font-family: var(--font-display); font-size: 17px; font-weight: 500; letter-spacing: -0.02em; color: var(--ink-900); margin-bottom: 10px; line-height: 1.2;">
+                  Hi Daniel &mdash;<br/>
+                  Coastal Spell deal for Aug 9.
+                </p>
+
+                <p>
+                  Quick one. Same shape as last time &mdash; <strong>Vs at 85/15</strong>
+                  with a $9,500 floor. Two recoups (radio + bus deposit). Sellout bonus
+                  bumped to $1,500.
+                </p>
+
+                <div class="inline-card">
+                  <div class="ph">Structure <span class="badge vs" style="font-size: 9px;">Vs · 85/15</span></div>
+                  <table>
+                    <tr><td class="k">Guarantee</td><td class="v">$9,500</td></tr>
+                    <tr><td class="k">% of net</td><td class="v">85</td></tr>
+                    <tr><td class="k">Expense cap</td><td class="v">$6,500</td></tr>
+                  </table>
+                </div>
+
+                <div class="inline-card">
+                  <div class="ph">Recoups</div>
+                  <div class="recoup-line" style="padding: 3px 0;">
+                    <div class="lbl">WNXP radio<span class="sub">Inside cap &middot; before</span></div>
+                    <div class="amt">$850</div>
+                  </div>
+                  <div class="recoup-line" style="padding: 3px 0;">
+                    <div class="lbl">Bus deposit<span class="sub">Off-top &middot; before</span></div>
+                    <div class="amt">$500</div>
+                  </div>
+                </div>
+
+                <p>
+                  Bonuses: sellout +$1,500 (650 tix); gross&nbsp;&gt;&nbsp;$25k +$1,000.
+                  Press / sponsor comps count.
+                </p>
+
+                <p>
+                  If anything looks off, decline with a quick note and I&rsquo;ll fix
+                  and re-send. Otherwise tap <em>Send signed reply</em> below.
+                </p>
+
+                <p class="signoff" style="margin-bottom: 4px;">
+                  Thanks,<br/>
+                  <strong style="color: var(--ink-900); font-weight: 500;">Mariana</strong>
+                </p>
+              </div>
+
+              <div class="sig-panel-m" style="border-top: 1px solid var(--ink-100);">
+                <div class="ph">Your reply</div>
+                <div class="tabs-m">
+                  <button class="on">Sign &amp; agree</button>
+                  <button>Reply with note</button>
+                </div>
+                <div class="sig-canvas" style="height: 86px;">
+                  <div class="stroke">Daniel B.</div>
+                  <div class="baseline"></div>
+                  <div class="x-mark">×</div>
+                  <span class="clear">Clear</span>
+                </div>
+                <div class="sig-field">
+                  <div class="lbl">Printed name</div>
+                  <input value="Daniel Brooks" />
+                </div>
+                <label class="sig-checkbox on">
+                  <span class="box"></span>
+                  <span>I agree this is my electronic signature and I&rsquo;m authorized to bind the artist to these terms.</span>
+                </label>
+                <div class="sig-actions-m">
+                  <button class="btn brand lg">
+                    <svg class="ico ico-sm" viewBox="0 0 24 24"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg>
+                    Send signed reply
+                  </button>
+                </div>
+              </div>
+
+              <div class="escape-link" style="border-top: 1px solid var(--ink-100);">
+                Want to keep this conversational? <a href="#">Reply to Mariana</a>
+              </div>
+              <div class="home-bar"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="notes">
+          <h5>What changes on the phone</h5>
+          <ul>
+            <li>
+              <span class="mk">01</span>
+              <span class="b"><strong>Wrapped in a Mail-app shell</strong> &mdash; back arrow, thread name, kebab menu. The page <em>becomes</em> a thread instead of resembling one.</span>
+            </li>
+            <li>
+              <span class="mk">02</span>
+              <span class="b"><strong>Sender row uses the standard email pattern</strong>: avatar, name, to-line. Daniel reads it the same way he reads every other email from Mariana.</span>
+            </li>
+            <li>
+              <span class="mk">03</span>
+              <span class="b"><strong>Letter typography shrinks</strong> by one step; inline deal-term cards stay full-width and stack naturally between paragraphs.</span>
+            </li>
+            <li>
+              <span class="mk">04</span>
+              <span class="b"><strong>Sign panel reads as the reply composer.</strong> Tabs say <em>Sign &amp; agree</em> / <em>Reply with note</em> &mdash; same actions, channel-native vocabulary.</span>
+            </li>
+            <li>
+              <span class="mk">05</span>
+              <span class="b"><strong>Final CTA is "Send signed reply"</strong>, not "Sign and confirm". The framing keeps a soft, relational tone all the way through the signing moment.</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="takeaway">
+        <strong>Why this works.</strong>
+        <span class="kw">Lowers the &ldquo;contract&rdquo; signal</span> &mdash; for relationships
+        where the deal is more handshake-than-paperwork, this format feels native to
+        the channel. The "send signed reply" button frames the action as
+        <em>responding to a message</em>, not <em>signing a document</em>.
+        <strong>Why it might not.</strong> Soft framing might undersell the legal
+        weight. Agents at WME, CAA, etc. who do this for a living might prefer the
+        document ceremony of variation B. Best for indie / repeat agent relationships.
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════ COMPARE ═══════════════ -->
+  <section>
+    <div class="sec-head">
+      <span class="num">05 / 05</span>
+      <h2>Compare</h2>
+      <div class="sub">Four philosophies, four hypotheses about what makes an agent comfortable signing.</div>
+    </div>
+
+    <div class="compare-grid">
+      <div class="compare-card">
+        <div class="ch">
+          <div class="ct">A &middot; Phone-first</div>
+          <div class="cd">Vertical scroll, thumb-zone sign.</div>
+        </div>
+        <div class="cb">
+          <strong>Best for</strong> the 80% case &mdash; agents reading on phones between meetings.<br/><br/>
+          <strong>Risk:</strong> too casual for high-stakes deals.
+          <br/><br/>
+          <span class="badge brand" style="font-size: 10px;">Recommended default</span>
+        </div>
+      </div>
+      <div class="compare-card">
+        <div class="ch">
+          <div class="ct">B &middot; Document</div>
+          <div class="cd">Section markers + progress.</div>
+        </div>
+        <div class="cb">
+          <strong>Best for</strong> high-value deals or agency lawyers who want due diligence on record.<br/><br/>
+          <strong>Risk:</strong> friction. Agents will skim past most of it on phone.
+        </div>
+      </div>
+      <div class="compare-card">
+        <div class="ch">
+          <div class="ct">C &middot; Split</div>
+          <div class="cd">Recap left, sign sticky right.</div>
+        </div>
+        <div class="cb">
+          <strong>Best for</strong> desktop signing &mdash; GM-on-couch, agent on laptop.<br/><br/>
+          <strong>Risk:</strong> collapses to A on phones, so the layout edge only matters on bigger screens.
+        </div>
+      </div>
+      <div class="compare-card">
+        <div class="ch">
+          <div class="ct">D &middot; Letter</div>
+          <div class="cd">Reply to Mariana, with terms inline.</div>
+        </div>
+        <div class="cb">
+          <strong>Best for</strong> repeat indie agent relationships where the deal feels like a handshake.<br/><br/>
+          <strong>Risk:</strong> can undersell legal weight. Doesn&rsquo;t suit majors.
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top: 36px; padding: 18px 22px; border-left: 3px solid var(--brand-700); background: rgba(167,243,208,0.12); border-radius: 0 10px 10px 0;">
+      <div class="eyebrow" style="margin-bottom: 6px;">Recommendation</div>
+      <div style="font-size: 14px; color: var(--ink-800); line-height: 1.6; max-width: 760px;">
+        Ship <strong>A &middot; Phone-first</strong> as the default agent sign-off page &mdash;
+        it matches the dominant channel (phone) and the dominant mood (between meetings).
+        Borrow <strong>B&rsquo;s &ldquo;reviewed&rdquo; section markers</strong> as an optional
+        progressive-disclosure enhancement when a deal is flagged high-stakes or when the
+        agency configures it. Keep <strong>C&rsquo;s split layout</strong> as the desktop
+        upgrade &mdash; the same page reflows into two columns on screens &gt; 1024px, so
+        Marcus on his couch gets the always-visible recap automatically. Skip
+        <strong>D</strong> for v1 &mdash; the letter format is a beautiful idea, but
+        agents at the agencies booking The Crescent (WME, CAA, UTA) likely want the
+        sober document. Revisit if a venue gets a lot of indie / direct-from-artist deals.
+        <br/><br/>
+        The four variations share the universal anatomy from <span class="mono" style="font-size: 12.5px; color: var(--ink-900);">§00</span>.
+        Build the eight pieces as composable React components once; let the layout swap
+        be a thin shell decision driven by viewport, recipient role, or venue preference.
+      </div>
+    </div>
+  </section>
+
+</main>
+
+</body>
+</html>

@@ -4,6 +4,7 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-display: var(--font-fraunces);
+  --font-signature: var(--font-caveat);
 
   --color-canvas: #faf7f0;
   --color-canvas-soft: #fdfbf6;

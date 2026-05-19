@@ -139,6 +139,55 @@ export const deals = sqliteTable("deals", {
   updatedAt: integer("updated_at", { mode: "timestamp" }),
 });
 
+// -------- Deal magic links --------
+
+/**
+ * One row per magic link issued for a deal. A deal can have:
+ *   - One "sign" link per recipient (the agent). Single-use for the
+ *     sign/decline action; opening the link doesn't count.
+ *   - One or more "view" links (tour manager, label, etc.). Unlimited
+ *     reads, never consume.
+ *
+ * Lifecycle states are derived from timestamps:
+ *   - sentAt set, openedAt null         → SENT
+ *   - openedAt set, consumedAt null     → OPENED (sign role: awaiting action)
+ *   - consumedAt set (sign only)        → SIGNED / DECLINED (action committed)
+ *   - invalidatedAt set                 → INVALIDATED (deal edited after send)
+ *   - now > expiresAt                   → EXPIRED
+ */
+export const dealLinks = sqliteTable("deal_links", {
+  id: text("id").primaryKey(),
+  dealId: text("deal_id")
+    .notNull()
+    .references(() => deals.id),
+  showId: text("show_id")
+    .notNull()
+    .references(() => shows.id),
+
+  token: text("token").notNull().unique(),
+  role: text("role", { enum: ["sign", "view"] }).notNull(),
+
+  // For sign links the recipient is required; for view links it's optional
+  // (an anonymous "share this with whoever" link).
+  recipientName: text("recipient_name"),
+  recipientEmail: text("recipient_email"),
+
+  sentAt: integer("sent_at", { mode: "timestamp" }).notNull(),
+  expiresAt: integer("expires_at", { mode: "timestamp" }).notNull(),
+  openedAt: integer("opened_at", { mode: "timestamp" }),
+  consumedAt: integer("consumed_at", { mode: "timestamp" }),
+  invalidatedAt: integer("invalidated_at", { mode: "timestamp" }),
+
+  // Slice 04 — sign-off outcome. Both "signed" and "declined" stamp
+  // consumedAt; outcome distinguishes them. Signature fields are only
+  // populated on signed; declineComment only on declined.
+  outcome: text("outcome", { enum: ["signed", "declined"] }),
+  printedName: text("printed_name"),
+  signatureDataUrl: text("signature_data_url"),
+  signatureType: text("signature_type", { enum: ["drawn", "typed"] }),
+  declineComment: text("decline_comment"),
+});
+
 // -------- Ticket sales --------
 
 export const ticketSales = sqliteTable("ticket_sales", {
@@ -305,6 +354,8 @@ export type TicketSale = typeof ticketSales.$inferSelect;
 export type Comp = typeof comps.$inferSelect;
 export type Expense = typeof expenses.$inferSelect;
 export type Settlement = typeof settlements.$inferSelect;
+export type DealLink = typeof dealLinks.$inferSelect;
+export type DealLinkRole = DealLink["role"];
 
 // -------- Decoded JSON helpers --------
 

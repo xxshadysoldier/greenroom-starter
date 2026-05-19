@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useTransition, useState, useMemo, useCallback } from "react";
+import { useTransition, useState, useMemo, useCallback, useEffect } from "react";
 import {
   ArrowLeft,
   Clock,
@@ -15,6 +15,12 @@ import {
   Info,
   AlertCircle,
   GripVertical,
+  Check,
+  Copy,
+  Mail,
+  Eye,
+  RefreshCw,
+  CheckCircle2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -44,7 +50,27 @@ import type {
   DeductionStage,
   WalkoutPot,
 } from "@/db/schema";
-import { saveDeal, type SaveDealResult } from "./actions";
+import { saveDeal, type SaveDealResult, type SentLinks } from "./actions";
+
+export type ActiveSendState = {
+  sentAt: string; // ISO
+  sign: {
+    url: string;
+    recipientName: string;
+    recipientEmail: string;
+    status: "sent" | "opened" | "signed" | "declined" | "expired" | "invalidated";
+    openedAt: string | null;
+  };
+  view: { url: string } | null;
+};
+
+export type LastSignoff = {
+  outcome: "signed" | "declined";
+  consumedAt: string; // ISO
+  signedBy: string | null;
+  /** Whether the link has since been invalidated by a prior amendment. */
+  invalidated: boolean;
+};
 
 type Props = {
   showId: string;
@@ -58,6 +84,8 @@ type Props = {
   agent: { name: string; email: string; agencyName: string | null } | null;
   initial: DealFormState;
   hasSavedDeal: boolean;
+  activeSend: ActiveSendState | null;
+  lastSignoff: LastSignoff | null;
 };
 
 const DEAL_TYPES: DealType[] = [
@@ -75,15 +103,38 @@ export function DealForm({
   agent,
   initial,
   hasSavedDeal,
+  activeSend: initialActiveSend,
+  lastSignoff,
 }: Props) {
   const [state, setState] = useState<DealFormState>(initial);
   const [isPending, startTransition] = useTransition();
   const [saveResult, setSaveResult] = useState<SaveDealResult | null>(null);
   const [saveMode, setSaveMode] = useState<"draft" | "send" | null>(null);
+  const [activeSend, setActiveSend] = useState<ActiveSendState | null>(
+    initialActiveSend,
+  );
+  // Brief confirmation flash that sits between the pre-send rail and the
+  // post-send status rail. Auto-clears after ~2.5s.
+  const [justSent, setJustSent] = useState<SentLinks | null>(null);
+  const [copiedUrl, setCopiedUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!justSent) return;
+    const t = setTimeout(() => setJustSent(null), 2500);
+    return () => clearTimeout(t);
+  }, [justSent]);
+
+  useEffect(() => {
+    if (!copiedUrl) return;
+    const t = setTimeout(() => setCopiedUrl(null), 1800);
+    return () => clearTimeout(t);
+  }, [copiedUrl]);
 
   const vis = useMemo(() => visibilityFor(state.dealType), [state.dealType]);
   const ready = useMemo(() => readiness(state), [state]);
   const canSend = ready.missing.length === 0;
+  // True while we have a live sign-off link the agent could act on.
+  const hasActiveSend = activeSend !== null && !justSent;
 
   // ─── Setters
   const setType = useCallback((dealType: DealType) => {
@@ -123,10 +174,36 @@ export function DealForm({
     setSaveMode(mode);
     setSaveResult(null);
     startTransition(async () => {
-      const result = await saveDeal(showId, state, { andRedirect: mode === "send" });
+      const result = await saveDeal(showId, state, { andSend: mode === "send" });
       setSaveResult(result);
       setSaveMode(null);
+      if (result.ok && result.sent) {
+        // Show the confirmation flash, then settle into the status panel.
+        setJustSent(result.sent);
+        setActiveSend({
+          sentAt: result.sent.sentAt,
+          sign: {
+            url: result.sent.sign.url,
+            recipientName: result.sent.sign.recipientName,
+            recipientEmail: result.sent.sign.recipientEmail,
+            status: "sent",
+            openedAt: null,
+          },
+          view: result.sent.view,
+        });
+      }
     });
+  };
+
+  const copyToClipboard = async (url: string) => {
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopiedUrl(url);
+    } catch {
+      // Clipboard API can fail in some browsers — fall back to a selection
+      // hint by surfacing the URL in the saveResult error slot.
+      window.prompt("Copy this URL:", url);
+    }
   };
 
   const isDisputed = false; // disputed state lives on settlement, not deal
@@ -513,11 +590,13 @@ export function DealForm({
 
         {/* ─── RIGHT: sticky readiness rail ──────────────────────── */}
         <aside className="lg:sticky lg:top-4 self-start space-y-3">
+          {/* Readiness card always renders — the meaning shifts after send
+              (re-send readiness vs first-send readiness). */}
           <Card>
             <div className="px-5 py-4">
               <div className="flex items-center justify-between mb-2.5">
                 <div className="eyebrow text-[10px] text-ink-500">
-                  Sign-off readiness
+                  {hasActiveSend ? "Edit & re-send readiness" : "Sign-off readiness"}
                 </div>
                 <PlainBadge variant={DEAL_TYPE_BADGE[state.dealType]}>
                   {DEAL_TYPE_LABELS[state.dealType]}
@@ -583,89 +662,254 @@ export function DealForm({
             </div>
           </Card>
 
-          <Card>
-            <div className="px-5 py-4">
-              <div className="eyebrow text-[10px] text-ink-500 mb-2">Send to</div>
-              {agent ? (
+          {/* ─── Brief "just sent" flash (T+1s scene from the canvas) ─── */}
+          {justSent && (
+            <Card className="bg-brand-50 border-brand-200/70">
+              <div className="px-5 py-4 flex items-start gap-3">
+                <CheckCircle2 className="h-4 w-4 text-brand-700 mt-0.5 flex-shrink-0" />
+                <div className="min-w-0">
+                  <div className="text-[13px] font-medium text-brand-800">
+                    Link sent to {justSent.sign.recipientName.split(" ")[0]}
+                  </div>
+                  <div className="text-[11.5px] text-brand-700 mt-0.5 leading-snug">
+                    Magic link delivered &middot; valid 14 days &middot; one-use sign
+                  </div>
+                </div>
+              </div>
+            </Card>
+          )}
+
+          {/* ─── Post-send status panel (T+20s onward) ─── */}
+          {hasActiveSend && activeSend && (
+            <Card>
+              <div className="px-5 py-4">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="eyebrow text-[10px] text-brand-700">
+                    Sign-off status
+                  </div>
+                  <span className="font-mono text-[10.5px] text-ink-400">
+                    {relativeSentLabel(activeSend.sentAt)}
+                  </span>
+                </div>
+
+                {/* Recipient line */}
                 <div className="flex items-center gap-2.5 px-2.5 py-2 rounded-md bg-canvas-soft ring-1 ring-ink-200/70 mb-3">
                   <div className="w-7 h-7 rounded-full bg-gradient-to-br from-brand-300 to-brand-700 text-white flex items-center justify-center text-[10.5px] font-semibold tracking-wide">
-                    {initials(agent.name)}
+                    {initials(activeSend.sign.recipientName)}
                   </div>
                   <div className="leading-tight min-w-0">
                     <div className="text-[12.5px] font-medium text-ink-900 truncate">
-                      {agent.name}
+                      {activeSend.sign.recipientName}
                     </div>
                     <div className="font-mono text-[10.5px] text-ink-500 truncate">
-                      {agent.email}
+                      {activeSend.sign.recipientEmail}
                     </div>
                   </div>
                 </div>
-              ) : (
-                <div className="text-[12px] text-ink-400 italic mb-3">
-                  No agent on file for this artist.
-                </div>
-              )}
 
-              <button
-                type="button"
-                disabled={!canSend || isPending}
-                onClick={() => handleSave("send")}
-                title={
-                  canSend
-                    ? "Send the structured deal to the agent for sign-off"
-                    : `${ready.missing.length} required field${ready.missing.length === 1 ? "" : "s"} still missing`
-                }
-                className={cn(
-                  "w-full h-10 px-5 inline-flex items-center justify-center gap-1.5 rounded-lg text-[13px] font-medium transition-all",
-                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-700 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas",
-                  canSend && !isPending
-                    ? "bg-brand-700 text-white hover:bg-brand-800 shadow-sm shadow-brand-700/15 ring-1 ring-inset ring-brand-800/20 cursor-pointer active:translate-y-px"
-                    : "bg-ink-100 text-ink-400 ring-1 ring-inset ring-ink-200 cursor-not-allowed",
-                )}
-              >
-                {!canSend && !isPending && <Lock className="h-3 w-3" />}
-                {canSend && !isPending && <Send className="h-3.5 w-3.5" />}
-                {isPending && saveMode === "send"
-                  ? "Saving…"
-                  : !canSend
-                    ? `${ready.missing.length} field${ready.missing.length === 1 ? "" : "s"} to go`
-                    : hasSavedDeal
-                      ? "Save & re-send"
-                      : "Save & continue"}
-              </button>
-              <div className="flex items-center justify-between text-[11px] mt-2.5">
-                <span
-                  className={cn(
-                    canSend ? "text-brand-700 font-medium" : "text-ink-400",
+                {/* Timeline */}
+                <ul className="space-y-2 mb-3">
+                  <li className="flex items-start gap-2 text-[12px] text-ink-700">
+                    <Send className="h-3 w-3 text-ink-500 mt-1 flex-shrink-0" />
+                    <span className="font-mono text-[10px] text-ink-400 w-12 flex-shrink-0">
+                      {formatTime(activeSend.sentAt)}
+                    </span>
+                    <span className="flex-1">
+                      Sent to <strong className="font-medium text-ink-900">{activeSend.sign.recipientName.split(" ")[0]}</strong>
+                    </span>
+                  </li>
+                  {activeSend.sign.openedAt ? (
+                    <li className="flex items-start gap-2 text-[12px] text-ink-700">
+                      <Eye className="h-3 w-3 text-sky-700 mt-1 flex-shrink-0" />
+                      <span className="font-mono text-[10px] text-ink-400 w-12 flex-shrink-0">
+                        {formatTime(activeSend.sign.openedAt)}
+                      </span>
+                      <span className="flex-1">Opened</span>
+                    </li>
+                  ) : (
+                    <li className="flex items-start gap-2 text-[12px] text-ink-400">
+                      <Clock className="h-3 w-3 mt-1 flex-shrink-0" />
+                      <span className="font-mono text-[10px] w-12 flex-shrink-0">…</span>
+                      <span className="flex-1">Awaiting open</span>
+                    </li>
                   )}
-                >
-                  {canSend
-                    ? "All required fields complete"
-                    : `${ready.missing.length} required field${ready.missing.length === 1 ? "" : "s"} left`}
-                </span>
+                </ul>
+
+                {/* Controls */}
+                <div className="grid grid-cols-2 gap-2 pt-3 border-t border-ink-100">
+                  <button
+                    type="button"
+                    onClick={() => copyToClipboard(activeSend.sign.url)}
+                    className="inline-flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-md bg-white text-[11.5px] text-ink-700 ring-1 ring-ink-200 hover:ring-ink-300 hover:text-ink-900"
+                  >
+                    {copiedUrl === activeSend.sign.url ? (
+                      <>
+                        <Check className="h-3 w-3 text-brand-700" /> Copied
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="h-3 w-3" /> Sign link
+                      </>
+                    )}
+                  </button>
+                  {activeSend.view && (
+                    <button
+                      type="button"
+                      onClick={() => copyToClipboard(activeSend.view!.url)}
+                      className="inline-flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-md bg-white text-[11.5px] text-ink-700 ring-1 ring-ink-200 hover:ring-ink-300 hover:text-ink-900"
+                    >
+                      {copiedUrl === activeSend.view.url ? (
+                        <>
+                          <Check className="h-3 w-3 text-brand-700" /> Copied
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="h-3 w-3" /> View link (TM)
+                        </>
+                      )}
+                    </button>
+                  )}
+                </div>
                 <button
                   type="button"
-                  onClick={() => handleSave("draft")}
-                  disabled={isPending}
-                  className="text-ink-600 hover:text-ink-900 disabled:opacity-50"
+                  onClick={() => handleSave("send")}
+                  disabled={!canSend || isPending}
+                  className="mt-2 w-full inline-flex items-center justify-center gap-1.5 px-2.5 py-2 rounded-md bg-white text-[12px] text-ink-700 ring-1 ring-ink-200 hover:ring-ink-300 hover:text-ink-900 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isPending && saveMode === "draft" ? "Saving…" : "Save draft →"}
+                  <RefreshCw className={cn("h-3 w-3", isPending && saveMode === "send" && "animate-spin")} />
+                  {isPending && saveMode === "send" ? "Re-sending…" : "Resend (invalidates the old link)"}
                 </button>
-              </div>
 
-              {saveResult && !saveResult.ok && (
-                <div className="mt-3 text-[12px] text-rose-700 bg-rose-50 ring-1 ring-rose-200 rounded-md p-2.5 flex gap-2">
-                  <AlertCircle className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" />
-                  <span>{saveResult.error}</span>
+                {saveResult && !saveResult.ok && (
+                  <div className="mt-3 text-[12px] text-rose-700 bg-rose-50 ring-1 ring-rose-200 rounded-md p-2.5 flex gap-2">
+                    <AlertCircle className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" />
+                    <span>{saveResult.error}</span>
+                  </div>
+                )}
+              </div>
+            </Card>
+          )}
+
+          {/* ─── Pre-send rail (T-0s) — hidden once we have an active link ─── */}
+          {!hasActiveSend && (
+            <Card>
+              <div className="px-5 py-4">
+                {/* Amendment banner — the previous send was signed/declined.
+                    Re-send will invalidate that signature and create a fresh link. */}
+                {lastSignoff && (
+                  <div className="mb-3 px-3 py-2.5 rounded-md bg-amber-50 ring-1 ring-amber-200/70">
+                    <div className="text-[10px] font-semibold uppercase tracking-[0.1em] text-amber-800 mb-1">
+                      {lastSignoff.outcome === "signed"
+                        ? "Previously signed"
+                        : "Previously declined"}
+                    </div>
+                    <div className="text-[12px] text-ink-700 leading-relaxed">
+                      {lastSignoff.outcome === "signed" ? (
+                        <>
+                          Signed by{" "}
+                          <strong className="text-ink-900 font-medium">
+                            {lastSignoff.signedBy ?? "—"}
+                          </strong>{" "}
+                          on {formatShortDate(lastSignoff.consumedAt)}.
+                          {lastSignoff.invalidated
+                            ? " The earlier signature was invalidated by a prior amendment."
+                            : " Saving will invalidate it and create an amendment."}
+                        </>
+                      ) : (
+                        <>
+                          Declined on {formatShortDate(lastSignoff.consumedAt)}.
+                          Saving will send a fresh sign-off request.
+                        </>
+                      )}
+                    </div>
+                  </div>
+                )}
+                <div className="eyebrow text-[10px] text-ink-500 mb-2">Send to</div>
+                {agent ? (
+                  <div className="flex items-center gap-2.5 px-2.5 py-2 rounded-md bg-canvas-soft ring-1 ring-ink-200/70 mb-3">
+                    <div className="w-7 h-7 rounded-full bg-gradient-to-br from-brand-300 to-brand-700 text-white flex items-center justify-center text-[10.5px] font-semibold tracking-wide">
+                      {initials(agent.name)}
+                    </div>
+                    <div className="leading-tight min-w-0">
+                      <div className="text-[12.5px] font-medium text-ink-900 truncate">
+                        {agent.name}
+                      </div>
+                      <div className="font-mono text-[10.5px] text-ink-500 truncate">
+                        {agent.email}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-[12px] text-ink-400 italic mb-3">
+                    No agent on file for this artist.
+                  </div>
+                )}
+
+                <button
+                  type="button"
+                  disabled={!canSend || isPending || !agent}
+                  onClick={() => handleSave("send")}
+                  title={
+                    !agent
+                      ? "This artist has no agent on file"
+                      : canSend
+                        ? "Send the structured deal to the agent for sign-off"
+                        : `${ready.missing.length} required field${ready.missing.length === 1 ? "" : "s"} still missing`
+                  }
+                  className={cn(
+                    "w-full h-10 px-5 inline-flex items-center justify-center gap-1.5 rounded-lg text-[13px] font-medium transition-all",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-700 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas",
+                    canSend && agent && !isPending
+                      ? "bg-brand-700 text-white hover:bg-brand-800 shadow-sm shadow-brand-700/15 ring-1 ring-inset ring-brand-800/20 cursor-pointer active:translate-y-px"
+                      : "bg-ink-100 text-ink-400 ring-1 ring-inset ring-ink-200 cursor-not-allowed",
+                  )}
+                >
+                  {(!canSend || !agent) && !isPending && <Lock className="h-3 w-3" />}
+                  {canSend && agent && !isPending && <Send className="h-3.5 w-3.5" />}
+                  {isPending && saveMode === "send"
+                    ? "Sending…"
+                    : !agent
+                      ? "No agent on file"
+                      : !canSend
+                        ? `${ready.missing.length} field${ready.missing.length === 1 ? "" : "s"} to go`
+                        : lastSignoff?.outcome === "signed"
+                          ? "Save & send amendment"
+                          : "Save & send for sign-off"}
+                </button>
+                <div className="flex items-center justify-between text-[11px] mt-2.5">
+                  <span
+                    className={cn(
+                      canSend ? "text-brand-700 font-medium" : "text-ink-400",
+                    )}
+                  >
+                    {canSend
+                      ? "All required fields complete"
+                      : `${ready.missing.length} required field${ready.missing.length === 1 ? "" : "s"} left`}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => handleSave("draft")}
+                    disabled={isPending}
+                    className="text-ink-600 hover:text-ink-900 disabled:opacity-50"
+                  >
+                    {isPending && saveMode === "draft" ? "Saving…" : "Save draft →"}
+                  </button>
                 </div>
-              )}
-              {saveResult?.ok && saveMode === null && (
-                <div className="mt-3 text-[12px] text-brand-700 bg-brand-50 ring-1 ring-brand-200 rounded-md p-2.5">
-                  Saved. Back on the show page when you&rsquo;re ready.
-                </div>
-              )}
-            </div>
-          </Card>
+
+                {saveResult && !saveResult.ok && (
+                  <div className="mt-3 text-[12px] text-rose-700 bg-rose-50 ring-1 ring-rose-200 rounded-md p-2.5 flex gap-2">
+                    <AlertCircle className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" />
+                    <span>{saveResult.error}</span>
+                  </div>
+                )}
+                {saveResult?.ok && !justSent && !hasActiveSend && saveMode === null && (
+                  <div className="mt-3 text-[12px] text-brand-700 bg-brand-50 ring-1 ring-brand-200 rounded-md p-2.5">
+                    Saved. Back on the show page when you&rsquo;re ready.
+                  </div>
+                )}
+              </div>
+            </Card>
+          )}
         </aside>
       </div>
     </div>
@@ -1406,4 +1650,31 @@ function cryptoRandomId(): string {
     return crypto.randomUUID();
   }
   return Math.random().toString(36).slice(2);
+}
+
+function formatTime(iso: string): string {
+  const d = new Date(iso);
+  const hh = String(d.getHours()).padStart(2, "0");
+  const mm = String(d.getMinutes()).padStart(2, "0");
+  return `${hh}:${mm}`;
+}
+
+function formatShortDate(iso: string): string {
+  return new Date(iso).toLocaleDateString(undefined, {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
+function relativeSentLabel(iso: string): string {
+  const ageMs = Date.now() - new Date(iso).getTime();
+  const sec = Math.round(ageMs / 1000);
+  if (sec < 60) return `sent ${sec}s ago`;
+  const min = Math.round(sec / 60);
+  if (min < 60) return `sent ${min}m ago`;
+  const hr = Math.round(min / 60);
+  if (hr < 24) return `sent ${hr}h ago`;
+  const day = Math.round(hr / 24);
+  return `sent ${day}d ago`;
 }
