@@ -1121,11 +1121,13 @@ function SegControl<T extends string>({
 
 function LockedField({ value, tag }: { value: string; tag?: string }) {
   return (
-    <div className="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-canvas-soft border border-dashed border-ink-300/80 text-[13.5px] text-ink-900">
-      <Lock className="h-3.5 w-3.5 text-ink-400 flex-shrink-0" />
-      <span className="font-medium flex-1 truncate">{value}</span>
+    <div className="flex flex-col gap-1 px-3 py-2 rounded-lg bg-canvas-soft border border-dashed border-ink-300/80">
+      <div className="flex items-center gap-2.5 text-[13.5px] text-ink-900">
+        <Lock className="h-3.5 w-3.5 text-ink-400 flex-shrink-0" />
+        <span className="font-medium">{value}</span>
+      </div>
       {tag && (
-        <span className="font-mono text-[10.5px] text-ink-400 uppercase tracking-wide flex-shrink-0">
+        <span className="font-mono text-[10.5px] text-ink-400 uppercase tracking-wide pl-[22px]">
           {tag}
         </span>
       )}
