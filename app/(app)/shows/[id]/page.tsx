@@ -236,14 +236,6 @@ export default async function ShowDetailPage({
                           </li>
                         ))}
                       </ul>
-                      <div className="text-[11px] text-ink-400 mt-3 leading-snug">
-                        Stored in{" "}
-                        <code className="font-mono text-[10px] bg-white/80 px-1 py-0.5 rounded ring-1 ring-ink-200/40">
-                          bonuses_json
-                        </code>
-                        . The in-app tool only reads structured bonuses — anything
-                        in the prose below is invisible to it.
-                      </div>
                     </div>
                   )}
 
